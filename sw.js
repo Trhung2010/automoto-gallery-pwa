@@ -1,4 +1,4 @@
-const CACHE_NAME = 'automoto-gallery-v2';
+const CACHE_NAME = 'automoto-gallery-v3';
 const APP_SHELL_URL = './index.html';
 const APP_ASSETS = [
   './',
@@ -10,6 +10,22 @@ const APP_ASSETS = [
   './icon-512.png',
   './apple-touch-icon.png'
 ];
+const APP_ASSET_PATHS = new Set(
+  APP_ASSETS.map(asset => new URL(asset, self.location.origin + self.location.pathname).pathname)
+);
+
+function updateCache(cacheKey, request, response) {
+  if (!response || response.status !== 200 || response.type === 'opaque') return response;
+  const copy = response.clone();
+  caches.open(cacheKey).then(cache => cache.put(request, copy));
+  return response;
+}
+
+function networkFirst(request, fallbackKey = request) {
+  return fetch(request)
+    .then(response => updateCache(CACHE_NAME, fallbackKey, response))
+    .catch(async () => (await caches.match(request)) || caches.match(fallbackKey));
+}
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -34,29 +50,27 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   const { request } = event;
   if (request.method !== 'GET') return;
+  const url = new URL(request.url);
+  const isSameOrigin = url.origin === self.location.origin;
+  const isAppAsset = isSameOrigin && APP_ASSET_PATHS.has(url.pathname);
 
   if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request)
-        .then(response => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(APP_SHELL_URL, copy));
-          return response;
-        })
-        .catch(() => caches.match(APP_SHELL_URL))
-    );
+    event.respondWith(networkFirst(request, APP_SHELL_URL));
     return;
   }
 
-  if (new URL(request.url).origin !== self.location.origin) return;
+  if (!isSameOrigin) return;
+
+  if (isAppAsset) {
+    event.respondWith(networkFirst(request));
+    return;
+  }
 
   event.respondWith(
     caches.match(request).then(cached => {
       if (cached) return cached;
       return fetch(request).then(response => {
-        const copy = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
-        return response;
+        return updateCache(CACHE_NAME, request, response);
       });
     })
   );
