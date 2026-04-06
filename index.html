@@ -1,0 +1,839 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AutoMoto Gallery</title>
+<meta name="theme-color" content="#0d0d14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AutoMoto">
+<link rel="manifest" href="./site.webmanifest">
+<link rel="icon" type="image/png" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0f;color:#e0e0e0;font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh}
+:root{--ac:#38bdf8;--ab:#f97316;--ap:#a78bfa;--bg2:#12121a;--bg3:#16161f;--bd:#1e1e2e}
+header{padding:1.75rem 1.5rem .85rem;text-align:center;border-bottom:1px solid var(--bd)}
+.logo{font-size:2rem;font-weight:700;letter-spacing:-1px}
+.logo .lc{color:var(--ac)}.logo .lb{color:var(--ab)}
+.tagline{color:#6b6b80;font-size:.8rem;margin-top:.2rem}
+/* tabs */
+.main-tabs{display:flex;border-bottom:1px solid var(--bd);background:#0d0d14}
+.main-tab{padding:.65rem 1.25rem;font-size:.82rem;color:#6b6b80;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.main-tab.active{color:var(--ac);border-color:var(--ac)}
+/* controls */
+.controls{padding:1rem 1.5rem;display:flex;flex-wrap:wrap;gap:.65rem;align-items:center;background:#0d0d14;border-bottom:1px solid var(--bd);position:sticky;top:0;z-index:100}
+.sw{position:relative;flex:1;min-width:180px}
+.sw input{width:100%;background:#1a1a26;border:1px solid #2a2a3e;border-radius:8px;padding:.45rem .7rem .45rem 2.1rem;color:#e0e0e0;font-size:.85rem;outline:none}
+.sw input:focus{border-color:var(--ac)}
+.si{position:absolute;left:.55rem;top:50%;transform:translateY(-50%);font-size:.82rem}
+.fbts{display:flex;gap:.4rem;flex-wrap:wrap}
+.fb{background:#1a1a26;border:1px solid #2a2a3e;border-radius:20px;padding:.3rem .8rem;color:#9090a0;font-size:.78rem;cursor:pointer;transition:all .2s}
+.fb.ac{border-color:var(--ac);color:var(--ac);background:#0f1e2a}
+.fb.ab{border-color:var(--ab);color:var(--ab);background:#2a1a0f}
+.fb.aa{border-color:var(--ap);color:var(--ap);background:#1e1a2e}
+.fb.av{border-color:#22d3ee;color:#22d3ee;background:#0a1e20}
+select.sel{background:#1a1a26;border:1px solid #2a2a3e;border-radius:8px;padding:.38rem .65rem;color:#9090a0;font-size:.78rem;outline:none;cursor:pointer}
+/* stats bar */
+.sb{padding:.45rem 1.5rem;background:#0a0a0f;border-bottom:1px solid var(--bd);display:flex;gap:1.25rem;font-size:.76rem;color:#6b6b80;flex-wrap:wrap}
+.sv{color:#e0e0e0;font-weight:500}
+/* grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.9rem;padding:1.1rem 1.5rem}
+/* card */
+.card{background:var(--bg2);border:1px solid var(--bd);border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color .2s,transform .2s;position:relative}
+.card:hover{transform:translateY(-3px)}
+.card.type-car:hover{border-color:var(--ac)}
+.card.type-bike:hover{border-color:var(--ab)}
+.card.type-vn:hover{border-color:#22d3ee}
+.cv{height:130px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.cv svg{width:88%;height:78%;transition:transform .3s}
+.card:hover .cv svg{transform:scale(1.06)}
+.cbadge{position:absolute;top:.45rem;left:.45rem;font-size:.62rem;font-weight:600;padding:.18rem .45rem;border-radius:4px;text-transform:uppercase;letter-spacing:.4px}
+.bcar{background:#0f1e2a;color:var(--ac);border:1px solid #38bdf833}
+.bbike{background:#2a1a0f;color:var(--ab);border:1px solid #f9731633}
+.bvn{background:#0a1e20;color:#22d3ee;border:1px solid #22d3ee33}
+.fbtn{position:absolute;top:.45rem;right:.45rem;background:none;border:none;color:#3a3a50;font-size:1rem;cursor:pointer;line-height:1;padding:.15rem;transition:color .2s}
+.fbtn:hover,.card.faved .fbtn{color:var(--ab)}
+.cchk{position:absolute;bottom:.45rem;right:.45rem;width:16px;height:16px;accent-color:var(--ap);cursor:pointer}
+.ci{padding:.65rem .9rem .75rem}
+.cbrand{font-size:.68rem;color:#6b6b80;text-transform:uppercase;letter-spacing:.4px}
+.cname{font-size:.9rem;font-weight:600;color:#e8e8f0;margin:.08rem 0 .45rem}
+.cstats{display:flex;gap:.4rem;flex-wrap:wrap}
+.chip{background:#1a1a26;border-radius:4px;padding:.12rem .4rem;font-size:.67rem;color:#8080a0}
+.chip span{color:#c0c0d8;font-weight:500}
+/* modal */
+.mo{display:none;position:fixed;inset:0;background:#00000095;z-index:500;align-items:center;justify-content:center;padding:1rem}
+.mo.show{display:flex}
+.modal{background:var(--bg2);border:1px solid #2a2a3e;border-radius:16px;width:100%;max-width:680px;max-height:90vh;overflow-y:auto;position:relative}
+.mcl{position:absolute;top:.65rem;right:.65rem;background:#1a1a26;border:1px solid #2a2a3e;border-radius:6px;color:#8080a0;padding:.2rem .55rem;cursor:pointer;font-size:.95rem;z-index:10}
+.mh{padding:1.25rem 1.25rem .85rem;border-bottom:1px solid var(--bd)}
+.mvis{height:180px;display:flex;align-items:center;justify-content:center;border-radius:10px;margin-bottom:.85rem}
+.mvis svg{width:80%;height:85%}
+.mtr{display:flex;align-items:flex-start;gap:.65rem}
+.mbrand{font-size:.72rem;color:#6b6b80;text-transform:uppercase;letter-spacing:.4px}
+.mname{font-size:1.3rem;font-weight:700;color:#f0f0ff}
+.mbody{padding:.85rem 1.25rem 1.25rem}
+/* modal tabs */
+.mtabs{display:flex;gap:.25rem;margin-bottom:1rem;border-bottom:1px solid var(--bd)}
+.mt{padding:.45rem .9rem;font-size:.78rem;color:#6b6b80;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s}
+.mt.on{color:var(--ac);border-color:var(--ac)}
+/* specs */
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:.35rem}
+.srow{display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;padding:.32rem .45rem;background:#0d0d14;border-radius:5px}
+.sk{font-size:.75rem;color:#6b6b80}
+.sv2{font-size:.77rem;font-weight:500;color:#c8c8e0;text-align:right;max-width:58%;overflow-wrap:anywhere}
+.stit{font-size:.68rem;color:#6b6b80;text-transform:uppercase;letter-spacing:.7px;margin-bottom:.5rem;padding-bottom:.28rem;border-bottom:1px solid var(--bd)}
+/* variants */
+.vlist{display:flex;flex-direction:column;gap:.35rem}
+.vi{background:#0d0d14;border-radius:6px;padding:.38rem .6rem;display:flex;justify-content:space-between;align-items:center}
+.vn{font-size:.8rem;color:#c0c0d8}
+.vp{font-size:.78rem;font-weight:600;color:var(--ap)}
+/* radar */
+#radarCanvas{display:block;margin:0 auto}
+/* compare panel */
+.cpanel{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--bg2);border-top:1px solid #2a2a3e;z-index:200;padding:.65rem 1.5rem;gap:.65rem;align-items:center;flex-wrap:wrap}
+.cpanel.show{display:flex}
+.cslots{display:flex;gap:.45rem;flex:1;flex-wrap:wrap}
+.cslot{background:#1a1a26;border:1px dashed #2a2a3e;border-radius:7px;padding:.35rem .65rem;font-size:.76rem;color:#505060;min-width:130px;display:flex;align-items:center;justify-content:space-between}
+.cslot.filled{border-color:#a78bfa33;color:#c0c0d8}
+.dob{background:var(--ap);border:none;border-radius:7px;padding:.45rem 1rem;color:#fff;font-size:.82rem;font-weight:600;cursor:pointer}
+.clr{background:none;border:1px solid #3a3a50;border-radius:7px;padding:.45rem .75rem;color:#6b6b80;font-size:.78rem;cursor:pointer}
+/* compare table */
+.ctbl{width:100%;border-collapse:collapse;font-size:.79rem}
+.ctbl th{background:#0d0d14;padding:.45rem .65rem;color:#8080a0;font-weight:500;text-align:left;border-bottom:1px solid var(--bd)}
+.ctbl td{padding:.4rem .65rem;border-bottom:1px solid #1a1a26;color:#c8c8e0}
+.ctbl tr:nth-child(even) td{background:#0d0d1480}
+.chi{color:var(--ap);font-weight:600}
+/* leaderboard */
+.lb-list{display:flex;flex-direction:column;gap:.5rem;padding:1rem 1.5rem}
+.lb-row{background:var(--bg2);border:1px solid var(--bd);border-radius:10px;padding:.65rem 1rem;display:flex;align-items:center;gap:.75rem;cursor:pointer;transition:border-color .2s}
+.lb-row:hover{border-color:var(--ap)}
+.lb-rank{font-size:1.1rem;font-weight:700;color:#3a3a50;min-width:2rem;text-align:center}
+.lb-rank.gold{color:#f59e0b}.lb-rank.silver{color:#9ca3af}.lb-rank.bronze{color:#b45309}
+.lb-info{flex:1}
+.lb-name{font-size:.88rem;font-weight:600;color:#e0e0f0}
+.lb-sub{font-size:.72rem;color:#6b6b80}
+.lb-val{font-size:1rem;font-weight:700;color:var(--ac)}
+.lb-bar-wrap{flex:2;height:6px;background:#1a1a26;border-radius:3px;overflow:hidden}
+.lb-bar{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--ac),var(--ap))}
+.lb-controls{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem}
+/* no results */
+.nr{grid-column:1/-1;text-align:center;padding:3rem;color:#50506080}
+/* scrollbar */
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#0a0a0f}::-webkit-scrollbar-thumb{background:#2a2a3e;border-radius:2px}
+.modal-wide{max-width:760px}
+@media (max-width:720px){
+header{padding:1.25rem 1rem .75rem}
+.logo{font-size:1.8rem}
+.controls,.sb,.grid,.lb-list{padding-left:1rem;padding-right:1rem}
+#tab-leaderboard{padding:1rem !important}
+.controls{gap:.5rem}
+.sw,.fbts,select.sel,#cmpBtn,#installBtn{width:100%}
+.sw{flex:1 1 100%;min-width:100%}
+.fbts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.fbts .fb,.lb-controls .fb{width:100%;text-align:center}
+select.sel{flex:1 1 100%}
+#cmpBtn,#installBtn{margin-left:0 !important}
+.sb{gap:.75rem;font-size:.74rem}
+.grid{grid-template-columns:1fr;padding-top:.85rem}
+.mo{padding:.5rem}
+.modal,.modal-wide{max-width:none;max-height:94vh;border-radius:14px}
+.mh,.mbody{padding-left:1rem;padding-right:1rem}
+.mvis{height:150px}
+.mtr{flex-direction:column}
+.mtabs{overflow-x:auto;overflow-y:hidden;white-space:nowrap;padding-bottom:.15rem}
+.mt{flex:0 0 auto}
+.sgrid{grid-template-columns:1fr}
+.srow{flex-direction:column;gap:.2rem}
+.sv2{max-width:none;text-align:left}
+.vi{flex-direction:column;align-items:flex-start;gap:.45rem}
+.cpanel{padding:.75rem 1rem;flex-direction:column;align-items:stretch}
+.cslots{width:100%;flex-direction:column}
+.cslot{min-width:0}
+.dob,.clr{width:100%}
+.lb-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.lb-row{flex-wrap:wrap;align-items:flex-start}
+.lb-bar-wrap{flex:1 1 100%}
+.lb-val{margin-left:auto}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"><span class="lc">AUTO</span><span class="lb">MOTO</span></div>
+  <div class="tagline">Car &amp; Bike Enthusiast Gallery - Specs, Variants, Performance, PWA Ready</div>
+</header>
+<div class="main-tabs">
+  <div class="main-tab active" onclick="switchTab('gallery',this)">Gallery</div>
+  <div class="main-tab" onclick="switchTab('leaderboard',this)">Leaderboard</div>
+</div>
+
+<!-- GALLERY -->
+<div id="tab-gallery">
+<div class="controls">
+  <div class="sw"><span class="si">&#128269;</span><input type="text" id="searchInput" placeholder="Search name, brand, category..."></div>
+  <div class="fbts">
+    <button class="fb aa" onclick="setFilter('all',this)">All</button>
+    <button class="fb" onclick="setFilter('car',this)">Cars</button>
+    <button class="fb" onclick="setFilter('bike',this)">Bikes</button>
+    <button class="fb" onclick="setFilter('vn',this)">VN Market</button>
+  </div>
+  <select class="sel" id="brandSel" onchange="renderGrid()"><option value="">All Brands</option></select>
+  <select class="sel" id="sortSel" onchange="renderGrid()">
+    <option value="">Sort: Default</option>
+    <option value="power">Most Powerful (HP)</option>
+    <option value="speed">Top Speed (km/h)</option>
+    <option value="price_asc">Price USD Low-High</option>
+    <option value="price_desc">Price USD High-Low</option>
+  </select>
+  <button class="fb" id="cmpBtn" onclick="toggleCompare()" style="margin-left:auto">Compare</button>
+  <button class="fb" id="installBtn" hidden>Install App</button>
+</div>
+<div class="sb">
+  <span>Showing <span class="sv" id="countD">0</span> vehicles</span>
+  <span>Cars <span class="sv" id="carD">0</span></span>
+  <span>Bikes <span class="sv" id="bikeD">0</span></span>
+  <span>VN Market <span class="sv" id="vnD">0</span></span>
+  <span>Favorites <span class="sv" id="favD">0</span></span>
+</div>
+<div class="grid" id="vGrid"></div>
+</div>
+
+<!-- LEADERBOARD -->
+<div id="tab-leaderboard" style="display:none;padding:1rem 1.5rem">
+  <div class="lb-controls">
+    <button class="fb aa" onclick="setLbMode('power',this)">Most Powerful (HP)</button>
+    <button class="fb" onclick="setLbMode('speed',this)">Top Speed (km/h)</button>
+    <button class="fb" onclick="setLbMode('accel',this)">0-60 Fastest (s)</button>
+    <button class="fb" onclick="setLbMode('light',this)">Lightest (kg)</button>
+  </div>
+  <div class="lb-list" id="lbList"></div>
+</div>
+
+<!-- Detail Modal -->
+<div class="mo" id="dModal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal">
+    <button class="mcl" onclick="document.getElementById('dModal').classList.remove('show')">&times;</button>
+    <div id="dContent"></div>
+  </div>
+</div>
+<!-- Compare Modal -->
+<div class="mo" id="cModal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal modal-wide">
+    <button class="mcl" onclick="document.getElementById('cModal').classList.remove('show')">&times;</button>
+    <div id="cContent"></div>
+  </div>
+</div>
+<!-- Compare Panel -->
+<div class="cpanel" id="cPanel">
+  <div class="cslots" id="cSlots"></div>
+  <button class="dob" onclick="showComparison()">Open Compare</button>
+  <button class="clr" onclick="clearCmp()">Clear</button>
+</div>
+
+<script>
+const V=[
+// â”€â”€ CARS â”€â”€
+{id:1,type:'car',brand:'Toyota',name:'GR Supra',year:2024,price:43695,priceStr:'$43,695',cat:'Sports',power:382,torque:368,topSpeed:155,zeroSixty:3.9,weightLb:3181,specs:{Engine:'3.0L Turbo I6',Power:'382 hp',Torque:'368 lb-ft',Drivetrain:'RWD',Trans:'8-spd Auto','0â€“60':'3.9s','Top Speed':'155 mph',Weight:'3,181 lbs'},variants:[{n:'2.0',p:'$43,695'},{n:'3.0',p:'$54,195'},{n:'3.0 A91 Edition',p:'$58,945'}],col:'#1a2e3a'},
+{id:2,type:'car',brand:'Toyota',name:'GR86',year:2024,price:29015,priceStr:'$29,015',cat:'Sports',power:228,torque:184,topSpeed:140,zeroSixty:6.1,weightLb:2822,specs:{Engine:'2.4L NA H4',Power:'228 hp',Torque:'184 lb-ft',Drivetrain:'RWD',Trans:'6-spd Manual','0â€“60':'6.1s','Top Speed':'140 mph',Weight:'2,822 lbs'},variants:[{n:'Base',p:'$29,015'},{n:'Premium',p:'$32,415'}],col:'#2a1a1a'},
+{id:3,type:'car',brand:'Honda',name:'Civic Type R',year:2024,price:44990,priceStr:'$44,990',cat:'Hot Hatch',power:315,torque:310,topSpeed:169,zeroSixty:5.0,weightLb:3117,specs:{Engine:'2.0L Turbo I4',Power:'315 hp',Torque:'310 lb-ft',Drivetrain:'FWD',Trans:'6-spd Manual','0â€“60':'5.0s','Top Speed':'169 mph',Weight:'3,117 lbs'},variants:[{n:'Type R',p:'$44,990'},{n:'Type R LE',p:'$50,000+'}],col:'#1a2a1a'},
+{id:4,type:'car',brand:'Honda',name:'NSX Type S',year:2022,price:169500,priceStr:'$169,500',cat:'Supercar',power:600,torque:492,topSpeed:191,zeroSixty:2.9,weightLb:3878,specs:{Engine:'3.5L TT V6 Hybrid',Power:'600 hp',Torque:'492 lb-ft',Drivetrain:'AWD',Trans:'9-spd DCT','0â€“60':'2.9s','Top Speed':'191 mph',Weight:'3,878 lbs'},variants:[{n:'Type S',p:'$169,500'}],col:'#2a1a0a'},
+{id:5,type:'car',brand:'BMW',name:'M3 Competition',year:2024,price:79100,priceStr:'$79,100',cat:'Sedan',power:503,torque:479,topSpeed:180,zeroSixty:3.3,weightLb:3830,specs:{Engine:'3.0L TT I6',Power:'503 hp',Torque:'479 lb-ft',Drivetrain:'RWD',Trans:'8-spd DCT','0â€“60':'3.3s','Top Speed':'180 mph',Weight:'3,830 lbs'},variants:[{n:'M3',p:'$73,800'},{n:'Competition',p:'$79,100'},{n:'xDrive',p:'$81,100'}],col:'#1a1a2a'},
+{id:6,type:'car',brand:'BMW',name:'M4 CSL',year:2023,price:139900,priceStr:'$139,900',cat:'Coupe',power:543,torque:479,topSpeed:191,zeroSixty:3.5,weightLb:3551,specs:{Engine:'3.0L TT I6',Power:'543 hp',Torque:'479 lb-ft',Drivetrain:'RWD',Trans:'8-spd DCT','0â€“60':'3.5s','Top Speed':'191 mph',Weight:'3,551 lbs'},variants:[{n:'CSL',p:'$139,900'}],col:'#1a1a2a'},
+{id:7,type:'car',brand:'Porsche',name:'911 GT3',year:2024,price:161100,priceStr:'$161,100',cat:'Sports',power:502,torque:346,topSpeed:197,zeroSixty:3.2,weightLb:3153,specs:{Engine:'4.0L NA Flat-6',Power:'502 hp',Torque:'346 lb-ft',Drivetrain:'RWD',Trans:'7-spd PDK','0â€“60':'3.2s','Top Speed':'197 mph',Weight:'3,153 lbs'},variants:[{n:'GT3',p:'$161,100'},{n:'GT3 Touring',p:'$163,000'},{n:'GT3 RS',p:'$225,250'}],col:'#2a1a0a'},
+{id:8,type:'car',brand:'Porsche',name:'Taycan Turbo S',year:2024,price:187400,priceStr:'$187,400',cat:'EV Sedan',power:750,torque:774,topSpeed:162,zeroSixty:2.6,weightLb:5060,specs:{Engine:'Electric AWD',Power:'750 hp',Torque:'774 lb-ft',Drivetrain:'AWD',Trans:'2-spd Auto','0â€“60':'2.6s','Top Speed':'162 mph',Weight:'5,060 lbs'},variants:[{n:'Taycan',p:'$90,900'},{n:'GTS',p:'$135,300'},{n:'Turbo S',p:'$187,400'}],col:'#1a2a2a'},
+{id:9,type:'car',brand:'Ferrari',name:'296 GTB',year:2024,price:320000,priceStr:'$320,000',cat:'Supercar',power:819,torque:546,topSpeed:205,zeroSixty:2.9,weightLb:3219,specs:{Engine:'3.0L TT V6 Hybrid',Power:'819 hp',Torque:'546 lb-ft',Drivetrain:'RWD',Trans:'8-spd DCT','0â€“60':'2.9s','Top Speed':'205 mph',Weight:'3,219 lbs'},variants:[{n:'296 GTB',p:'$320,000'},{n:'296 GTS',p:'$337,300'}],col:'#2a0a0a'},
+{id:10,type:'car',brand:'Ferrari',name:'SF90 Stradale',year:2024,price:520000,priceStr:'$520,000',cat:'Hypercar',power:986,torque:590,topSpeed:211,zeroSixty:2.5,weightLb:3461,specs:{Engine:'4.0L V8 + 3 E-Motors',Power:'986 hp',Torque:'590 lb-ft',Drivetrain:'AWD',Trans:'8-spd DCT','0â€“60':'2.5s','Top Speed':'211 mph',Weight:'3,461 lbs'},variants:[{n:'Stradale',p:'$520,000'},{n:'Spider',p:'$565,000'}],col:'#2a0a0a'},
+{id:11,type:'car',brand:'Lamborghini',name:'HuracĂ¡n EVO',year:2024,price:261274,priceStr:'$261,274',cat:'Supercar',power:630,torque:443,topSpeed:202,zeroSixty:2.9,weightLb:3135,specs:{Engine:'5.2L NA V10',Power:'630 hp',Torque:'443 lb-ft',Drivetrain:'AWD',Trans:'7-spd DCT','0â€“60':'2.9s','Top Speed':'202 mph',Weight:'3,135 lbs'},variants:[{n:'EVO RWD',p:'$212,500'},{n:'EVO AWD',p:'$261,274'},{n:'EVO Spyder',p:'$287,400'}],col:'#2a2a0a'},
+{id:12,type:'car',brand:'Lamborghini',name:'Urus Performante',year:2024,price:259975,priceStr:'$259,975',cat:'SUV',power:666,torque:627,topSpeed:189,zeroSixty:3.3,weightLb:4741,specs:{Engine:'4.0L TT V8',Power:'666 hp',Torque:'627 lb-ft',Drivetrain:'AWD',Trans:'8-spd Auto','0â€“60':'3.3s','Top Speed':'189 mph',Weight:'4,741 lbs'},variants:[{n:'Urus',p:'$231,282'},{n:'Urus S',p:'$249,595'},{n:'Performante',p:'$259,975'}],col:'#2a2a0a'},
+{id:13,type:'car',brand:'Mercedes',name:'AMG GT 63 S',year:2024,price:161050,priceStr:'$161,050',cat:'GT Car',power:630,torque:664,topSpeed:196,zeroSixty:3.1,weightLb:4112,specs:{Engine:'4.0L Biturbo V8',Power:'630 hp',Torque:'664 lb-ft',Drivetrain:'RWD',Trans:'9-spd MCT','0â€“60':'3.1s','Top Speed':'196 mph',Weight:'4,112 lbs'},variants:[{n:'GT 63',p:'$137,500'},{n:'GT 63 S',p:'$161,050'},{n:'E Performance',p:'$174,900'}],col:'#1a2a1a'},
+{id:14,type:'car',brand:'Audi',name:'R8 V10 Performance',year:2023,price:198700,priceStr:'$198,700',cat:'Supercar',power:602,torque:413,topSpeed:205,zeroSixty:3.1,weightLb:3561,specs:{Engine:'5.2L NA V10',Power:'602 hp',Torque:'413 lb-ft',Drivetrain:'AWD',Trans:'7-spd DCT','0â€“60':'3.1s','Top Speed':'205 mph',Weight:'3,561 lbs'},variants:[{n:'V10',p:'$158,600'},{n:'V10 Performance',p:'$198,700'},{n:'V10 Spyder',p:'$212,000'}],col:'#1a1a2a'},
+{id:15,type:'car',brand:'Nissan',name:'GT-R Nismo',year:2024,price:212245,priceStr:'$212,245',cat:'Supercar',power:600,torque:481,topSpeed:196,zeroSixty:2.5,weightLb:3824,specs:{Engine:'3.8L TT V6',Power:'600 hp',Torque:'481 lb-ft',Drivetrain:'AWD',Trans:'6-spd DCT','0â€“60':'2.5s','Top Speed':'196 mph',Weight:'3,824 lbs'},variants:[{n:'Premium',p:'$113,540'},{n:'T-spec',p:'$149,990'},{n:'Nismo',p:'$212,245'}],col:'#0f1a2a'},
+{id:16,type:'car',brand:'Ford',name:'Mustang GT500',year:2024,price:80000,priceStr:'$80,000',cat:'Muscle',power:760,torque:625,topSpeed:180,zeroSixty:3.3,weightLb:3880,specs:{Engine:'5.2L SC V8',Power:'760 hp',Torque:'625 lb-ft',Drivetrain:'RWD',Trans:'7-spd DCT','0â€“60':'3.3s','Top Speed':'180 mph',Weight:'3,880 lbs'},variants:[{n:'GT500',p:'$80,000'},{n:'Carbon Track Pack',p:'$87,440'}],col:'#2a1a0a'},
+{id:17,type:'car',brand:'Mazda',name:'MX-5 Miata',year:2024,price:30115,priceStr:'$30,115',cat:'Roadster',power:181,torque:151,topSpeed:135,zeroSixty:5.7,weightLb:2342,specs:{Engine:'2.0L NA I4',Power:'181 hp',Torque:'151 lb-ft',Drivetrain:'RWD',Trans:'6-spd Manual','0â€“60':'5.7s','Top Speed':'135 mph',Weight:'2,342 lbs'},variants:[{n:'Sport',p:'$30,115'},{n:'Club',p:'$33,430'},{n:'Grand Touring',p:'$35,270'},{n:'RF GT',p:'$39,145'}],col:'#2a1a1a'},
+{id:18,type:'car',brand:'Chevrolet',name:'Corvette Z06',year:2024,price:106395,priceStr:'$106,395',cat:'Supercar',power:670,torque:460,topSpeed:195,zeroSixty:2.6,weightLb:3366,specs:{Engine:'5.5L NA V8 Flat-plane',Power:'670 hp',Torque:'460 lb-ft',Drivetrain:'RWD',Trans:'8-spd DCT','0â€“60':'2.6s','Top Speed':'195 mph',Weight:'3,366 lbs'},variants:[{n:'1LZ',p:'$106,395'},{n:'2LZ',p:'$115,995'},{n:'3LZ',p:'$127,995'}],col:'#2a1a0a'},
+{id:19,type:'car',brand:'Dodge',name:'Challenger SRT Hellcat',year:2023,price:72170,priceStr:'$72,170',cat:'Muscle',power:717,torque:656,topSpeed:199,zeroSixty:3.6,weightLb:4439,specs:{Engine:'6.2L SC V8',Power:'717 hp',Torque:'656 lb-ft',Drivetrain:'RWD',Trans:'8-spd Auto','0â€“60':'3.6s','Top Speed':'199 mph',Weight:'4,439 lbs'},variants:[{n:'Hellcat',p:'$72,170'},{n:'Hellcat Redeye',p:'$82,490'},{n:'Super Stock',p:'$85,500'},{n:'Demon 170',p:'$99,990'}],col:'#2a0a1a'},
+{id:20,type:'car',brand:'Tesla',name:'Model S Plaid',year:2024,price:89990,priceStr:'$89,990',cat:'EV Sedan',power:1020,torque:1050,topSpeed:200,zeroSixty:1.99,weightLb:4766,specs:{Engine:'Tri-Motor Electric',Power:'1,020 hp',Torque:'1,050 lb-ft',Drivetrain:'AWD',Trans:'Single-speed','0â€“60':'1.99s','Top Speed':'200 mph',Weight:'4,766 lbs',Range:'396 mi'},variants:[{n:'Model S',p:'$74,990'},{n:'Model S Plaid',p:'$89,990'}],col:'#0a1a2a'},
+{id:21,type:'car',brand:'Subaru',name:'WRX STI',year:2021,price:36590,priceStr:'$36,590',cat:'Rally',power:310,torque:290,topSpeed:159,zeroSixty:4.7,weightLb:3373,specs:{Engine:'2.5L Turbo H4',Power:'310 hp',Torque:'290 lb-ft',Drivetrain:'AWD',Trans:'6-spd Manual','0â€“60':'4.7s','Top Speed':'159 mph',Weight:'3,373 lbs'},variants:[{n:'STI',p:'$36,590'},{n:'STI Limited',p:'$39,195'},{n:'STI S209',p:'$64,880'}],col:'#0a1a2a'},
+{id:22,type:'car',brand:'Volkswagen',name:'Golf R',year:2024,price:47195,priceStr:'$47,195',cat:'Hot Hatch',power:315,torque:310,topSpeed:155,zeroSixty:4.5,weightLb:3322,specs:{Engine:'2.0L Turbo I4',Power:'315 hp',Torque:'310 lb-ft',Drivetrain:'AWD',Trans:'7-spd DSG','0â€“60':'4.5s','Top Speed':'155 mph',Weight:'3,322 lbs'},variants:[{n:'Golf R',p:'$47,195'},{n:'Golf R 20th Anniversary',p:'$51,395'}],col:'#0a1a2a'},
+{id:23,type:'car',brand:'Lexus',name:'LFA',year:2012,price:375000,priceStr:'$375,000',cat:'Supercar',power:553,torque:354,topSpeed:202,zeroSixty:3.7,weightLb:3263,specs:{Engine:'4.8L NA V10',Power:'553 hp',Torque:'354 lb-ft',Drivetrain:'RWD',Trans:'6-spd ASG','0â€“60':'3.7s','Top Speed':'202 mph',Weight:'3,263 lbs'},variants:[{n:'LFA',p:'$375,000'},{n:'LFA NĂ¼rburgring',p:'$445,000'}],col:'#1a0a2a'},
+{id:24,type:'car',brand:'Alfa Romeo',name:'Giulia QV',year:2024,price:83095,priceStr:'$83,095',cat:'Sports Sedan',power:505,torque:443,topSpeed:191,zeroSixty:3.8,weightLb:3800,specs:{Engine:'2.9L TT V6',Power:'505 hp',Torque:'443 lb-ft',Drivetrain:'RWD',Trans:'8-spd Auto','0â€“60':'3.8s','Top Speed':'191 mph',Weight:'3,800 lbs'},variants:[{n:'Quadrifoglio',p:'$83,095'}],col:'#2a0a0a'},
+{id:25,type:'car',brand:'McLaren',name:'765LT Spider',year:2023,price:382500,priceStr:'$382,500',cat:'Hypercar',power:755,torque:590,topSpeed:205,zeroSixty:2.8,weightLb:3219,specs:{Engine:'4.0L TT V8',Power:'755 hp',Torque:'590 lb-ft',Drivetrain:'RWD',Trans:'7-spd DCT','0â€“60':'2.8s','Top Speed':'205 mph',Weight:'3,219 lbs'},variants:[{n:'765LT',p:'$358,000'},{n:'765LT Spider',p:'$382,500'}],col:'#2a1a0a'},
+{id:26,type:'car',brand:'Bugatti',name:'Chiron',year:2024,price:3300000,priceStr:'$3,300,000',cat:'Hypercar',power:1479,torque:1180,topSpeed:261,zeroSixty:2.5,weightLb:4398,specs:{Engine:'8.0L Quad-Turbo W16',Power:'1,479 hp',Torque:'1,180 lb-ft',Drivetrain:'AWD',Trans:'7-spd DCT','0â€“60':'2.5s','Top Speed':'261 mph',Weight:'4,398 lbs'},variants:[{n:'Chiron',p:'$3,300,000'},{n:'Super Sport',p:'$3,825,000'},{n:'Pur Sport',p:'$3,600,000'}],col:'#2a2a0a'},
+{id:27,type:'car',brand:'Mitsubishi',name:'Lancer Evo X',year:2015,price:38395,priceStr:'$38,395',cat:'Rally',power:291,torque:300,topSpeed:150,zeroSixty:4.2,weightLb:3241,specs:{Engine:'2.0L Turbo I4',Power:'291 hp',Torque:'300 lb-ft',Drivetrain:'AWD',Trans:'6-spd Manual','0â€“60':'4.2s','Top Speed':'150 mph',Weight:'3,241 lbs'},variants:[{n:'GSR',p:'$34,595'},{n:'MR',p:'$38,395'},{n:'Final Edition',p:'$38,990'}],col:'#1a2a1a'},
+{id:28,type:'car',brand:'Hyundai',name:'Ioniq 5 N',year:2024,price:66450,priceStr:'$66,450',cat:'EV Hot Hatch',power:641,torque:568,topSpeed:161,zeroSixty:3.4,weightLb:4768,specs:{Engine:'Electric AWD',Power:'641 hp',Torque:'568 lb-ft',Drivetrain:'AWD',Trans:'Single-speed','0â€“60':'3.4s','Top Speed':'161 mph',Weight:'4,768 lbs',Range:'221 mi'},variants:[{n:'Ioniq 5 N',p:'$66,450'}],col:'#1a2a2a'},
+
+// â”€â”€ BIKES â”€â”€
+{id:40,type:'bike',brand:'Honda',name:'CBR1000RR-R SP',year:2024,price:28500,priceStr:'$28,500',cat:'Superbike',power:215,torque:83,topSpeed:186,zeroSixty:2.6,weightLb:443,specs:{Engine:'999cc Inline-4',Power:'215 hp',Torque:'83 lb-ft',Seat:'831 mm',Weight:'201 kg','0â€“60':'2.6s','Top Speed':'186 mph',Electronics:'10-mode TC'},variants:[{n:'Fireblade',p:'$22,000'},{n:'Fireblade SP',p:'$28,500'}],col:'#2a0a0a'},
+{id:41,type:'bike',brand:'Honda',name:'Africa Twin',year:2024,price:15699,priceStr:'$15,699',cat:'Adventure',power:101,torque:77,topSpeed:130,zeroSixty:5.2,weightLb:498,specs:{Engine:'1084cc Parallel Twin',Power:'101 hp',Torque:'77 lb-ft',Seat:'850 mm',Weight:'226 kg','Top Speed':'130 mph',Tank:'24.8L',Electronics:'5-mode TC'},variants:[{n:'Standard',p:'$15,699'},{n:'Adventure Sports',p:'$17,499'},{n:'DCT',p:'$16,699'}],col:'#2a1a0a'},
+{id:42,type:'bike',brand:'Honda',name:'CB1000R Black Ed.',year:2024,price:15199,priceStr:'$15,199',cat:'Naked',power:143,torque:75,topSpeed:155,zeroSixty:2.9,weightLb:470,specs:{Engine:'998cc Inline-4',Power:'143 hp',Torque:'75 lb-ft',Seat:'830 mm',Weight:'213 kg','0â€“60':'2.9s','Top Speed':'155 mph',Electronics:'3-mode TC'},variants:[{n:'CB1000R',p:'$13,899'},{n:'Black Edition',p:'$15,199'}],col:'#1a1a1a'},
+{id:43,type:'bike',brand:'Honda',name:'CB650R',year:2024,price:9299,priceStr:'$9,299',cat:'Naked',power:95,torque:64,topSpeed:130,zeroSixty:4.2,weightLb:419,specs:{Engine:'649cc Inline-4',Power:'95 hp',Torque:'64 lb-ft',Seat:'810 mm',Weight:'190 kg','Top Speed':'130 mph',Tank:'15.4L',Electronics:'2-mode ABS'},variants:[{n:'CB650R',p:'$9,299'}],col:'#1a1a1a'},
+{id:44,type:'bike',brand:'Yamaha',name:'YZF-R1M',year:2024,price:26999,priceStr:'$26,999',cat:'Superbike',power:200,torque:83,topSpeed:186,zeroSixty:2.5,weightLb:443,specs:{Engine:'998cc Crossplane I4',Power:'200 hp',Torque:'83 lb-ft',Seat:'855 mm',Weight:'201 kg','0â€“60':'2.5s','Top Speed':'186 mph',Electronics:'Ă–hlins ERS'},variants:[{n:'R1',p:'$17,999'},{n:'R1M',p:'$26,999'}],col:'#0f1a2a'},
+{id:45,type:'bike',brand:'Yamaha',name:'MT-09 SP',year:2024,price:11999,priceStr:'$11,999',cat:'Naked',power:117,torque:73,topSpeed:140,zeroSixty:3.2,weightLb:425,specs:{Engine:'889cc Inline-3',Power:'117 hp',Torque:'73 lb-ft',Seat:'825 mm',Weight:'193 kg','0â€“60':'3.2s','Top Speed':'140 mph',Electronics:'6-axis IMU'},variants:[{n:'MT-09',p:'$9,299'},{n:'MT-09 SP',p:'$11,999'}],col:'#1a1a0a'},
+{id:46,type:'bike',brand:'Yamaha',name:'XSR900',year:2024,price:10299,priceStr:'$10,299',cat:'Retro Sport',power:117,torque:68,topSpeed:135,zeroSixty:3.4,weightLb:413,specs:{Engine:'889cc Inline-3',Power:'117 hp',Torque:'68 lb-ft',Seat:'820 mm',Weight:'193 kg','Top Speed':'135 mph',Tank:'14L',Electronics:'3-mode TCS'},variants:[{n:'XSR900',p:'$10,299'}],col:'#1a1a0a'},
+{id:47,type:'bike',brand:'Kawasaki',name:'Ninja ZX-10R KRT',year:2024,price:18999,priceStr:'$18,999',cat:'Superbike',power:203,torque:84,topSpeed:186,zeroSixty:2.7,weightLb:456,specs:{Engine:'998cc Inline-4',Power:'203 hp',Torque:'84 lb-ft',Seat:'835 mm',Weight:'207 kg','0â€“60':'2.7s','Top Speed':'186 mph',Electronics:'KTRC / KLCM'},variants:[{n:'ZX-10R',p:'$16,499'},{n:'ZX-10R KRT',p:'$18,999'},{n:'ZX-10RR',p:'$24,999'}],col:'#0a1a0a'},
+{id:48,type:'bike',brand:'Kawasaki',name:'Ninja H2R',year:2024,price:55000,priceStr:'$55,000',cat:'Track',power:310,torque:121,topSpeed:249,zeroSixty:2.0,weightLb:525,specs:{Engine:'998cc Supercharged I4',Power:'310 hp',Torque:'121 lb-ft',Seat:'825 mm',Weight:'238 kg','0â€“60':'2.0s','Top Speed':'249 mph+',Electronics:'Ă–hlins ERS'},variants:[{n:'H2 SX SE',p:'$22,199'},{n:'H2 Carbon',p:'$32,999'},{n:'H2R',p:'$55,000'}],col:'#0a1a0a'},
+{id:49,type:'bike',brand:'Kawasaki',name:'Z900 SE',year:2024,price:11299,priceStr:'$11,299',cat:'Naked',power:125,torque:73,topSpeed:140,zeroSixty:3.1,weightLb:425,specs:{Engine:'948cc Inline-4',Power:'125 hp',Torque:'73 lb-ft',Seat:'795 mm',Weight:'193 kg','0â€“60':'3.1s','Top Speed':'140 mph',Electronics:'3-mode KTRC'},variants:[{n:'Z900',p:'$9,799'},{n:'Z900 SE',p:'$11,299'}],col:'#0a1a0a'},
+{id:50,type:'bike',brand:'Suzuki',name:'Hayabusa',year:2024,price:18599,priceStr:'$18,599',cat:'Sport Tourer',power:190,torque:111,topSpeed:186,zeroSixty:2.6,weightLb:582,specs:{Engine:'1340cc Inline-4',Power:'190 hp',Torque:'111 lb-ft',Seat:'800 mm',Weight:'264 kg','0â€“60':'2.6s','Top Speed':'186 mph',Electronics:'10-mode TC'},variants:[{n:'Hayabusa',p:'$18,599'}],col:'#2a1a0a'},
+{id:51,type:'bike',brand:'Suzuki',name:'GSX-R1000R',year:2024,price:17999,priceStr:'$17,999',cat:'Superbike',power:199,torque:85,topSpeed:186,zeroSixty:2.7,weightLb:448,specs:{Engine:'999cc Inline-4',Power:'199 hp',Torque:'85 lb-ft',Seat:'825 mm',Weight:'203 kg','0â€“60':'2.7s','Top Speed':'186 mph',Electronics:'Showa BFRC'},variants:[{n:'GSX-R1000',p:'$14,999'},{n:'GSX-R1000R',p:'$17,999'}],col:'#0f1a2a'},
+{id:52,type:'bike',brand:'Ducati',name:'Panigale V4 S',year:2024,price:37295,priceStr:'$37,295',cat:'Superbike',power:215,torque:90,topSpeed:192,zeroSixty:2.5,weightLb:436,specs:{Engine:'1103cc V4',Power:'215.5 hp',Torque:'90.6 lb-ft',Seat:'830 mm',Weight:'198 kg','0â€“60':'2.5s','Top Speed':'192 mph',Electronics:'Ă–hlins NIX30'},variants:[{n:'Panigale V4',p:'$23,995'},{n:'Panigale V4 S',p:'$37,295'},{n:'Speciale',p:'$64,995'}],col:'#2a0a0a'},
+{id:53,type:'bike',brand:'Ducati',name:'Streetfighter V4 S',year:2024,price:31295,priceStr:'$31,295',cat:'Naked',power:208,torque:90,topSpeed:180,zeroSixty:2.6,weightLb:439,specs:{Engine:'1103cc V4',Power:'208 hp',Torque:'90.6 lb-ft',Seat:'845 mm',Weight:'199 kg','0â€“60':'2.6s','Top Speed':'180 mph',Electronics:'Ă–hlins Smart EC'},variants:[{n:'Streetfighter V4',p:'$22,295'},{n:'V4 S',p:'$31,295'},{n:'V4 SP2',p:'$41,995'}],col:'#2a0a0a'},
+{id:54,type:'bike',brand:'BMW',name:'S 1000 RR M',year:2024,price:31245,priceStr:'$31,245',cat:'Superbike',power:210,torque:83,topSpeed:190,zeroSixty:2.6,weightLb:434,specs:{Engine:'999cc ShiftCam I4',Power:'210 hp',Torque:'83 lb-ft',Seat:'824 mm',Weight:'197 kg','0â€“60':'2.6s','Top Speed':'190 mph',Electronics:'DDC + M Chain'},variants:[{n:'S 1000 RR',p:'$17,745'},{n:'S 1000 RR M',p:'$31,245'}],col:'#1a1a2a'},
+{id:55,type:'bike',brand:'BMW',name:'R 1300 GS Adventure',year:2024,price:19145,priceStr:'$19,145',cat:'Adventure',power:145,torque:105,topSpeed:135,zeroSixty:4.5,weightLb:591,specs:{Engine:'1300cc Boxer Twin',Power:'145 hp',Torque:'105 lb-ft',Seat:'850 mm',Weight:'268 kg','Top Speed':'135 mph',Tank:'30L',Electronics:'GS Pro Modes'},variants:[{n:'R 1300 GS',p:'$16,645'},{n:'R 1300 GS Adv.',p:'$19,145'},{n:'Trophy',p:'$23,995'}],col:'#1a1a2a'},
+{id:56,type:'bike',brand:'KTM',name:'1290 Super Duke R EVO',year:2024,price:19999,priceStr:'$19,999',cat:'Naked',power:180,torque:106,topSpeed:175,zeroSixty:2.8,weightLb:417,specs:{Engine:'1301cc V-Twin',Power:'180 hp',Torque:'106 lb-ft',Seat:'834 mm',Weight:'189 kg','0â€“60':'2.8s','Top Speed':'175 mph',Electronics:'Semi-active WP'},variants:[{n:'Super Duke R',p:'$17,999'},{n:'Super Duke R EVO',p:'$19,999'}],col:'#2a1a0a'},
+{id:57,type:'bike',brand:'KTM',name:'890 Adventure R',year:2024,price:13699,priceStr:'$13,699',cat:'Adventure',power:105,torque:73,topSpeed:125,zeroSixty:5.0,weightLb:441,specs:{Engine:'889cc Parallel Twin',Power:'105 hp',Torque:'73 lb-ft',Seat:'880 mm',Weight:'200 kg','Top Speed':'125 mph',Tank:'20L',Electronics:'Rally Mode'},variants:[{n:'890 Adventure',p:'$11,299'},{n:'890 Adventure R',p:'$13,699'},{n:'Rally',p:'$15,999'}],col:'#2a1a0a'},
+{id:58,type:'bike',brand:'Aprilia',name:'RSV4 Factory',year:2024,price:26999,priceStr:'$26,999',cat:'Superbike',power:217,torque:89,topSpeed:193,zeroSixty:2.5,weightLb:439,specs:{Engine:'1099cc Inline-4',Power:'217 hp',Torque:'89 lb-ft',Seat:'851 mm',Weight:'199 kg','0â€“60':'2.5s','Top Speed':'193 mph',Electronics:'Ă–hlins Smart EC 2.0'},variants:[{n:'RSV4',p:'$19,999'},{n:'RSV4 Factory',p:'$26,999'},{n:'RSV4 X',p:'$36,999'}],col:'#1a0a2a'},
+{id:59,type:'bike',brand:'Triumph',name:'Speed Triple 1200 RS',year:2024,price:18900,priceStr:'$18,900',cat:'Naked',power:180,torque:100,topSpeed:165,zeroSixty:2.9,weightLb:437,specs:{Engine:'1160cc Inline-3',Power:'180 hp',Torque:'100 lb-ft',Seat:'830 mm',Weight:'198 kg','0â€“60':'2.9s','Top Speed':'165 mph',Electronics:'Ă–hlins Smart EC'},variants:[{n:'Speed Triple 1200 RR',p:'$17,200'},{n:'Speed Triple 1200 RS',p:'$18,900'}],col:'#0a1a2a'},
+{id:60,type:'bike',brand:'Triumph',name:'Daytona 660',year:2024,price:9595,priceStr:'$9,595',cat:'Sports',power:95,torque:52,topSpeed:135,zeroSixty:4.0,weightLb:397,specs:{Engine:'660cc Inline-3',Power:'95 hp',Torque:'52 lb-ft',Seat:'820 mm',Weight:'180 kg','Top Speed':'135 mph',Tank:'15L',Electronics:'2-mode TC'},variants:[{n:'Daytona 660',p:'$9,595'}],col:'#0a1a2a'},
+{id:61,type:'bike',brand:'Harley-Davidson',name:'Nightster Special',year:2024,price:14299,priceStr:'$14,299',cat:'Cruiser',power:90,torque:70,topSpeed:120,zeroSixty:5.0,weightLb:503,specs:{Engine:'975cc Revolution Max',Power:'90 hp',Torque:'70 lb-ft',Seat:'705 mm',Weight:'228 kg','Top Speed':'120 mph',Tank:'11.7L',Electronics:'Drag Torque SC'},variants:[{n:'Nightster',p:'$12,299'},{n:'Nightster Special',p:'$14,299'}],col:'#2a1a1a'},
+
+// â”€â”€ VN MARKET â”€â”€
+{id:70,type:'vn',brand:'Yamaha',name:'Exciter 155 VVA',year:2024,price:1150,priceStr:'~47tr VND',cat:'Underbone Sport',power:19.3,torque:14.4,topSpeed:122,zeroSixty:9.5,weightLb:268,specs:{Engine:'155cc VVA SOHC',Power:'19.3 hp',Torque:'14.4 Nm',Seat:'795 mm',Weight:'117 kg','Top Speed':'122 km/h',Tank:'4.2L',Fuel:'~2.5L/100km'},variants:[{n:'Exciter 155 Standard',p:'~45.9tr'},{n:'Exciter 155 Connected',p:'~47.4tr'},{n:'Exciter 155 RC',p:'~48.9tr'}],col:'#1a1a0a'},
+{id:71,type:'vn',brand:'Honda',name:'Winner X',year:2024,price:1100,priceStr:'~46.5tr VND',cat:'Underbone Sport',power:14.8,torque:13.5,topSpeed:118,zeroSixty:10.2,weightLb:253,specs:{Engine:'150cc eSP+ SOHC',Power:'14.8 hp',Torque:'13.5 Nm',Seat:'785 mm',Weight:'115 kg','Top Speed':'118 km/h',Tank:'4.1L',Fuel:'~2.0L/100km'},variants:[{n:'Standard',p:'~45.9tr'},{n:'Special Edition',p:'~48.9tr'}],col:'#2a1a0a'},
+{id:72,type:'vn',brand:'Yamaha',name:'NVX 155',year:2024,price:1050,priceStr:'~50tr VND',cat:'Maxi Scooter',power:15.1,torque:13.8,topSpeed:115,zeroSixty:9.8,weightLb:291,specs:{Engine:'155cc VVA SOHC',Power:'15.1 hp',Torque:'13.8 Nm',Seat:'785 mm',Weight:'132 kg','Top Speed':'115 km/h',Tank:'5.5L',Fuel:'~2.4L/100km'},variants:[{n:'NVX 155',p:'~49.9tr'},{n:'NVX 155 Premium',p:'~52.9tr'}],col:'#0f1a2a'},
+{id:73,type:'vn',brand:'Honda',name:'Air Blade 150',year:2024,price:980,priceStr:'~43.5tr VND',cat:'Scooter',power:13.6,torque:13.1,topSpeed:110,zeroSixty:10.5,weightLb:255,specs:{Engine:'150cc eSP+ SOHC',Power:'13.6 hp',Torque:'13.1 Nm',Seat:'764 mm',Weight:'113 kg','Top Speed':'110 km/h',Tank:'3.7L',Fuel:'~1.9L/100km'},variants:[{n:'Standard',p:'~43.5tr'},{n:'Special',p:'~44.9tr'}],col:'#1a2a1a'},
+{id:74,type:'vn',brand:'Yamaha',name:'Grande Hybrid',year:2024,price:860,priceStr:'~52tr VND',cat:'Scooter Hybrid',power:12.6,torque:13.8,topSpeed:105,zeroSixty:11.0,weightLb:266,specs:{Engine:'125cc VVA + E-Motor',Power:'12.6 hp',Torque:'13.8 Nm',Seat:'760 mm',Weight:'112 kg','Top Speed':'105 km/h',Tank:'5.1L',Fuel:'~1.6L/100km'},variants:[{n:'Grande Hybrid',p:'~52tr'},{n:'Grande Hybrid Limited',p:'~56tr'}],col:'#1a1a2a'},
+{id:75,type:'vn',brand:'Honda',name:'Vision 110',year:2024,price:650,priceStr:'~33tr VND',cat:'Scooter',power:8.1,torque:9.3,topSpeed:95,zeroSixty:13.0,weightLb:220,specs:{Engine:'110cc eSP SOHC',Power:'8.1 hp',Torque:'9.3 Nm',Seat:'757 mm',Weight:'98 kg','Top Speed':'95 km/h',Tank:'3.7L',Fuel:'~1.7L/100km'},variants:[{n:'Vision 110',p:'~33.2tr'},{n:'Vision Special',p:'~35.9tr'}],col:'#1a2a2a'},
+{id:76,type:'vn',brand:'Honda',name:'Wave Alpha 110',year:2024,price:480,priceStr:'~19.9tr VND',cat:'Cub',power:8.67,torque:8.83,topSpeed:90,zeroSixty:14.0,weightLb:220,specs:{Engine:'110cc SOHC',Power:'8.67 hp',Torque:'8.83 Nm',Seat:'765 mm',Weight:'98 kg','Top Speed':'90 km/h',Tank:'3.5L',Fuel:'~1.6L/100km'},variants:[{n:'Wave Alpha',p:'~18.99tr'},{n:'Wave Alpha Special',p:'~19.99tr'}],col:'#2a1a1a'},
+{id:77,type:'vn',brand:'Yamaha',name:'Sirius FI',year:2024,price:450,priceStr:'~20.9tr VND',cat:'Cub',power:9.0,torque:9.5,topSpeed:92,zeroSixty:13.5,weightLb:224,specs:{Engine:'113cc SOHC FI',Power:'9.0 hp',Torque:'9.5 Nm',Seat:'770 mm',Weight:'100 kg','Top Speed':'92 km/h',Tank:'4L',Fuel:'~1.8L/100km'},variants:[{n:'Sirius FI',p:'~20.9tr'},{n:'Sirius RC',p:'~21.9tr'}],col:'#1a1a2a'},
+{id:78,type:'vn',brand:'Honda',name:'SH 150i',year:2024,price:1350,priceStr:'~75tr VND',cat:'Premium Scooter',power:14.6,torque:13.6,topSpeed:118,zeroSixty:8.5,weightLb:290,specs:{Engine:'149cc eSP+ SOHC',Power:'14.6 hp',Torque:'13.6 Nm',Seat:'796 mm',Weight:'130 kg','Top Speed':'118 km/h',Tank:'7.7L',Fuel:'~1.9L/100km'},variants:[{n:'SH 150i',p:'~71tr'},{n:'SH 150i Sport',p:'~75.5tr'},{n:'SH 160i',p:'~83.5tr'}],col:'#1a2a2a'},
+];
+
+const USD_TO_VND = 26340;
+const LBFT_TO_NM = 1.3558179483314;
+const MPH_TO_KPH = 1.609344;
+const LB_TO_KG = 0.45359237;
+const MI_TO_KM = 1.609344;
+
+let filt='all', brandF='', searchQ='', favs=new Set(), cmpMode=false, cmpList=[], lbMode='power', curTab='gallery', curModalTab='specs';
+let deferredInstallPrompt = null;
+
+const usdFormatter = new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0});
+
+function formatNumber(value,digits=0){
+  return Number(value).toLocaleString('en-US',{minimumFractionDigits:digits,maximumFractionDigits:digits});
+}
+
+function formatUsd(value){return value==null?'-':usdFormatter.format(Math.round(value));}
+function formatPower(v){return `${formatNumber(v.powerHp,0)} HP`;}
+function formatTorque(v){return `${formatNumber(v.torqueNm,0)} Nm`;}
+function formatTopSpeed(v){return `${formatNumber(v.topSpeedKph,0)} km/h`;}
+function formatWeight(v){return `${formatNumber(v.weightKg,0)} kg`;}
+function formatAccel(value){return `${formatNumber(value,value<3?2:1)} s`;}
+function formatMeters(value){return `${formatNumber(value,2)} m`;}
+function formatLiters(value){return `${formatNumber(value,1)} L`;}
+function formatRange(value){return `${formatNumber(value,0)} km`;}
+function formatFuelUse(value){return `${formatNumber(value,1)} L/100 km`;}
+
+function parsePriceUsd(text){
+  if(!text) return null;
+  const source=String(text);
+  if(/vnd|tr/i.test(source)){
+    const match=source.match(/([\d.]+)\s*tr/i);
+    return match?(parseFloat(match[1])*1000000)/USD_TO_VND:null;
+  }
+  const match=source.replace(/,/g,'').match(/(\d+(?:\.\d+)?)/);
+  return match?parseFloat(match[1]):null;
+}
+
+function parseEngineLiters(text){
+  const source=String(text||'');
+  let match=source.match(/(\d+(?:\.\d+)?)\s*L/i);
+  if(match) return parseFloat(match[1]);
+  match=source.match(/(\d+(?:\.\d+)?)\s*cc/i);
+  return match?parseFloat(match[1])/1000:null;
+}
+
+function parseMillimetersToMeters(text){
+  const match=String(text||'').match(/(\d+(?:\.\d+)?)\s*mm/i);
+  return match?parseFloat(match[1])/1000:null;
+}
+
+function parseLitersValue(text){
+  const match=String(text||'').match(/(\d+(?:\.\d+)?)\s*L/i);
+  return match?parseFloat(match[1]):null;
+}
+
+function parseRangeKm(text){
+  const source=String(text||'');
+  let match=source.match(/(\d+(?:\.\d+)?)\s*km/i);
+  if(match) return parseFloat(match[1]);
+  match=source.match(/(\d+(?:\.\d+)?)\s*mi/i);
+  return match?parseFloat(match[1])*MI_TO_KM:null;
+}
+
+function parseFuelUse(text){
+  const match=String(text||'').match(/(\d+(?:\.\d+)?)\s*L\/100\s*km/i);
+  return match?parseFloat(match[1]):null;
+}
+
+function normalizeEngineLabel(text){
+  const source=String(text||'');
+  const liters=parseEngineLiters(source);
+  if(liters==null) return source||'-';
+  const amount=liters>=1?liters.toFixed(1):liters.toFixed(2);
+  const rest=source.replace(/(\d+(?:\.\d+)?)\s*(L|cc)/i,'').replace(/\s+/g,' ').trim();
+  return `${amount} L${rest?` ${rest}`:''}`;
+}
+
+function normalizeVehicle(v){
+  const priceUsd=v.type==='vn'?(parsePriceUsd(v.priceStr)??v.price):v.price;
+  const variants=v.variants.map(variant=>({...variant,priceUsd:parsePriceUsd(variant.p)}));
+  Object.assign(v,{
+    priceUsd,
+    powerHp:v.power,
+    torqueNm:v.type==='vn'?v.torque:v.torque*LBFT_TO_NM,
+    topSpeedKph:v.type==='vn'?v.topSpeed:v.topSpeed*MPH_TO_KPH,
+    weightKg:v.weightLb*LB_TO_KG,
+    engineLabel:normalizeEngineLabel(v.specs.Engine),
+    seatM:parseMillimetersToMeters(v.specs.Seat),
+    tankL:parseLitersValue(v.specs.Tank),
+    rangeKm:parseRangeKm(v.specs.Range),
+    fuelUseL:parseFuelUse(v.specs.Fuel),
+    variants
+  });
+  return v;
+}
+
+V.forEach(normalizeVehicle);
+
+function carSVG(c='#1a2e3a'){return`<svg viewBox="0 0 220 100" xmlns="http://www.w3.org/2000/svg"><rect x="20" y="55" width="180" height="28" rx="5" fill="${c}" opacity=".7"/><path d="M35 55L55 30L155 30L175 55Z" fill="${c}" opacity=".9"/><rect x="58" y="34" width="42" height="18" rx="2" fill="#38bdf820"/><rect x="106" y="34" width="42" height="18" rx="2" fill="#38bdf820"/><circle cx="55" cy="83" r="13" fill="#0a0a0f" stroke="#38bdf8" stroke-width="2"/><circle cx="55" cy="83" r="6" fill="#38bdf830"/><circle cx="165" cy="83" r="13" fill="#0a0a0f" stroke="#38bdf8" stroke-width="2"/><circle cx="165" cy="83" r="6" fill="#38bdf830"/><rect x="14" y="62" width="18" height="8" rx="2" fill="#38bdf8" opacity=".7"/><rect x="188" y="62" width="18" height="8" rx="2" fill="#f97316" opacity=".7"/></svg>`}
+function bikeSVG(c='#2a1a0a'){return`<svg viewBox="0 0 220 110" xmlns="http://www.w3.org/2000/svg"><circle cx="60" cy="78" r="25" fill="none" stroke="#f97316" stroke-width="3" opacity=".7"/><circle cx="60" cy="78" r="10" fill="${c}" opacity=".8"/><circle cx="160" cy="78" r="25" fill="none" stroke="#f97316" stroke-width="3" opacity=".7"/><circle cx="160" cy="78" r="10" fill="${c}" opacity=".8"/><line x1="60" y1="78" x2="160" y2="78" stroke="${c}" stroke-width="5" opacity=".6"/><path d="M85 78L100 45L140 45L160 78Z" fill="${c}" opacity=".85"/><path d="M100 45L110 30L145 30L140 45Z" fill="${c}" opacity=".9"/><rect x="108" y="30" width="36" height="14" rx="3" fill="#f9731625"/><path d="M58 78L75 55L90 55" stroke="#f97316" stroke-width="2.5" fill="none" opacity=".7"/></svg>`}
+function scooterSVG(c='#1a2a2a'){return`<svg viewBox="0 0 220 110" xmlns="http://www.w3.org/2000/svg"><circle cx="55" cy="80" r="22" fill="none" stroke="#22d3ee" stroke-width="2.5" opacity=".7"/><circle cx="55" cy="80" r="9" fill="${c}" opacity=".8"/><circle cx="155" cy="80" r="18" fill="none" stroke="#22d3ee" stroke-width="2.5" opacity=".7"/><circle cx="155" cy="80" r="7" fill="${c}" opacity=".8"/><path d="M75 80 Q90 50 130 48 L155 80Z" fill="${c}" opacity=".8"/><path d="M105 48 L110 30 L145 30 L140 48Z" fill="${c}" opacity=".9"/><rect x="112" y="32" width="28" height="12" rx="2" fill="#22d3ee20"/><ellipse cx="90" cy="68" rx="20" ry="12" fill="${c}" opacity=".6"/><path d="M53 80 L65 60 L80 60" stroke="#22d3ee" stroke-width="2" fill="none" opacity=".6"/></svg>`}
+
+function getVisual(v){
+  if(v.type==='vn') return scooterSVG(v.col);
+  if(v.type==='car') return carSVG(v.col);
+  return bikeSVG(v.col);
+}
+
+function getBadge(v){
+  if(v.type==='vn') return `<span class="cbadge bvn">VN</span>`;
+  if(v.type==='car') return `<span class="cbadge bcar">Car</span>`;
+  return `<span class="cbadge bbike">Bike</span>`;
+}
+
+function getSummarySpecs(v){
+  return [
+    ['Power',formatPower(v)],
+    ['Top Speed',formatTopSpeed(v)],
+    ['Weight',formatWeight(v)],
+  ];
+}
+
+function getSpecRows(v){
+  const rows=[
+    ['Price',formatUsd(v.priceUsd)],
+    ['Power',formatPower(v)],
+    ['Torque',formatTorque(v)],
+    ['Top Speed',formatTopSpeed(v)],
+    ['0-60 mph',formatAccel(v.zeroSixty)],
+    ['Weight',formatWeight(v)],
+    ['Engine',v.engineLabel],
+  ];
+  if(v.specs.Drivetrain) rows.push(['Drivetrain',v.specs.Drivetrain]);
+  if(v.specs.Trans) rows.push(['Transmission',v.specs.Trans]);
+  if(v.seatM!=null) rows.push(['Seat Height',formatMeters(v.seatM)]);
+  if(v.tankL!=null) rows.push(['Tank',formatLiters(v.tankL)]);
+  if(v.rangeKm!=null) rows.push(['Range',formatRange(v.rangeKm)]);
+  if(v.fuelUseL!=null) rows.push(['Fuel Use',formatFuelUse(v.fuelUseL)]);
+  if(v.specs.Electronics) rows.push(['Electronics',v.specs.Electronics]);
+  return rows;
+}
+
+function getComparisonRows(list){
+  const rows=[
+    ['Price',v=>formatUsd(v.priceUsd)],
+    ['Category',v=>v.cat],
+    ['Power',v=>formatPower(v)],
+    ['Torque',v=>formatTorque(v)],
+    ['Top Speed',v=>formatTopSpeed(v)],
+    ['0-60 mph',v=>formatAccel(v.zeroSixty)],
+    ['Weight',v=>formatWeight(v)],
+    ['Engine',v=>v.engineLabel],
+  ];
+  const optional=[
+    ['Seat Height',v=>v.seatM!=null?formatMeters(v.seatM):'-',v=>v.seatM!=null],
+    ['Tank',v=>v.tankL!=null?formatLiters(v.tankL):'-',v=>v.tankL!=null],
+    ['Range',v=>v.rangeKm!=null?formatRange(v.rangeKm):'-',v=>v.rangeKm!=null],
+    ['Fuel Use',v=>v.fuelUseL!=null?formatFuelUse(v.fuelUseL):'-',v=>v.fuelUseL!=null],
+    ['Drivetrain',v=>v.specs.Drivetrain||'-',v=>Boolean(v.specs.Drivetrain)],
+    ['Transmission',v=>v.specs.Trans||'-',v=>Boolean(v.specs.Trans)],
+    ['Electronics',v=>v.specs.Electronics||'-',v=>Boolean(v.specs.Electronics)],
+  ];
+  optional.forEach(([label,getter,predicate])=>{if(list.some(predicate)) rows.push([label,getter]);});
+  return rows;
+}
+
+function filtered(){
+  let list=V.filter(v=>{
+    if(filt==='vn'&&v.type!=='vn') return false;
+    if(filt==='car'&&v.type!=='car') return false;
+    if(filt==='bike'&&v.type!=='bike') return false;
+    if(brandF&&v.brand!==brandF) return false;
+    if(searchQ){
+      const q=searchQ.toLowerCase();
+      if(!v.name.toLowerCase().includes(q)&&!v.brand.toLowerCase().includes(q)&&!v.cat.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+  const sort=document.getElementById('sortSel').value;
+  if(sort==='power') list.sort((a,b)=>b.powerHp-a.powerHp);
+  else if(sort==='speed') list.sort((a,b)=>b.topSpeedKph-a.topSpeedKph);
+  else if(sort==='price_asc') list.sort((a,b)=>a.priceUsd-b.priceUsd);
+  else if(sort==='price_desc') list.sort((a,b)=>b.priceUsd-a.priceUsd);
+  return list;
+}
+
+function setFilter(f,btn){
+  filt=f;
+  document.querySelectorAll('.fbts .fb').forEach(button=>button.className='fb');
+  btn.className=`fb ${f==='all'?'aa':f==='car'?'ac':f==='bike'?'ab':'av'}`;
+  populateBrands();
+  renderGrid();
+}
+
+function populateBrands(){
+  const select=document.getElementById('brandSel');
+  const brands=[...new Set(V.filter(v=>filt==='all'||v.type===filt).map(v=>v.brand))].sort();
+  select.innerHTML='<option value="">All Brands</option>'+brands.map(brand=>`<option value="${brand}"${brandF===brand?' selected':''}>${brand}</option>`).join('');
+}
+
+function renderGrid(){
+  brandF=document.getElementById('brandSel').value;
+  const list=filtered();
+  document.getElementById('countD').textContent=list.length;
+  document.getElementById('carD').textContent=V.filter(v=>v.type==='car').length;
+  document.getElementById('bikeD').textContent=V.filter(v=>v.type==='bike').length;
+  document.getElementById('vnD').textContent=V.filter(v=>v.type==='vn').length;
+  document.getElementById('favD').textContent=favs.size;
+  const grid=document.getElementById('vGrid');
+  if(!list.length){grid.innerHTML='<div class="nr">No vehicles found</div>';return;}
+  grid.innerHTML=list.map(v=>{
+    const chips=getSummarySpecs(v);
+    return `<div class="card type-${v.type}${favs.has(v.id)?' faved':''}" onclick="openDetail(${v.id})">
+      <div class="cv" style="background:${v.col}22">
+        ${getVisual(v)}${getBadge(v)}
+        <button class="fbtn" onclick="toggleFav(event,${v.id})">${favs.has(v.id)?'&#9829;':'&#9825;'}</button>
+        ${cmpMode?`<input type="checkbox" class="cchk"${cmpList.includes(v.id)?' checked':''} onclick="toggleCmp(event,${v.id})">`:``}
+      </div>
+      <div class="ci">
+        <div class="cbrand">${v.brand} / ${v.year}</div>
+        <div class="cname">${v.name}</div>
+        <div class="cstats">${chips.map(([label,value])=>`<div class="chip">${label}: <span>${value}</span></div>`).join('')}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function clamp01(value){return Math.max(0,Math.min(1,value));}
+
+function drawRadar(canvasId,v){
+  const canvas=document.getElementById(canvasId);
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height,cx=W/2,cy=H/2,R=Math.min(W,H)/2-32;
+
+  const maxPower=v.type==='vn'?25:v.type==='bike'?320:1500;
+  const maxTorque=v.type==='vn'?20:v.type==='bike'?180:1600;
+  const maxSpeed=v.type==='vn'?150:v.type==='bike'?410:430;
+  const maxAccel=v.type==='vn'?15:v.type==='bike'?10:8;
+  const maxWeight=v.type==='vn'?200:v.type==='bike'?300:3000;
+
+  const axes=[
+    {label:'Power',val:clamp01(v.powerHp/maxPower)},
+    {label:'Torque',val:clamp01(v.torqueNm/maxTorque)},
+    {label:'Top Speed',val:clamp01(v.topSpeedKph/maxSpeed)},
+    {label:'Accel',val:clamp01(1-(v.zeroSixty/maxAccel))},
+    {label:'Lightweight',val:clamp01(1-(v.weightKg/maxWeight))},
+  ];
+
+  const n=axes.length;
+  const angle=i=>(-Math.PI/2)+(2*Math.PI/n)*i;
+
+  ctx.clearRect(0,0,W,H);
+
+  for(let ring=1;ring<=4;ring++){
+    ctx.beginPath();
+    for(let i=0;i<n;i++){
+      const a=angle(i),rr=(R/4)*ring;
+      ctx.lineTo(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr);
+    }
+    ctx.closePath();
+    ctx.strokeStyle='#1e1e2e';
+    ctx.lineWidth=1;
+    ctx.stroke();
+  }
+
+  for(let i=0;i<n;i++){
+    const a=angle(i);
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+Math.cos(a)*R,cy+Math.sin(a)*R);
+    ctx.strokeStyle='#2a2a3e';
+    ctx.lineWidth=1;
+    ctx.stroke();
+  }
+
+  const accent=v.type==='vn'?'#22d3ee':v.type==='bike'?'#f97316':'#38bdf8';
+  ctx.beginPath();
+  for(let i=0;i<n;i++){
+    const a=angle(i),radius=R*axes[i].val;
+    ctx.lineTo(cx+Math.cos(a)*radius,cy+Math.sin(a)*radius);
+  }
+  ctx.closePath();
+  ctx.fillStyle=accent+'33';
+  ctx.fill();
+  ctx.strokeStyle=accent;
+  ctx.lineWidth=2;
+  ctx.stroke();
+
+  for(let i=0;i<n;i++){
+    const a=angle(i),radius=R*axes[i].val;
+    ctx.beginPath();
+    ctx.arc(cx+Math.cos(a)*radius,cy+Math.sin(a)*radius,4,0,Math.PI*2);
+    ctx.fillStyle=accent;
+    ctx.fill();
+  }
+
+  ctx.fillStyle='#9090b0';
+  ctx.font='11px Segoe UI,system-ui,sans-serif';
+  ctx.textAlign='center';
+  for(let i=0;i<n;i++){
+    const a=angle(i),lx=cx+Math.cos(a)*(R+18),ly=cy+Math.sin(a)*(R+18);
+    ctx.fillText(axes[i].label,lx,ly+4);
+    ctx.fillStyle=accent;
+    ctx.font='bold 10px Segoe UI,system-ui,sans-serif';
+    ctx.fillText(Math.round(axes[i].val*100)+'%',lx,ly+16);
+    ctx.fillStyle='#9090b0';
+    ctx.font='11px Segoe UI,system-ui,sans-serif';
+  }
+}
+
+function openDetail(id){
+  const v=V.find(item=>item.id===id);
+  curModalTab='specs';
+  document.getElementById('dContent').innerHTML=`
+    <div class="mh">
+      <div class="mvis" style="background:${v.col}33">${getVisual(v)}</div>
+      <div class="mtr">
+        <div>
+          <div class="mbrand">${v.brand} / ${v.year} / ${v.cat}</div>
+          <div class="mname">${v.name}</div>
+          <div style="font-size:.82rem;color:var(--ap);margin-top:.2rem">From ${formatUsd(v.priceUsd)}</div>
+        </div>
+        ${getBadge(v)}
+      </div>
+    </div>
+    <div class="mbody">
+      <div class="mtabs">
+        <div class="mt on" id="mt-specs" onclick="switchModalTab('specs',${id})">Specs</div>
+        <div class="mt" id="mt-radar" onclick="switchModalTab('radar',${id})">Performance</div>
+        <div class="mt" id="mt-variants" onclick="switchModalTab('variants',${id})">Variants</div>
+      </div>
+      <div id="mTabContent">${renderSpecsTab(v)}</div>
+    </div>`;
+  document.getElementById('dModal').classList.add('show');
+}
+
+function renderSpecsTab(v){
+  return `<div class="sgrid">${getSpecRows(v).map(([label,value])=>`<div class="srow"><span class="sk">${label}</span><span class="sv2">${value}</span></div>`).join('')}</div>`;
+}
+
+function renderRadarTab(v){
+  const scope=v.type==='vn'?'VN market':v.type==='bike'?'motorcycle':'car';
+  return `<div style="text-align:center;margin-bottom:.5rem;font-size:.72rem;color:#6b6b80">Normalized performance within the ${scope} class using the metric dataset.</div>
+  <canvas id="radarCanvas" width="300" height="300"></canvas>`;
+}
+
+function renderVariantsTab(v){
+  return `<div class="vlist">${v.variants.map(variant=>`<div class="vi"><span class="vn">${v.brand} ${v.name} - ${variant.n}</span><span class="vp">${variant.priceUsd!=null?formatUsd(variant.priceUsd):variant.p}</span></div>`).join('')}</div>`;
+}
+
+function switchModalTab(tab,id){
+  const v=V.find(item=>item.id===id);
+  curModalTab=tab;
+  document.querySelectorAll('.mt').forEach(node=>node.classList.remove('on'));
+  document.getElementById('mt-'+tab).classList.add('on');
+  const container=document.getElementById('mTabContent');
+  if(tab==='specs') container.innerHTML=renderSpecsTab(v);
+  else if(tab==='radar'){
+    container.innerHTML=renderRadarTab(v);
+    setTimeout(()=>drawRadar('radarCanvas',v),60);
+  }else{
+    container.innerHTML=renderVariantsTab(v);
+  }
+}
+
+function toggleFav(e,id){
+  e.stopPropagation();
+  favs.has(id)?favs.delete(id):favs.add(id);
+  renderGrid();
+}
+
+function toggleCompare(){
+  cmpMode=!cmpMode;
+  const btn=document.getElementById('cmpBtn');
+  btn.className=cmpMode?'fb ab':'fb';
+  btn.textContent=cmpMode?'Comparing':'Compare';
+  if(!cmpMode) clearCmp();
+  else renderGrid();
+}
+
+function toggleCmp(e,id){
+  e.stopPropagation();
+  if(cmpList.includes(id)) cmpList=cmpList.filter(item=>item!==id);
+  else if(cmpList.length<3) cmpList.push(id);
+  else{
+    alert('Max 3 vehicles');
+    return;
+  }
+  renderGrid();
+  updateCmpPanel();
+}
+
+function updateCmpPanel(){
+  const panel=document.getElementById('cPanel');
+  const slots=document.getElementById('cSlots');
+  if(!cmpMode){
+    panel.classList.remove('show');
+    return;
+  }
+  panel.classList.add('show');
+  const items=cmpList.map(id=>{
+    const v=V.find(item=>item.id===id);
+    return `<div class="cslot filled">${v.brand} ${v.name}<button class="clr" style="padding:.1rem .4rem;font-size:.75rem" onclick="toggleCmp(event,${id})">&times;</button></div>`;
+  });
+  while(items.length<3) items.push('<div class="cslot">+ Add vehicle</div>');
+  slots.innerHTML=items.join('');
+}
+
+function clearCmp(){
+  cmpMode=false;
+  cmpList=[];
+  document.getElementById('cmpBtn').className='fb';
+  document.getElementById('cmpBtn').textContent='Compare';
+  document.getElementById('cPanel').classList.remove('show');
+  renderGrid();
+}
+
+function showComparison(){
+  if(cmpList.length<2){
+    alert('Select at least 2 vehicles');
+    return;
+  }
+  const list=cmpList.map(id=>V.find(item=>item.id===id));
+  const rows=getComparisonRows(list);
+  document.getElementById('cContent').innerHTML=`
+    <div style="padding:1.25rem 1.25rem .85rem;border-bottom:1px solid var(--bd)">
+      <div style="font-size:1.15rem;font-weight:700;color:#f0f0ff">Comparison</div>
+      <div style="font-size:.78rem;color:#6b6b80">${list.map(v=>v.name).join(' vs ')}</div>
+    </div>
+    <div style="padding:.85rem 1.25rem;overflow-x:auto">
+      <table class="ctbl">
+        <thead><tr><th style="width:130px">Spec</th>${list.map(v=>`<th>${v.brand}<br><span style="color:#e0e0e0;font-weight:600">${v.name}</span></th>`).join('')}</tr></thead>
+        <tbody>
+          ${rows.map(([label,getter])=>`<tr><td style="color:#6b6b80;font-size:.75rem">${label}</td>${list.map(v=>`<td>${getter(v)}</td>`).join('')}</tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+  document.getElementById('cModal').classList.add('show');
+}
+
+function switchTab(tab,el){
+  curTab=tab;
+  document.querySelectorAll('.main-tab').forEach(node=>node.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-gallery').style.display=tab==='gallery'?'':'none';
+  document.getElementById('tab-leaderboard').style.display=tab==='leaderboard'?'':'none';
+  if(tab==='leaderboard') renderLeaderboard();
+}
+
+function setLbMode(mode,btn){
+  lbMode=mode;
+  document.querySelectorAll('#tab-leaderboard .fb').forEach(button=>button.className='fb');
+  btn.className='fb aa';
+  renderLeaderboard();
+}
+
+function renderLeaderboard(){
+  let list=[...V];
+  let getVal;
+  let formatVal;
+  if(lbMode==='power'){
+    list.sort((a,b)=>b.powerHp-a.powerHp);
+    getVal=v=>v.powerHp;
+    formatVal=v=>formatPower(v);
+  }else if(lbMode==='speed'){
+    list.sort((a,b)=>b.topSpeedKph-a.topSpeedKph);
+    getVal=v=>v.topSpeedKph;
+    formatVal=v=>formatTopSpeed(v);
+  }else if(lbMode==='accel'){
+    list.sort((a,b)=>a.zeroSixty-b.zeroSixty);
+    getVal=v=>v.zeroSixty;
+    formatVal=v=>formatAccel(v.zeroSixty);
+  }else{
+    list.sort((a,b)=>a.weightKg-b.weightKg);
+    getVal=v=>v.weightKg;
+    formatVal=v=>formatWeight(v);
+  }
+  list=list.slice(0,20);
+  const maxVal=Math.max(...list.map(getVal));
+  const minVal=Math.min(...list.map(getVal));
+  const spread=maxVal-minVal||1;
+  document.getElementById('lbList').innerHTML=list.map((v,index)=>{
+    const value=getVal(v);
+    const pct=lbMode==='accel'||lbMode==='light'?1-((value-minVal)/spread):value/(maxVal||1);
+    const rankClass=index===0?'gold':index===1?'silver':index===2?'bronze':'';
+    return `<div class="lb-row" onclick="openDetail(${v.id})">
+      <div class="lb-rank ${rankClass}">${index+1}</div>
+      <div class="lb-info">
+        <div class="lb-name">${v.brand} ${v.name}</div>
+        <div class="lb-sub">${v.cat} / ${v.year}</div>
+      </div>
+      <div class="lb-bar-wrap"><div class="lb-bar" style="width:${Math.round(clamp01(pct)*100)}%"></div></div>
+      <div class="lb-val">${formatVal(v)}</div>
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('searchInput').addEventListener('input',e=>{
+  searchQ=e.target.value;
+  renderGrid();
+});
+
+const installBtn=document.getElementById('installBtn');
+installBtn.addEventListener('click',async ()=>{
+  if(!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  const choice=await deferredInstallPrompt.userChoice;
+  if(choice.outcome==='accepted') installBtn.hidden=true;
+  deferredInstallPrompt=null;
+});
+
+window.addEventListener('beforeinstallprompt',event=>{
+  event.preventDefault();
+  deferredInstallPrompt=event;
+  installBtn.hidden=false;
+});
+
+window.addEventListener('appinstalled',()=>{
+  deferredInstallPrompt=null;
+  installBtn.hidden=true;
+});
+
+if('serviceWorker' in navigator && window.location.protocol!=='file:'){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js').catch(error=>{
+      console.error('Service worker registration failed',error);
+    });
+  });
+}
+
+populateBrands();
+renderGrid();
+</script>
+</body>
+</html>
