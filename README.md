@@ -32,3 +32,41 @@ The project demonstrates:
 - 🔌 Offline support (cached assets)
 
 ---
+🛠️ Tech Stack
+HTML, CSS, JavaScript
+Vite (build tool)
+Service Worker
+Web App Manifest
+GitHub Pages
+🚀 Getting Started
+git clone https://github.com/trhung2010/automoto-gallery-pwa.git
+cd automoto-gallery-pwa
+npm install
+npm run dev
+
+Build:
+
+npm run build
+📦 PWA Features
+Installable on desktop & mobile
+Offline browsing capability
+Fast loading with caching
+App-like experience
+📂 Project Structure
+automoto-gallery-pwa/
+│── index.html
+│── src/
+│── assets/
+│── public/
+│── manifest.json
+│── service-worker.js
+🔮 Future Improvements
+🔍 Search & filter system
+❤️ Favorite vehicles
+🌐 API integration
+🎨 UI enhancements
+👨‍💻 Author
+
+Vương Nguyễn Trường Hưng
+🎓 Software Engineering Student
+🚗 Automotive Enthusiast
