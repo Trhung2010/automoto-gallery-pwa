@@ -2,14 +2,14 @@
   "id": "./",
   "name": "AutoMoto Gallery",
   "short_name": "AutoMoto",
-  "description": "Car and motorcycle gallery with specs, comparisons, leaderboard, offline support, and installable PWA shell.",
-  "lang": "en",
+  "description": "Garage xe hien dai voi gallery, compare, AI mini, luu local va ho tro offline.",
+  "lang": "vi",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0a0a0f",
-  "theme_color": "#0d0d14",
+  "background_color": "#07111f",
+  "theme_color": "#08111f",
   "icons": [
     {
       "src": "./icon-192.png",
