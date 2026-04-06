@@ -1,23 +1,34 @@
-# AutoMoto Gallery PWA
+# 🚗 AutoMoto Gallery PWA
 
-Deploy-ready static bundle for GitHub Pages or any other static host.
+![Build](https://img.shields.io/badge/build-passing-brightgreen)
+![Deploy](https://img.shields.io/badge/deploy-github%20pages-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![PWA](https://img.shields.io/badge/PWA-enabled-purple)
 
-Files:
-- `index.html`
-- `site.webmanifest`
-- `sw.js`
-- `icon-192.png`
-- `icon-512.png`
-- `apple-touch-icon.png`
+> A modern Progressive Web App for browsing automobile and motorcycle galleries with fast, responsive performance.
 
-GitHub Pages:
-1. Create a new GitHub repo.
-2. From this folder run `git init`.
-3. Run `git add .`.
-4. Run `git commit -m "Initial PWA deploy"`.
-5. Add your remote and push to `main`.
-6. In GitHub repo settings, enable Pages from the `main` branch root.
+🌐 **Live Demo:**  
+👉 https://trhung2010.github.io/automoto-gallery-pwa/
 
-Notes:
-- PWA install and offline mode require `https://` or `localhost`.
-- Relative paths are already set, so this works on GitHub Pages project URLs too.
+---
+
+## 📌 Overview
+
+AutoMoto Gallery PWA is a lightweight web application that allows users to explore car and motorcycle images in a clean, responsive gallery interface.
+
+The project demonstrates:
+- Progressive Web App (PWA)
+- Responsive UI design
+- Frontend performance optimization
+
+---
+
+## ✨ Features
+
+- 📸 Vehicle image gallery (cars & motorcycles)
+- 📱 Fully responsive design
+- ⚡ Fast loading & smooth UI
+- 📦 Installable PWA
+- 🔌 Offline support (cached assets)
+
+---
