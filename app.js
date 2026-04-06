@@ -55,14 +55,22 @@ const PHOTO_POOLS = {
 const PROMO_BADGES = {
   8: "Hot",
   16: "Hot",
-  20: "New 2025",
+  20: "Hot",
   26: "Hot",
   28: "New 2025",
+  29: "Hot",
+  30: "Hot",
+  31: "New 2025",
+  33: "Hot",
+  37: "New 2025",
   48: "Hot",
   52: "Hot",
+  64: "New 2025",
   70: "Hot",
-  71: "New 2025",
-  78: "Hot"
+  71: "Hot",
+  78: "Hot",
+  79: "New 2025",
+  82: "Hot"
 };
 
 SEED_VEHICLES.push(
@@ -128,6 +136,31 @@ SEED_VEHICLES.push(
   { id: 76, type: "vn", brand: "Honda", name: "Wave Alpha 110", year: 2024, price: 480, priceStr: "~19.9tr VND", cat: "Cub", power: 8.67, torque: 8.83, topSpeed: 90, zeroSixty: 14, weightLb: 220, specs: { Engine: "110cc SOHC", Power: "8.67 HP", Torque: "8.83 Nm", Seat: "765 mm", Weight: "98 kg", "Top Speed": "90 km/h", Tank: "3.5L", Fuel: "~1.6L/100km" }, variants: [{ n: "Wave Alpha", p: "~18.99tr" }, { n: "Wave Alpha Special", p: "~19.99tr" }], col: "#2a1a1a" },
   { id: 77, type: "vn", brand: "Yamaha", name: "Sirius FI", year: 2024, price: 450, priceStr: "~20.9tr VND", cat: "Cub", power: 9, torque: 9.5, topSpeed: 92, zeroSixty: 13.5, weightLb: 224, specs: { Engine: "113cc SOHC FI", Power: "9.0 HP", Torque: "9.5 Nm", Seat: "770 mm", Weight: "100 kg", "Top Speed": "92 km/h", Tank: "4L", Fuel: "~1.8L/100km" }, variants: [{ n: "Sirius FI", p: "~20.9tr" }, { n: "Sirius RC", p: "~21.9tr" }], col: "#1a1a2a" },
   { id: 78, type: "vn", brand: "Honda", name: "SH 150i", year: 2024, price: 1350, priceStr: "~75tr VND", cat: "Premium Scooter", power: 14.6, torque: 13.6, topSpeed: 118, zeroSixty: 8.5, weightLb: 290, specs: { Engine: "149cc eSP+ SOHC", Power: "14.6 HP", Torque: "13.6 Nm", Seat: "796 mm", Weight: "130 kg", "Top Speed": "118 km/h", Tank: "7.7L", Fuel: "~1.9L/100km" }, variants: [{ n: "SH 150i", p: "~71tr" }, { n: "SH 150i Sport", p: "~75.5tr" }, { n: "SH 160i", p: "~83.5tr" }], col: "#1a2a2a" }
+);
+
+SEED_VEHICLES.push(
+  { id: 29, type: "car", brand: "Koenigsegg", name: "Jesko Attack", year: 2024, price: 3000000, priceStr: "$3,000,000", cat: "Mega Hypercar", power: 1600, torque: 1106, topSpeed: 278, zeroSixty: 2.5, weightLb: 3131, specs: { Engine: "5.0L TT V8", Power: "1,600 HP", Torque: "1,106 lb-ft", Drivetrain: "RWD", Trans: "9-spd LST", "0-60": "2.5s", "Top Speed": "278 mph", Weight: "3,131 lbs" }, variants: [{ n: "Attack", p: "$3,000,000" }, { n: "Absolut", p: "$3,400,000" }], col: "#12243f" },
+  { id: 30, type: "car", brand: "Rimac", name: "Nevera", year: 2024, price: 2200000, priceStr: "$2,200,000", cat: "Electric Hypercar", power: 1914, torque: 1741, topSpeed: 258, zeroSixty: 1.85, weightLb: 5071, specs: { Engine: "Quad-Motor EV", Power: "1,914 HP", Torque: "1,741 lb-ft", Drivetrain: "AWD", Trans: "Single-speed", "0-60": "1.85s", "Top Speed": "258 mph", Weight: "5,071 lbs", Range: "304 mi" }, variants: [{ n: "Nevera", p: "$2,200,000" }], col: "#12324a" },
+  { id: 31, type: "car", brand: "Aston Martin", name: "Valhalla", year: 2025, price: 850000, priceStr: "$850,000", cat: "Hybrid Supercar", power: 1064, torque: 811, topSpeed: 217, zeroSixty: 2.5, weightLb: 3638, specs: { Engine: "4.0L TT V8 Hybrid", Power: "1,064 HP", Torque: "811 lb-ft", Drivetrain: "AWD", Trans: "8-spd DCT", "0-60": "2.5s", "Top Speed": "217 mph", Weight: "3,638 lbs" }, variants: [{ n: "Valhalla", p: "$850,000" }], col: "#182638" },
+  { id: 32, type: "car", brand: "Porsche", name: "718 Cayman GT4 RS", year: 2024, price: 164200, priceStr: "$164,200", cat: "Track Coupe", power: 493, torque: 331, topSpeed: 196, zeroSixty: 3.2, weightLb: 3227, specs: { Engine: "4.0L NA Flat-6", Power: "493 HP", Torque: "331 lb-ft", Drivetrain: "RWD", Trans: "7-spd PDK", "0-60": "3.2s", "Top Speed": "196 mph", Weight: "3,227 lbs" }, variants: [{ n: "GT4 RS", p: "$164,200" }, { n: "Weissach Pack", p: "$182,000+" }], col: "#28334a" },
+  { id: 33, type: "car", brand: "Mercedes-AMG", name: "One", year: 2024, price: 2720000, priceStr: "$2,720,000", cat: "F1 Hypercar", power: 1063, torque: 738, topSpeed: 219, zeroSixty: 2.9, weightLb: 3737, specs: { Engine: "1.6L Turbo V6 Hybrid", Power: "1,063 HP", Torque: "738 lb-ft", Drivetrain: "AWD", Trans: "7-spd AMT", "0-60": "2.9s", "Top Speed": "219 mph", Weight: "3,737 lbs" }, variants: [{ n: "AMG One", p: "$2,720,000" }], col: "#232935" },
+  { id: 34, type: "car", brand: "Cadillac", name: "CT5-V Blackwing", year: 2024, price: 94995, priceStr: "$94,995", cat: "Super Sedan", power: 668, torque: 659, topSpeed: 200, zeroSixty: 3.4, weightLb: 4123, specs: { Engine: "6.2L SC V8", Power: "668 HP", Torque: "659 lb-ft", Drivetrain: "RWD", Trans: "10-spd Auto", "0-60": "3.4s", "Top Speed": "200 mph", Weight: "4,123 lbs" }, variants: [{ n: "Manual", p: "$94,995" }, { n: "Automatic", p: "$98,995" }], col: "#2d1b23" },
+  { id: 35, type: "car", brand: "Lotus", name: "Emira V6", year: 2024, price: 102250, priceStr: "$102,250", cat: "Driver's Coupe", power: 400, torque: 310, topSpeed: 180, zeroSixty: 4.1, weightLb: 3142, specs: { Engine: "3.5L SC V6", Power: "400 HP", Torque: "310 lb-ft", Drivetrain: "RWD", Trans: "6-spd Manual", "0-60": "4.1s", "Top Speed": "180 mph", Weight: "3,142 lbs" }, variants: [{ n: "V6 First Edition", p: "$102,250" }, { n: "Turbo SE", p: "$109,000+" }], col: "#1b3140" },
+  { id: 36, type: "car", brand: "Nissan", name: "Z Nismo", year: 2024, price: 66995, priceStr: "$66,995", cat: "Sport Coupe", power: 420, torque: 384, topSpeed: 155, zeroSixty: 4.1, weightLb: 3704, specs: { Engine: "3.0L TT V6", Power: "420 HP", Torque: "384 lb-ft", Drivetrain: "RWD", Trans: "9-spd Auto", "0-60": "4.1s", "Top Speed": "155 mph", Weight: "3,704 lbs" }, variants: [{ n: "Performance", p: "$52,110" }, { n: "Nismo", p: "$66,995" }], col: "#2e1d1e" },
+  { id: 37, type: "car", brand: "Lucid", name: "Air Sapphire", year: 2025, price: 249000, priceStr: "$249,000", cat: "Luxury EV Super Sedan", power: 1234, torque: 1430, topSpeed: 205, zeroSixty: 1.89, weightLb: 5298, specs: { Engine: "Tri-Motor EV", Power: "1,234 HP", Torque: "1,430 lb-ft", Drivetrain: "AWD", Trans: "Single-speed", "0-60": "1.89s", "Top Speed": "205 mph", Weight: "5,298 lbs", Range: "427 mi" }, variants: [{ n: "Sapphire", p: "$249,000" }], col: "#1b2944" },
+  { id: 38, type: "car", brand: "Audi", name: "RS e-tron GT Performance", year: 2025, price: 167000, priceStr: "$167,000", cat: "Electric GT", power: 912, torque: 758, topSpeed: 155, zeroSixty: 2.4, weightLb: 5181, specs: { Engine: "Dual-Motor EV", Power: "912 HP", Torque: "758 lb-ft", Drivetrain: "AWD", Trans: "2-spd Auto", "0-60": "2.4s", "Top Speed": "155 mph", Weight: "5,181 lbs", Range: "278 mi" }, variants: [{ n: "RS e-tron GT", p: "$147,000" }, { n: "Performance", p: "$167,000" }], col: "#20283f" },
+  { id: 62, type: "bike", brand: "Ducati", name: "DesertX Rally", year: 2024, price: 22995, priceStr: "$22,995", cat: "Rally Adventure", power: 110, torque: 68, topSpeed: 131, zeroSixty: 4.2, weightLb: 463, specs: { Engine: "937cc Testastretta V2", Power: "110 HP", Torque: "68 lb-ft", Seat: "910 mm", Weight: "210 kg", "Top Speed": "131 mph", Tank: "21L", Electronics: "Rally ABS + Traction" }, variants: [{ n: "DesertX", p: "$17,995" }, { n: "DesertX Rally", p: "$22,995" }], col: "#3b2415" },
+  { id: 63, type: "bike", brand: "Yamaha", name: "Tenere 700 Extreme", year: 2024, price: 12499, priceStr: "$12,499", cat: "Adventure", power: 72, torque: 50, topSpeed: 118, zeroSixty: 4.9, weightLb: 452, specs: { Engine: "689cc Parallel Twin", Power: "72 HP", Torque: "50 lb-ft", Seat: "910 mm", Weight: "205 kg", "Top Speed": "118 mph", Tank: "16L", Electronics: "Off-road ABS" }, variants: [{ n: "Tenere 700", p: "$10,799" }, { n: "Extreme", p: "$12,499" }], col: "#24314d" },
+  { id: 64, type: "bike", brand: "BMW", name: "M 1000 RR", year: 2025, price: 37995, priceStr: "$37,995", cat: "Homologation Superbike", power: 212, torque: 83, topSpeed: 195, zeroSixty: 2.5, weightLb: 423, specs: { Engine: "999cc ShiftCam I4", Power: "212 HP", Torque: "83 lb-ft", Seat: "832 mm", Weight: "192 kg", "0-60": "2.5s", "Top Speed": "195 mph", Electronics: "Race ABS Pro" }, variants: [{ n: "M 1000 RR", p: "$37,995" }], col: "#1c2740" },
+  { id: 65, type: "bike", brand: "Aprilia", name: "Tuono V4 Factory", year: 2024, price: 19999, priceStr: "$19,999", cat: "Hyper Naked", power: 175, torque: 89, topSpeed: 167, zeroSixty: 2.8, weightLb: 463, specs: { Engine: "1099cc V4", Power: "175 HP", Torque: "89 lb-ft", Seat: "825 mm", Weight: "210 kg", "0-60": "2.8s", "Top Speed": "167 mph", Electronics: "APRC + Semi-active Ohlins" }, variants: [{ n: "Tuono V4", p: "$16,999" }, { n: "Factory", p: "$19,999" }], col: "#31213a" },
+  { id: 66, type: "bike", brand: "Suzuki", name: "GSX-8R", year: 2024, price: 9439, priceStr: "$9,439", cat: "Middleweight Sport", power: 82, torque: 58, topSpeed: 137, zeroSixty: 4.1, weightLb: 452, specs: { Engine: "776cc Parallel Twin", Power: "82 HP", Torque: "58 lb-ft", Seat: "810 mm", Weight: "205 kg", "Top Speed": "137 mph", Tank: "14L", Electronics: "Ride-by-wire + Quickshifter" }, variants: [{ n: "GSX-8R", p: "$9,439" }], col: "#203245" },
+  { id: 67, type: "bike", brand: "LiveWire", name: "S2 Del Mar", year: 2024, price: 15999, priceStr: "$15,999", cat: "Electric Street Tracker", power: 84, torque: 194, topSpeed: 103, zeroSixty: 3.1, weightLb: 431, specs: { Engine: "Electric Drive Unit", Power: "84 HP", Torque: "194 lb-ft", Seat: "768 mm", Weight: "196 kg", "0-60": "3.1s", "Top Speed": "103 mph", Range: "113 mi" }, variants: [{ n: "S2 Del Mar", p: "$15,999" }], col: "#263042" },
+  { id: 79, type: "vn", brand: "Honda", name: "ADV 160", year: 2024, price: 2200, priceStr: "~56tr VND", cat: "Adventure Scooter", power: 15.8, torque: 14.7, topSpeed: 118, zeroSixty: 10.8, weightLb: 294, specs: { Engine: "157cc eSP+ SOHC", Power: "15.8 HP", Torque: "14.7 Nm", Seat: "780 mm", Weight: "133 kg", "Top Speed": "118 km/h", Tank: "8.1L", Fuel: "~2.1L/100km" }, variants: [{ n: "ADV 160 ABS", p: "~56tr" }], col: "#223145" },
+  { id: 80, type: "vn", brand: "Suzuki", name: "Raider R150", year: 2024, price: 2050, priceStr: "~51tr VND", cat: "Underbone Sport", power: 18.2, torque: 13.8, topSpeed: 135, zeroSixty: 9.2, weightLb: 254, specs: { Engine: "147cc DOHC", Power: "18.2 HP", Torque: "13.8 Nm", Seat: "765 mm", Weight: "115 kg", "Top Speed": "135 km/h", Tank: "4L", Fuel: "~2.3L/100km" }, variants: [{ n: "Raider R150", p: "~51tr" }], col: "#2e1d1c" },
+  { id: 81, type: "vn", brand: "VinFast", name: "Feliz S", year: 2024, price: 1550, priceStr: "~39tr VND", cat: "Electric Scooter", power: 8.5, torque: 30, topSpeed: 78, zeroSixty: 15, weightLb: 265, specs: { Engine: "Electric Hub Motor", Power: "8.5 HP", Torque: "30 Nm", Seat: "770 mm", Weight: "120 kg", "Top Speed": "78 km/h", Range: "198 km" }, variants: [{ n: "Feliz S", p: "~39tr" }], col: "#1b2d41" },
+  { id: 82, type: "vn", brand: "Honda", name: "SH 350i", year: 2024, price: 5900, priceStr: "~151tr VND", cat: "Premium Maxi Scooter", power: 28.8, torque: 31.5, topSpeed: 145, zeroSixty: 7.2, weightLb: 381, specs: { Engine: "330cc eSP+ SOHC", Power: "28.8 HP", Torque: "31.5 Nm", Seat: "805 mm", Weight: "173 kg", "Top Speed": "145 km/h", Tank: "9.1L", Fuel: "~3.0L/100km" }, variants: [{ n: "SH 350i ABS", p: "~151tr" }], col: "#243447" },
+  { id: 83, type: "vn", brand: "Yamaha", name: "PG-1", year: 2024, price: 1200, priceStr: "~31tr VND", cat: "Urban Scrambler", power: 8.8, torque: 9.5, topSpeed: 95, zeroSixty: 13.8, weightLb: 238, specs: { Engine: "113cc SOHC", Power: "8.8 HP", Torque: "9.5 Nm", Seat: "795 mm", Weight: "108 kg", "Top Speed": "95 km/h", Tank: "5.1L", Fuel: "~1.7L/100km" }, variants: [{ n: "PG-1", p: "~31tr" }], col: "#3a2a17" },
+  { id: 84, type: "vn", brand: "VinFast", name: "Klara S2", year: 2024, price: 1450, priceStr: "~37tr VND", cat: "Electric Scooter", power: 8, torque: 28, topSpeed: 78, zeroSixty: 15.4, weightLb: 262, specs: { Engine: "Electric Hub Motor", Power: "8.0 HP", Torque: "28 Nm", Seat: "760 mm", Weight: "119 kg", "Top Speed": "78 km/h", Range: "194 km" }, variants: [{ n: "Klara S2", p: "~37tr" }], col: "#202e3e" }
 );
 
 const state = {
@@ -319,12 +352,12 @@ function bindEvents() {
     event.preventDefault();
     state.installPrompt = event;
     syncInstallButton();
-    showToast("Co the cai dat", "Dung nut Cai dat app de them app ra man hinh chinh.");
+    showToast("Ready to install", "Use the Install app button to pin AutoMoto to your home screen.");
   });
   window.addEventListener("appinstalled", () => {
     state.installPrompt = null;
     syncInstallButton();
-    showToast("Da cai dat", "AutoMoto da duoc them vao man hinh chinh.");
+    showToast("App installed", "AutoMoto was added to your home screen.");
   });
   window.addEventListener("hashchange", handleHashState);
 }
@@ -362,14 +395,14 @@ function populateFilterOptions() {
   const currentYearTo = state.filters.yearTo;
   const relevantVehicles = state.allVehicles.filter((vehicle) => state.activeType === "all" || (state.activeType === "mine" ? vehicle.isMine : vehicle.type === state.activeType));
   const brands = [...new Set(relevantVehicles.map((vehicle) => vehicle.brand))].sort(sortStrings);
-  refs.brandSel.innerHTML = ['<option value="">Tat ca</option>']
+  refs.brandSel.innerHTML = ['<option value="">All brands</option>']
     .concat(brands.map((brand) => `<option value="${escapeAttr(brand)}">${escapeHtml(brand)}</option>`))
     .join("");
   refs.brandSel.value = brands.includes(currentBrand) ? currentBrand : "";
   state.filters.brand = refs.brandSel.value;
 
   const years = [...new Set(state.allVehicles.map((vehicle) => vehicle.year))].sort((a, b) => b - a);
-  const yearOptions = ['<option value="">Tat ca</option>']
+  const yearOptions = ['<option value="">All years</option>']
     .concat(years.map((year) => `<option value="${year}">${year}</option>`))
     .join("");
   refs.yearFromSel.innerHTML = yearOptions;
@@ -478,7 +511,7 @@ function renderHero() {
   refs.heroCount.textContent = state.allVehicles.length.toLocaleString("en-US");
   refs.heroFavCount.textContent = state.favorites.size.toLocaleString("en-US");
   refs.heroGarageCount.textContent = state.userVehicles.length.toLocaleString("en-US");
-  refs.compareToggle.textContent = state.compareMode ? "Dang chon compare" : "Chon de compare";
+  refs.compareToggle.textContent = state.compareMode ? "Compare mode on" : "Select for compare";
   refs.compareToggle.classList.toggle("active", state.compareMode);
 }
 
@@ -492,7 +525,7 @@ function renderGallery() {
   refs.mineD.textContent = allMatches.filter((vehicle) => vehicle.isMine).length.toLocaleString("en-US");
   refs.favD.textContent = allMatches.filter((vehicle) => state.favorites.has(String(vehicle.id))).length.toLocaleString("en-US");
   if (!allMatches.length) {
-    refs.grid.innerHTML = '<div class="empty-state"><strong>Khong tim thay xe phu hop.</strong><div>Thu doi tu khoa, bo bot filter hoac them xe cua ban vao Garage.</div></div>';
+    refs.grid.innerHTML = '<div class="empty-state"><strong>No matching vehicles found.</strong><div>Try another keyword, loosen the filters, or add your own machine to My Garage.</div></div>';
     refs.sentinel.classList.add("hidden");
     return;
   }
@@ -527,20 +560,20 @@ function renderVehicleCard(vehicle) {
           <div class="card-subtitle">${escapeHtml(vehicle.engineType)} / ${escapeHtml(vehicle.engineLabel)}</div>
         </div>
         <div class="metric-grid">
-          ${metricChip("Gia", formatUsd(vehicle.priceUsd))}
-          ${metricChip("Cong suat", formatPower(vehicle))}
-          ${metricChip("Toc do", formatTopSpeed(vehicle))}
+          ${metricChip("Price", formatUsd(vehicle.priceUsd))}
+          ${metricChip("Power", formatPower(vehicle))}
+          ${metricChip("Top speed", formatTopSpeed(vehicle))}
         </div>
         <div class="hot-strip">
           <div class="hot-head">
-            <span>Do hot</span>
+            <span>Heat</span>
             <strong>${hotValue}%</strong>
           </div>
           <div class="bar"><span style="width:${hotValue}%"></span></div>
         </div>
         <div class="card-actions">
-          <button class="chip-btn" type="button" data-open="${escapeAttr(vehicle.id)}">Xem chi tiet</button>
-          <button class="ghost-btn" type="button" data-compare="${escapeAttr(vehicle.id)}">${inCompare ? "Da chon" : "Compare"}</button>
+          <button class="chip-btn" type="button" data-open="${escapeAttr(vehicle.id)}">View details</button>
+          <button class="ghost-btn" type="button" data-compare="${escapeAttr(vehicle.id)}">${inCompare ? "Selected" : "Compare"}</button>
         </div>
       </div>
     </article>
@@ -599,12 +632,12 @@ function renderCompareDock() {
   refs.compareDock.classList.toggle("show", shouldShow);
   refs.compareSlots.innerHTML = Array.from({ length: 3 }, (_, index) => {
     const vehicle = vehicles[index];
-    if (!vehicle) return '<div class="compare-slot">+ Them xe vao compare</div>';
+    if (!vehicle) return '<div class="compare-slot">+ Add a vehicle to compare</div>';
     return `
       <div class="compare-slot filled">
         <strong>${escapeHtml(vehicle.brand)} ${escapeHtml(vehicle.name)}</strong>
         <span>${formatPower(vehicle)} / ${formatUsd(vehicle.priceUsd)}</span>
-        <button class="ghost-btn" type="button" data-compare-remove="${escapeAttr(vehicle.id)}">Bo xe nay</button>
+        <button class="ghost-btn" type="button" data-compare-remove="${escapeAttr(vehicle.id)}">Remove</button>
       </div>
     `;
   }).join("");
@@ -683,14 +716,14 @@ function renderVehicleModal(vehicle) {
             <div class="detail-price">${formatUsd(vehicle.priceUsd)}</div>
           </div>
           <div class="quick-metrics">
-            ${metricChip("Cong suat", formatPower(vehicle))}
+            ${metricChip("Power", formatPower(vehicle))}
             ${metricChip("Top speed", formatTopSpeed(vehicle))}
-            ${metricChip("Trong luong", formatWeight(vehicle))}
+            ${metricChip("Weight", formatWeight(vehicle))}
           </div>
           <div class="detail-actions">
             <button class="primary-btn" type="button" data-share-copy="${escapeAttr(vehicle.id)}">Copy link</button>
-            <button class="chip-btn" type="button" data-compare="${escapeAttr(vehicle.id)}">${state.compareIds.includes(String(vehicle.id)) ? "Da chon compare" : "Them vao compare"}</button>
-            <button class="ghost-btn" type="button" data-fav="${escapeAttr(vehicle.id)}">${isFav ? "Bo favorite" : "Favorite"}</button>
+            <button class="chip-btn" type="button" data-compare="${escapeAttr(vehicle.id)}">${state.compareIds.includes(String(vehicle.id)) ? "Already selected" : "Add to compare"}</button>
+            <button class="ghost-btn" type="button" data-fav="${escapeAttr(vehicle.id)}">${isFav ? "Remove favorite" : "Favorite"}</button>
           </div>
         </div>
       </div>
@@ -718,22 +751,22 @@ function renderVehicleTab(vehicle) {
 
 function renderSpecsTab(vehicle) {
   const rows = [
-    ["Gia", formatUsd(vehicle.priceUsd)],
-    ["Cong suat", formatPower(vehicle)],
+    ["Price", formatUsd(vehicle.priceUsd)],
+    ["Power", formatPower(vehicle)],
     ["Torque", formatTorque(vehicle)],
     ["Top speed", formatTopSpeed(vehicle)],
     ["0-60", formatAccel(vehicle.zeroSixty)],
-    ["Trong luong", formatWeight(vehicle)],
-    ["Dong co", vehicle.engineLabel],
-    ["Loai dong co", vehicle.engineType]
+    ["Weight", formatWeight(vehicle)],
+    ["Engine", vehicle.engineLabel],
+    ["Engine type", vehicle.engineType]
   ];
-  if (vehicle.specs.Drivetrain) rows.push(["Dan dong", vehicle.specs.Drivetrain]);
-  if (vehicle.specs.Trans) rows.push(["Hop so", vehicle.specs.Trans]);
-  if (vehicle.seatM != null) rows.push(["Chieu cao yen", formatMeters(vehicle.seatM)]);
-  if (vehicle.tankL != null) rows.push(["Binh xang", formatLiters(vehicle.tankL)]);
-  if (vehicle.rangeKm != null) rows.push(["Tam hoat dong", formatRange(vehicle.rangeKm)]);
-  if (vehicle.fuelUseL != null) rows.push(["Tieu hao", formatFuelUse(vehicle.fuelUseL)]);
-  if (vehicle.specs.Electronics) rows.push(["Dien tu", vehicle.specs.Electronics]);
+  if (vehicle.specs.Drivetrain) rows.push(["Drivetrain", vehicle.specs.Drivetrain]);
+  if (vehicle.specs.Trans) rows.push(["Transmission", vehicle.specs.Trans]);
+  if (vehicle.seatM != null) rows.push(["Seat height", formatMeters(vehicle.seatM)]);
+  if (vehicle.tankL != null) rows.push(["Fuel tank", formatLiters(vehicle.tankL)]);
+  if (vehicle.rangeKm != null) rows.push(["Range", formatRange(vehicle.rangeKm)]);
+  if (vehicle.fuelUseL != null) rows.push(["Consumption", formatFuelUse(vehicle.fuelUseL)]);
+  if (vehicle.specs.Electronics) rows.push(["Electronics", vehicle.specs.Electronics]);
   return `<div class="spec-grid">${rows.map(([label, value]) => `<div class="spec-row"><span class="spec-key">${escapeHtml(label)}</span><span class="spec-val">${escapeHtml(value)}</span></div>`).join("")}</div>`;
 }
 
@@ -751,19 +784,19 @@ function renderPerformanceTab(vehicle) {
 
 function renderPhotosTab(vehicle) {
   const photos = vehicle.photoUrls.length ? vehicle.photoUrls : [vehicle.imageUrl].filter(Boolean);
-  if (!photos.length) return '<div class="empty-state"><strong>Chua co anh that.</strong><div>Ban co the them xe cua minh voi nhieu URL anh trong Garage.</div></div>';
-  return `<div class="photo-grid">${photos.map((url, index) => `<figure><img src="${escapeAttr(url)}" alt="${escapeAttr(`${vehicle.name} ${index + 1}`)}" loading="lazy" referrerpolicy="no-referrer"><figcaption>${index === 0 ? "Anh chinh" : `Real photo ${index + 1}`}</figcaption></figure>`).join("")}</div>`;
+  if (!photos.length) return '<div class="empty-state"><strong>No real-world photos yet.</strong><div>Add your own machine with multiple image URLs to populate this gallery.</div></div>';
+  return `<div class="photo-grid">${photos.map((url, index) => `<figure><img src="${escapeAttr(url)}" alt="${escapeAttr(`${vehicle.name} ${index + 1}`)}" loading="lazy" referrerpolicy="no-referrer"><figcaption>${index === 0 ? "Primary shot" : `Real photo ${index + 1}`}</figcaption></figure>`).join("")}</div>`;
 }
 
 function renderReviewsTab(vehicle) {
   const reviews = getReviews(vehicle.id);
   return `
     <div class="review-list">
-      ${reviews.length ? reviews.map((review) => `<div class="review-item"><strong>${escapeHtml(review.author || "Ban")}</strong><div>${escapeHtml(review.text)}</div><div class="review-meta">${escapeHtml(formatDateTime(review.ts))}</div></div>`).join("") : '<div class="review-empty">Chua co review local nao. Viet review ngan de luu ngay tren may nay.</div>'}
+      ${reviews.length ? reviews.map((review) => `<div class="review-item"><strong>${escapeHtml(review.author || "You")}</strong><div>${escapeHtml(review.text)}</div><div class="review-meta">${escapeHtml(formatDateTime(review.ts))}</div></div>`).join("") : '<div class="review-empty">No local reviews yet. Write a short take and it will stay on this device.</div>'}
     </div>
     <form class="review-form" data-review-form="${escapeAttr(vehicle.id)}">
-      <textarea name="reviewText" rows="4" maxlength="280" placeholder="Nhan xet ngan ve xe nay..."></textarea>
-      <button class="primary-btn" type="submit">Luu review</button>
+      <textarea name="reviewText" rows="4" maxlength="280" placeholder="Write a short impression of this vehicle..."></textarea>
+      <button class="primary-btn" type="submit">Save review</button>
     </form>
   `;
 }
@@ -776,32 +809,32 @@ function renderShareTab(vehicle) {
       <div class="share-card">
         <div class="share-link">
           <label class="field">
-            <span>Link chia se</span>
+            <span>Shareable link</span>
             <input type="text" readonly value="${escapeAttr(link)}">
           </label>
           <div class="share-actions">
             <button class="primary-btn" type="button" data-share-copy="${escapeAttr(vehicle.id)}">Copy link</button>
             <button class="chip-btn" type="button" data-native-share="${escapeAttr(vehicle.id)}">Share</button>
           </div>
-          <div class="review-meta">Nguoi nhan mo link nay se nhay vao modal xe neu cung URL app.</div>
+          <div class="review-meta">Anyone opening this URL inside the app will jump straight into this vehicle modal.</div>
         </div>
       </div>
       <div class="share-qr">
-        <div class="qr-frame">${navigator.onLine ? `<img src="${escapeAttr(qrSrc)}" alt="QR ${escapeAttr(vehicle.name)}" loading="lazy">` : '<div class="review-empty">Dang offline nen khong tai QR online duoc. Ban van copy link binh thuong.</div>'}</div>
+        <div class="qr-frame">${navigator.onLine ? `<img src="${escapeAttr(qrSrc)}" alt="QR ${escapeAttr(vehicle.name)}" loading="lazy">` : '<div class="review-empty">You are offline, so the live QR image is unavailable. The share link still works.</div>'}</div>
       </div>
     </div>
   `;
 }
 
 function renderVariantsTab(vehicle) {
-  if (!vehicle.variants.length) return '<div class="empty-state"><strong>Khong co variants.</strong><div>Xe nay hien dang dung 1 cau hinh co ban.</div></div>';
+  if (!vehicle.variants.length) return '<div class="empty-state"><strong>No variants available.</strong><div>This entry currently uses a single default configuration.</div></div>';
   return `<div class="variant-list">${vehicle.variants.map((variant) => `<div class="variant-item"><div><strong>${escapeHtml(variant.n)}</strong><div>${escapeHtml(vehicle.brand)} ${escapeHtml(vehicle.name)}</div></div><div>${variant.priceUsd != null ? formatUsd(variant.priceUsd) : escapeHtml(variant.p)}</div></div>`).join("")}</div>`;
 }
 
 function openCompareModal() {
   const vehicles = state.compareIds.map(findVehicleById).filter(Boolean);
   if (vehicles.length < 2) {
-    showToast("Can them xe", "Hay chon it nhat 2 xe de compare.");
+    showToast("Need more vehicles", "Pick at least two vehicles before opening compare.");
     return;
   }
   refs.compareContent.innerHTML = renderCompareModal(vehicles);
@@ -814,13 +847,13 @@ function renderCompareModal(vehicles) {
     <div class="compare-head">
       <div><p class="eyebrow">Compare</p><h2>${escapeHtml(vehicles.map((vehicle) => vehicle.name).join(" vs "))}</h2></div>
       <div class="compare-tools">
-        <button class="primary-btn" type="button" data-export-json="1">Xuat JSON</button>
-        <button class="chip-btn" type="button" data-print-compare="1">In / PDF</button>
+        <button class="primary-btn" type="button" data-export-json="1">Export JSON</button>
+        <button class="chip-btn" type="button" data-print-compare="1">Print / PDF</button>
       </div>
     </div>
     <div class="compare-table-wrap">
       <table class="compare-table">
-        <thead><tr><th>Thong so</th>${vehicles.map((vehicle) => `<th>${escapeHtml(vehicle.brand)}<br><strong>${escapeHtml(vehicle.name)}</strong></th>`).join("")}</tr></thead>
+        <thead><tr><th>Spec</th>${vehicles.map((vehicle) => `<th>${escapeHtml(vehicle.brand)}<br><strong>${escapeHtml(vehicle.name)}</strong></th>`).join("")}</tr></thead>
         <tbody>${rows.map(([label, getter]) => `<tr><td>${escapeHtml(label)}</td>${vehicles.map((vehicle) => `<td>${escapeHtml(getter(vehicle))}</td>`).join("")}</tr>`).join("")}</tbody>
       </table>
     </div>
@@ -828,14 +861,14 @@ function renderCompareModal(vehicles) {
 }
 
 function renderAiChat() {
-  refs.aiChat.innerHTML = state.aiMessages.map((message) => `<div class="ai-bubble ${message.role}"><span class="ai-role">${message.role === "user" ? "Ban" : "AI mini"}</span><div>${message.html}</div></div>`).join("");
+  refs.aiChat.innerHTML = state.aiMessages.map((message) => `<div class="ai-bubble ${message.role}"><span class="ai-role">${message.role === "user" ? "You" : "Mini AI"}</span><div>${message.html}</div></div>`).join("");
   refs.aiChat.scrollTop = refs.aiChat.scrollHeight;
 }
 
 function seedAiMessages() {
   state.aiMessages = [{
     role: "assistant",
-    html: '<div class="ai-help">Thu hoi AI mini du lieu local, khong goi API.</div><div class="ai-suggestion"><div class="ai-result"><strong>Thu cau nay</strong><div>Xe nao manh nhat duoi 50 trieu?</div></div><div class="ai-result"><strong>Hoac</strong><div>So sanh Exciter vs Winner X</div></div></div>'
+    html: '<div class="ai-help">Mini AI answers from the local garage data only, with no external API.</div><div class="ai-suggestion"><div class="ai-result"><strong>Try this</strong><div>What is the most powerful vehicle under $50,000?</div></div><div class="ai-result"><strong>Or this</strong><div>Compare Exciter vs Winner X</div></div></div>'
   }];
 }
 
@@ -873,29 +906,29 @@ function answerAi(rawQuery) {
     const matches = allVehicles.filter((vehicle) => query.includes(normalizeText(vehicle.name)) || query.includes(normalizeText(`${vehicle.brand} ${vehicle.name}`)));
     if (matches.length >= 2) return buildCompareAnswer(matches[0], matches[1]);
   }
-  if ((/manh nhat|cong suat cao nhat/.test(query)) && /(duoi|under|nho hon)/.test(query)) {
+  if ((/most powerful|highest power|strongest|manh nhat|cong suat cao nhat/.test(query)) && /(under|below|less than|duoi|nho hon)/.test(query)) {
     const budget = parseBudgetFromQuery(query);
     if (budget != null) {
       const result = allVehicles.filter((vehicle) => vehicle.priceUsd <= budget).sort((a, b) => sortNumbers(b.powerHp, a.powerHp))[0];
-      if (result) return buildSingleVehicleAnswer(`Mạnh nhất dưới ${formatUsd(budget)}`, result, `Cong suat ${formatPower(result)}, gia ${formatUsd(result.priceUsd)}.`);
-      return `<div>Khong co xe nao duoi ${formatUsd(budget)} trong du lieu hien tai.</div>`;
+      if (result) return buildSingleVehicleAnswer(`Most powerful under ${formatUsd(budget)}`, result, `It makes ${formatPower(result)} and is listed at ${formatUsd(result.priceUsd)}.`);
+      return `<div>No vehicle is currently listed below ${formatUsd(budget)} in this dataset.</div>`;
     }
   }
-  if (/nhanh nhat/.test(query)) {
+  if (/fastest|highest top speed|nhanh nhat/.test(query)) {
     const result = [...allVehicles].sort((a, b) => sortNumbers(b.topSpeedKph, a.topSpeedKph))[0];
-    return buildSingleVehicleAnswer("Xe nhanh nhat", result, `Top speed ${formatTopSpeed(result)} va cong suat ${formatPower(result)}.`);
+    return buildSingleVehicleAnswer("Fastest vehicle", result, `${result.name} tops out at ${formatTopSpeed(result)} with ${formatPower(result)} on tap.`);
   }
-  if (/re nhat|gia thap nhat/.test(query)) {
+  if (/cheapest|lowest price|re nhat|gia thap nhat/.test(query)) {
     const result = [...allVehicles].sort((a, b) => sortNumbers(a.priceUsd, b.priceUsd))[0];
-    return buildSingleVehicleAnswer("Xe re nhat", result, `Gia ${formatUsd(result.priceUsd)} va phu hop de tham khao nhom gia re.`);
+    return buildSingleVehicleAnswer("Cheapest vehicle", result, `It starts at ${formatUsd(result.priceUsd)} and currently sets the floor for the catalog.`);
   }
-  if (/hot nhat|noi bat nhat/.test(query)) {
+  if (/hottest|most popular|hot nhat|noi bat nhat/.test(query)) {
     const result = [...allVehicles].sort((a, b) => sortNumbers(hotScore(b), hotScore(a)))[0];
-    return buildSingleVehicleAnswer("Xe dang hot", result, `Do hot ${Math.round(normalizeHotScore(result) * 100)}% dua tren favorite va luot mo chi tiet.`);
+    return buildSingleVehicleAnswer("Hottest vehicle", result, `Its heat score is ${Math.round(normalizeHotScore(result) * 100)}%, based on favorites and detail views.`);
   }
   const matches = allVehicles.filter((vehicle) => normalizeText(`${vehicle.brand} ${vehicle.name} ${vehicle.cat}`).includes(query)).slice(0, 3);
-  if (matches.length) return `<div>Minh tim thay ${matches.length} xe lien quan:</div><div class="ai-suggestion">${matches.map((vehicle) => aiResultCard(vehicle)).join("")}</div>`;
-  return '<div>AI mini hien tra loi tot nhat voi cau hoi theo mau:</div><div class="ai-suggestion"><div class="ai-result"><strong>Tim theo gia</strong><div>Xe nao manh nhat duoi 50 trieu?</div></div><div class="ai-result"><strong>So sanh 2 xe</strong><div>So sanh Exciter vs Winner X</div></div><div class="ai-result"><strong>Tim nhanh</strong><div>Xe nhanh nhat / Xe re nhat / Xe hot nhat</div></div></div>';
+  if (matches.length) return `<div>I found ${matches.length} related vehicles:</div><div class="ai-suggestion">${matches.map((vehicle) => aiResultCard(vehicle)).join("")}</div>`;
+  return '<div>Mini AI works best with prompts like these:</div><div class="ai-suggestion"><div class="ai-result"><strong>Find by budget</strong><div>What is the most powerful vehicle under $50,000?</div></div><div class="ai-result"><strong>Compare two entries</strong><div>Compare Exciter vs Winner X</div></div><div class="ai-result"><strong>Quick discovery</strong><div>Fastest vehicle / Cheapest vehicle / Hottest vehicle</div></div></div>';
 }
 
 function buildSingleVehicleAnswer(title, vehicle, note) {
@@ -910,13 +943,13 @@ function buildCompareAnswer(first, second) {
     <div class="ai-suggestion">
       <div class="ai-result">
         <strong>${escapeHtml(first.name)} vs ${escapeHtml(second.name)}</strong>
-        <div>Mạnh hơn: ${escapeHtml(stronger.name)} (${formatPower(stronger)})</div>
-        <div>Nhanh hơn: ${escapeHtml(faster.name)} (${formatTopSpeed(faster)})</div>
-        <div>Rẻ hơn: ${escapeHtml(cheaper.name)} (${formatUsd(cheaper.priceUsd)})</div>
+        <div>More power: ${escapeHtml(stronger.name)} (${formatPower(stronger)})</div>
+        <div>Faster: ${escapeHtml(faster.name)} (${formatTopSpeed(faster)})</div>
+        <div>Cheaper: ${escapeHtml(cheaper.name)} (${formatUsd(cheaper.priceUsd)})</div>
         <div class="ai-inline-actions">
-          <button class="chip-btn" type="button" data-ai-open="${escapeAttr(first.id)}">Xem ${escapeHtml(first.name)}</button>
-          <button class="chip-btn" type="button" data-ai-open="${escapeAttr(second.id)}">Xem ${escapeHtml(second.name)}</button>
-          <button class="primary-btn" type="button" data-ai-compare="${escapeAttr(first.id)},${escapeAttr(second.id)}">Mo compare</button>
+          <button class="chip-btn" type="button" data-ai-open="${escapeAttr(first.id)}">View ${escapeHtml(first.name)}</button>
+          <button class="chip-btn" type="button" data-ai-open="${escapeAttr(second.id)}">View ${escapeHtml(second.name)}</button>
+          <button class="primary-btn" type="button" data-ai-compare="${escapeAttr(first.id)},${escapeAttr(second.id)}">Open compare</button>
         </div>
       </div>
     </div>
@@ -924,7 +957,7 @@ function buildCompareAnswer(first, second) {
 }
 
 function aiResultCard(vehicle, note = "") {
-  return `<div class="ai-result"><strong>${escapeHtml(vehicle.brand)} ${escapeHtml(vehicle.name)}</strong><div>${formatUsd(vehicle.priceUsd)} / ${formatPower(vehicle)} / ${formatTopSpeed(vehicle)}</div>${note ? `<div>${escapeHtml(note)}</div>` : ""}<div class="ai-inline-actions"><button class="chip-btn" type="button" data-ai-open="${escapeAttr(vehicle.id)}">Xem chi tiet</button></div></div>`;
+  return `<div class="ai-result"><strong>${escapeHtml(vehicle.brand)} ${escapeHtml(vehicle.name)}</strong><div>${formatUsd(vehicle.priceUsd)} / ${formatPower(vehicle)} / ${formatTopSpeed(vehicle)}</div>${note ? `<div>${escapeHtml(note)}</div>` : ""}<div class="ai-inline-actions"><button class="chip-btn" type="button" data-ai-open="${escapeAttr(vehicle.id)}">View details</button></div></div>`;
 }
 
 function handleGridClick(event) {
@@ -966,7 +999,7 @@ function handleVehicleModalSubmit(event) {
   saveReview(vehicleId, text);
   const vehicle = findVehicleById(vehicleId);
   refs.vehicleContent.innerHTML = renderVehicleModal(vehicle);
-  showToast("Da luu review", "Review duoc luu local tren trinh duyet nay.");
+  showToast("Review saved", "This review is now stored locally in your browser.");
 }
 
 function handleCompareModalClick(event) {
@@ -995,7 +1028,7 @@ function handleGarageSubmit(event) {
     price: priceUsd,
     priceUsd,
     priceStr: formatUsd(priceUsd),
-    cat: type === "car" ? "My Garage Car" : type === "bike" ? "My Garage Bike" : "My Garage VN",
+    cat: type === "car" ? "My Garage Car" : type === "bike" ? "My Garage Bike" : "My Garage SEA",
     power: powerHp,
     powerHp,
     torque: torqueNm,
@@ -1031,27 +1064,27 @@ function handleGarageSubmit(event) {
   syncTypeButtons();
   state.visibleCount = PAGE_SIZE;
   renderAll();
-  showToast("Da them xe", `${newVehicle.name} da vao Gallery va compare ngay duoc.`);
+  showToast("Vehicle added", `${newVehicle.name} is now live in the gallery and ready for compare.`);
 }
 
 function getComparisonRows(list) {
   const rows = [
-    ["Gia", (vehicle) => formatUsd(vehicle.priceUsd)],
-    ["Loai", (vehicle) => vehicle.cat],
-    ["Cong suat", (vehicle) => formatPower(vehicle)],
+    ["Price", (vehicle) => formatUsd(vehicle.priceUsd)],
+    ["Category", (vehicle) => vehicle.cat],
+    ["Power", (vehicle) => formatPower(vehicle)],
     ["Torque", (vehicle) => formatTorque(vehicle)],
     ["Top speed", (vehicle) => formatTopSpeed(vehicle)],
     ["0-60", (vehicle) => formatAccel(vehicle.zeroSixty)],
-    ["Trong luong", (vehicle) => formatWeight(vehicle)],
-    ["Dong co", (vehicle) => vehicle.engineLabel],
-    ["Loai dong co", (vehicle) => vehicle.engineType]
+    ["Weight", (vehicle) => formatWeight(vehicle)],
+    ["Engine", (vehicle) => vehicle.engineLabel],
+    ["Engine type", (vehicle) => vehicle.engineType]
   ];
-  if (list.some((vehicle) => vehicle.seatM != null)) rows.push(["Chieu cao yen", (vehicle) => vehicle.seatM != null ? formatMeters(vehicle.seatM) : "-"]);
-  if (list.some((vehicle) => vehicle.tankL != null)) rows.push(["Binh xang", (vehicle) => vehicle.tankL != null ? formatLiters(vehicle.tankL) : "-"]);
-  if (list.some((vehicle) => vehicle.rangeKm != null)) rows.push(["Tam hoat dong", (vehicle) => vehicle.rangeKm != null ? formatRange(vehicle.rangeKm) : "-"]);
-  if (list.some((vehicle) => vehicle.fuelUseL != null)) rows.push(["Tieu hao", (vehicle) => vehicle.fuelUseL != null ? formatFuelUse(vehicle.fuelUseL) : "-"]);
-  if (list.some((vehicle) => vehicle.specs.Drivetrain)) rows.push(["Dan dong", (vehicle) => vehicle.specs.Drivetrain || "-"]);
-  if (list.some((vehicle) => vehicle.specs.Trans)) rows.push(["Hop so", (vehicle) => vehicle.specs.Trans || "-"]);
+  if (list.some((vehicle) => vehicle.seatM != null)) rows.push(["Seat height", (vehicle) => vehicle.seatM != null ? formatMeters(vehicle.seatM) : "-"]);
+  if (list.some((vehicle) => vehicle.tankL != null)) rows.push(["Fuel tank", (vehicle) => vehicle.tankL != null ? formatLiters(vehicle.tankL) : "-"]);
+  if (list.some((vehicle) => vehicle.rangeKm != null)) rows.push(["Range", (vehicle) => vehicle.rangeKm != null ? formatRange(vehicle.rangeKm) : "-"]);
+  if (list.some((vehicle) => vehicle.fuelUseL != null)) rows.push(["Consumption", (vehicle) => vehicle.fuelUseL != null ? formatFuelUse(vehicle.fuelUseL) : "-"]);
+  if (list.some((vehicle) => vehicle.specs.Drivetrain)) rows.push(["Drivetrain", (vehicle) => vehicle.specs.Drivetrain || "-"]);
+  if (list.some((vehicle) => vehicle.specs.Trans)) rows.push(["Transmission", (vehicle) => vehicle.specs.Trans || "-"]);
   return rows;
 }
 
@@ -1197,7 +1230,7 @@ function toggleCompare(vehicleId, rerenderModal = false) {
   const key = String(vehicleId);
   if (state.compareIds.includes(key)) state.compareIds = state.compareIds.filter((item) => item !== key);
   else {
-    if (state.compareIds.length >= 3) return void showToast("Gioi han compare", "Chi compare toi da 3 xe mot lan.");
+    if (state.compareIds.length >= 3) return void showToast("Compare limit", "You can compare up to three vehicles at once.");
     state.compareIds = [...state.compareIds, key];
   }
   saveJson(STORAGE.compare, state.compareIds);
@@ -1217,7 +1250,7 @@ function clearCompare() {
 }
 
 function handleInstallClick() {
-  if (isStandalone()) return void showToast("Da cai dat", "App nay dang chay o che do da cai dat.");
+  if (isStandalone()) return void showToast("Already installed", "This app is already running in installed mode.");
   if (state.installPrompt) {
     state.installPrompt.prompt();
     state.installPrompt.userChoice.finally(() => {
@@ -1227,17 +1260,17 @@ function handleInstallClick() {
     return;
   }
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  showToast(isIOS ? "Cach cai tren iPhone" : "Cach cai dat", isIOS ? "Mo Share > Add to Home Screen trong Safari." : "Neu browser chua hien prompt, mo menu va chon Install App / Add to Home screen.");
+  showToast(isIOS ? "Install on iPhone" : "How to install", isIOS ? "Open Share > Add to Home Screen in Safari." : "If your browser does not show a prompt, open the menu and choose Install App / Add to Home Screen.");
 }
 
 function syncInstallButton() {
   if (isStandalone()) {
-    refs.installBtn.textContent = "Da cai dat";
+    refs.installBtn.textContent = "Installed";
     refs.installBtn.disabled = true;
     return;
   }
   refs.installBtn.disabled = false;
-  refs.installBtn.textContent = "Cai dat app";
+  refs.installBtn.textContent = "Install app";
 }
 
 function registerServiceWorker() {
@@ -1247,7 +1280,7 @@ function registerServiceWorker() {
       await navigator.serviceWorker.register("./sw.js");
       await navigator.serviceWorker.ready;
       if (!loadJson(STORAGE.offlineToast, false)) {
-        showToast("Offline ready", "App san sang dung offline sau khi mo lai tu icon tren dien thoai.");
+        showToast("Offline ready", "The app is cached and ready to reopen from your home screen without a connection.");
         saveJson(STORAGE.offlineToast, true);
       }
     } catch (error) {
@@ -1296,7 +1329,7 @@ function syncHashForVehicle(vehicleId) {
 
 function copyVehicleLink(vehicleId) {
   const link = buildVehicleShareUrl(vehicleId);
-  navigator.clipboard.writeText(link).then(() => showToast("Da copy", "Link xe da duoc copy vao clipboard.")).catch(() => showToast("Khong copy duoc", "Browser dang chan clipboard, ban co the copy thu cong."));
+  navigator.clipboard.writeText(link).then(() => showToast("Copied", "The vehicle link was copied to your clipboard.")).catch(() => showToast("Copy unavailable", "Your browser blocked clipboard access, so copy the link manually."));
 }
 
 function nativeShareVehicle(vehicleId) {
@@ -1316,7 +1349,7 @@ function buildVehicleShareUrl(vehicleId) {
 function saveReview(vehicleId, text) {
   const key = String(vehicleId);
   const list = getReviews(key);
-  list.unshift({ author: "Ban", text, ts: Date.now() });
+  list.unshift({ author: "You", text, ts: Date.now() });
   state.reviews[key] = list.slice(0, 20);
   saveJson(STORAGE.reviews, state.reviews);
 }
@@ -1479,10 +1512,10 @@ function formatNumber(value, digits = 0) {
 }
 
 function typeLabel(vehicle) {
-  if (vehicle.isMine) return "Xe cua toi";
-  if (vehicle.type === "car") return "O to";
-  if (vehicle.type === "bike") return "Moto";
-  return "VN Market";
+  if (vehicle.isMine) return "My Garage";
+  if (vehicle.type === "car") return "Car";
+  if (vehicle.type === "bike") return "Motorcycle";
+  return "SEA Market";
 }
 
 function inferEngineType(engineText) {
@@ -1548,7 +1581,8 @@ function normalizeEngineLabel(text) {
 function parseBudgetFromQuery(query) {
   const match = query.match(/(\d+(?:[.,]\d+)?)/);
   if (!match) return null;
-  const value = Number(match[1].replace(",", "."));
+  const value = Number(match[1].replace(/,/g, ""));
+  if (/million/.test(query)) return value * 1000000;
   if (/trieu| tr\b/.test(query)) return (value * 1000000) / USD_TO_VND;
   if (/usd|\$/.test(query)) return value;
   if (value > 1000) return value;
@@ -1640,7 +1674,7 @@ function hashCode(value) {
 }
 
 function formatDateTime(timestamp) {
-  return new Intl.DateTimeFormat("vi-VN", { dateStyle: "medium", timeStyle: "short" }).format(new Date(timestamp));
+  return new Intl.DateTimeFormat("en-US", { dateStyle: "medium", timeStyle: "short" }).format(new Date(timestamp));
 }
 
 function showToast(title, body) {
