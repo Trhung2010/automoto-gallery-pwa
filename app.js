@@ -719,12 +719,13 @@ function getFilteredVehicles() {
   return list;
 }
 
-function openVehicleModal(vehicleId, preferredTab = "specs") {
+function openVehicleModal(vehicleId, preferredTab = "specs", options = {}) {
   const vehicle = findVehicleById(vehicleId);
   if (!vehicle) return;
+  const { incrementView = true } = options;
   state.currentVehicleId = String(vehicle.id);
   state.detailTab = preferredTab;
-  incrementHot(vehicle);
+  if (incrementView) incrementHot(vehicle);
   refs.vehicleContent.innerHTML = renderVehicleModal(vehicle);
   openOverlay("vehicle");
   drawVehicleChartIfNeeded(vehicle);
@@ -1255,7 +1256,7 @@ function toggleFavorite(vehicleId, rerenderModal = false) {
   else state.favorites.add(key);
   saveJson(STORAGE.favorites, [...state.favorites]);
   renderAll();
-  if (rerenderModal && state.currentVehicleId === key) openVehicleModal(key, state.detailTab);
+  if (rerenderModal && state.currentVehicleId === key) openVehicleModal(key, state.detailTab, { incrementView: false });
 }
 
 function toggleCompareMode() {
@@ -1275,7 +1276,7 @@ function toggleCompare(vehicleId, rerenderModal = false) {
   state.compareMode = true;
   renderCompareDock();
   renderGallery();
-  if (rerenderModal && state.currentVehicleId === key) openVehicleModal(key, state.detailTab);
+  if (rerenderModal && state.currentVehicleId === key) openVehicleModal(key, state.detailTab, { incrementView: false });
 }
 
 function clearCompare() {
