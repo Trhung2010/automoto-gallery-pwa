@@ -354,6 +354,7 @@ const state = {
 
 const refs = {
   body: document.body,
+  heroPanel: document.getElementById("heroPanel"),
   themeToggle: document.getElementById("themeToggle"),
   addVehicleBtn: document.getElementById("addVehicleBtn"),
   openGarageBtn: document.getElementById("openGarageBtn"),
@@ -382,6 +383,8 @@ const refs = {
   heroCount: document.getElementById("heroCount"),
   heroFavCount: document.getElementById("heroFavCount"),
   heroGarageCount: document.getElementById("heroGarageCount"),
+  heroSignalGrid: document.getElementById("heroSignalGrid"),
+  heroSpotlight: document.getElementById("heroSpotlight"),
   grid: document.getElementById("vGrid"),
   pageSummary: document.getElementById("galleryPageSummary"),
   pagination: document.getElementById("galleryPagination"),
@@ -426,6 +429,7 @@ function bindEvents() {
   refs.addVehicleBtn.addEventListener("click", () => openOverlay("garage"));
   refs.openGarageBtn.addEventListener("click", () => openOverlay("garage"));
   refs.installBtn.addEventListener("click", handleInstallClick);
+  refs.heroPanel.addEventListener("click", handleHeroPanelClick);
   refs.searchInput.addEventListener("input", () => {
     state.filters.search = refs.searchInput.value.trim();
     resetGalleryWindow();
@@ -469,9 +473,7 @@ function bindEvents() {
   });
   refs.mainTabs.forEach((button) => {
     button.addEventListener("click", () => {
-      state.activeTab = button.dataset.tab;
-      syncMainTabs();
-      renderAll();
+      setActiveTab(button.dataset.tab);
     });
   });
   refs.lbControls.forEach((button) => {
@@ -665,6 +667,12 @@ function syncMainTabs() {
   refs.tabLeaderboard.classList.toggle("hidden", state.activeTab !== "leaderboard");
 }
 
+function setActiveTab(tab) {
+  if (!["gallery", "leaderboard"].includes(tab)) return;
+  state.activeTab = tab;
+  renderAll();
+}
+
 function syncLbButtons() {
   refs.lbControls.forEach((button) => {
     button.classList.toggle("active", button.dataset.lbMode === state.lbMode);
@@ -686,6 +694,81 @@ function renderHero() {
   refs.heroGarageCount.textContent = state.userVehicles.length.toLocaleString("en-US");
   refs.compareToggle.textContent = state.compareMode ? "Compare mode on" : "Select for compare";
   refs.compareToggle.classList.toggle("active", state.compareMode);
+  const filtered = getFilteredVehicles();
+  const scope = filtered.length ? filtered : state.allVehicles;
+  const latest = [...state.allVehicles].sort((a, b) => sortNumbers(b.year, a.year) || sortNumbers(b.id, a.id))[0] || null;
+  const hottest = [...scope].sort((a, b) => sortNumbers(hotScore(b), hotScore(a)) || sortNumbers(b.year, a.year))[0] || null;
+  const buildReady = state.allVehicles.find((vehicle) => hasBuildSheet(vehicle)) || latest;
+  refs.heroSignalGrid.innerHTML = [
+    latest ? renderHeroSignalCard("Newest drop", latest, `${latest.year} • ${formatPower(latest)}`, "newest", `data-hero-sort="new"`) : "",
+    hottest ? renderHeroSignalCard("Heat leader", hottest, `${Math.round(normalizeHotScore(hottest) * 100)}% heat • ${formatTopSpeed(hottest)}`, "heat", `data-hero-sort="hot"`) : "",
+    buildReady ? renderHeroSignalCard("Build culture", buildReady, `${buildReady.type === "vn" ? "SEA icon" : buildReady.cat} • ${hasBuildSheet(buildReady) ? "Build sheet ready" : "Open gallery"}`, "build", `data-open="${escapeAttr(buildReady.id)}"`) : ""
+  ].join("");
+  refs.heroSpotlight.innerHTML = hottest ? renderHeroSpotlight(hottest) : "";
+}
+
+function renderHeroSignalCard(label, vehicle, meta, tone, actionAttr) {
+  return `
+    <button class="hero-signal-card ${escapeAttr(tone)}" type="button" ${actionAttr}>
+      <span class="hero-signal-label">${escapeHtml(label)}</span>
+      <strong>${escapeHtml(vehicle.brand)} ${escapeHtml(vehicle.name)}</strong>
+      <span class="hero-signal-meta">${escapeHtml(meta)}</span>
+    </button>
+  `;
+}
+
+function renderHeroSpotlight(vehicle) {
+  const spotlightHeat = Math.round(normalizeHotScore(vehicle) * 100);
+  return `
+    <div class="hero-spotlight-shell">
+      <div class="hero-spotlight-head">
+        <span class="hero-spotlight-kicker">Spotlight machine</span>
+        <span class="hero-spotlight-score">Heat ${spotlightHeat}%</span>
+      </div>
+      <div class="hero-spotlight-stage">
+        <div class="hero-spotlight-visual">${renderMedia(vehicle)}</div>
+        <div class="hero-spotlight-copy">
+          <div class="hero-spotlight-brand">${escapeHtml(vehicle.brand)} / ${vehicle.year}</div>
+          <h2>${escapeHtml(vehicle.name)}</h2>
+          <p>${escapeHtml(vehicle.cat)} tuned with ${escapeHtml(vehicle.engineType)} attitude and a headline speed of ${escapeHtml(formatTopSpeed(vehicle))}.</p>
+          <div class="hero-spotlight-metrics">
+            ${metricChip("Power", formatPower(vehicle))}
+            ${metricChip("Price", formatUsd(vehicle.priceUsd))}
+            ${metricChip("0-60", formatAccel(vehicle.zeroSixty))}
+          </div>
+          <div class="hero-spotlight-actions">
+            <button class="primary-btn" type="button" data-open="${escapeAttr(vehicle.id)}">Open spotlight</button>
+            <button class="ghost-btn" type="button" data-hero-tab="leaderboard">Leaderboard</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function handleHeroPanelClick(event) {
+  const openButton = event.target.closest("[data-open]");
+  if (openButton) {
+    openVehicleModal(openButton.dataset.open);
+    return;
+  }
+  const sortButton = event.target.closest("[data-hero-sort]");
+  if (sortButton) {
+    state.activeTab = "gallery";
+    state.filters.sort = sortButton.dataset.heroSort;
+    saveJson(STORAGE.filters, state.filters);
+    syncFilterControls();
+    state.currentPage = 1;
+    persistGalleryState();
+    renderAll();
+    refs.tabGallery.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
+  const tabButton = event.target.closest("[data-hero-tab]");
+  if (tabButton) {
+    setActiveTab(tabButton.dataset.heroTab);
+    if (tabButton.dataset.heroTab === "leaderboard") refs.tabLeaderboard.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 }
 
 function renderGallery() {

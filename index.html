@@ -11,7 +11,7 @@
 <link rel="manifest" href="./site.webmanifest">
 <link rel="icon" type="image/png" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
-<link rel="stylesheet" href="./styles.css?v=shop-v9">
+<link rel="stylesheet" href="./styles.css?v=shop-v10">
 </head>
 <body class="theme-dark">
 <div class="app-shell">
@@ -30,23 +30,33 @@
         <button class="primary-btn" id="installBtn" type="button">Install app</button>
       </div>
     </div>
-    <div class="hero-panel glass">
-      <div>
-        <p class="eyebrow">Smart Garage</p>
-        <h1>Compare dream machines, build your own garage, and browse offline.</h1>
+    <div class="hero-panel glass" id="heroPanel">
+      <div class="hero-copy">
+        <div class="hero-copy-inner">
+          <p class="eyebrow">Curated Performance Garage</p>
+          <h1>Track the machines that feel like posters, paddock passes, and street icons.</h1>
+          <p class="hero-lead">A brighter, sharper catalog for supercars, superbikes, and SEA build culture. Compare specs, save favorites, and jump back in without losing your place.</p>
+        </div>
+        <div class="hero-signal-grid" id="heroSignalGrid"></div>
       </div>
-      <div class="hero-kpis">
-        <div class="kpi">
-          <span class="kpi-label">Vehicles indexed</span>
-          <span class="kpi-value" id="heroCount">0</span>
-        </div>
-        <div class="kpi">
-          <span class="kpi-label">Favorites</span>
-          <span class="kpi-value" id="heroFavCount">0</span>
-        </div>
-        <div class="kpi">
-          <span class="kpi-label">My garage</span>
-          <span class="kpi-value" id="heroGarageCount">0</span>
+      <div class="hero-side">
+        <div class="hero-spotlight" id="heroSpotlight"></div>
+        <div class="hero-kpis">
+          <article class="kpi kpi-total">
+            <span class="kpi-label">Vehicles indexed</span>
+            <span class="kpi-value" id="heroCount">0</span>
+            <span class="kpi-note">cars, bikes, and SEA market icons</span>
+          </article>
+          <article class="kpi kpi-favorites">
+            <span class="kpi-label">Favorites</span>
+            <span class="kpi-value" id="heroFavCount">0</span>
+            <span class="kpi-note">saved picks waiting for compare</span>
+          </article>
+          <article class="kpi kpi-garage">
+            <span class="kpi-label">My garage</span>
+            <span class="kpi-value" id="heroGarageCount">0</span>
+            <span class="kpi-note">personal uploads pinned into the feed</span>
+          </article>
         </div>
       </div>
     </div>
@@ -127,12 +137,36 @@
     </div>
 
     <div class="stats-strip">
-      <span>Showing <strong id="countD">0</strong> vehicles</span>
-      <span>Cars <strong id="carD">0</strong></span>
-      <span>Motorcycles <strong id="bikeD">0</strong></span>
-      <span>SEA Market <strong id="vnD">0</strong></span>
-      <span>My Garage <strong id="mineD">0</strong></span>
-      <span>Favorites <strong id="favD">0</strong></span>
+      <article class="stat-tile stat-primary">
+        <span class="stat-label">Showing now</span>
+        <strong id="countD">0</strong>
+        <small class="stat-note">matches in the current view</small>
+      </article>
+      <article class="stat-tile stat-cars">
+        <span class="stat-label">Cars</span>
+        <strong id="carD">0</strong>
+        <small class="stat-note">coupe, sedan, hyper, SUV</small>
+      </article>
+      <article class="stat-tile stat-bikes">
+        <span class="stat-label">Motorcycles</span>
+        <strong id="bikeD">0</strong>
+        <small class="stat-note">superbike, naked, adventure</small>
+      </article>
+      <article class="stat-tile stat-vn">
+        <span class="stat-label">SEA Market</span>
+        <strong id="vnD">0</strong>
+        <small class="stat-note">street builds and daily icons</small>
+      </article>
+      <article class="stat-tile stat-mine">
+        <span class="stat-label">My Garage</span>
+        <strong id="mineD">0</strong>
+        <small class="stat-note">your own saved machines</small>
+      </article>
+      <article class="stat-tile stat-favorites">
+        <span class="stat-label">Favorites</span>
+        <strong id="favD">0</strong>
+        <small class="stat-note">quick shortlist for comeback runs</small>
+      </article>
     </div>
 
     <div class="grid" id="vGrid"></div>
@@ -219,6 +253,6 @@
   </div>
 </div>
 
-<script type="module" src="./app.js?v=shop-v9"></script>
+<script type="module" src="./app.js?v=shop-v10"></script>
 </body>
 </html>
