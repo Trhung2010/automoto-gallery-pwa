@@ -227,6 +227,14 @@ img {
   gap: 12px;
 }
 
+.hero-notify-btn {
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
 .icon-btn,
 .primary-btn,
 .ghost-btn,
@@ -789,6 +797,8 @@ input[type="range"] {
     var(--panel);
   box-shadow: var(--shadow-soft);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  content-visibility: auto;
+  contain-intrinsic-size: 170px;
 }
 
 .stat-label,
@@ -917,6 +927,8 @@ input[type="range"] {
     0 22px 42px rgba(0, 0, 0, 0.2);
   overflow: hidden;
   transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  content-visibility: auto;
+  contain-intrinsic-size: 420px;
 }
 
 .vehicle-card::before {
@@ -991,6 +1003,24 @@ input[type="range"] {
   object-fit: cover;
   border-radius: inherit;
   transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+img.lazy-media,
+img.gallery-photo {
+  opacity: 0;
+  filter: blur(12px) saturate(0.88);
+  transform: scale(1.02);
+  transition:
+    opacity 0.28s ease,
+    filter 0.32s ease,
+    transform 0.32s ease;
+}
+
+img.lazy-media.lazy-ready,
+img.gallery-photo.lazy-ready {
+  opacity: 1;
+  filter: none;
+  transform: none;
 }
 
 .visual-fallback {
@@ -1223,6 +1253,8 @@ input[type="range"] {
   border: 1px solid rgba(118, 176, 255, 0.16);
   box-shadow: var(--shadow-soft);
   transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  content-visibility: auto;
+  contain-intrinsic-size: 112px;
 }
 
 .lb-row:hover {
@@ -2839,7 +2871,7 @@ body.theme-light .build-shop-footer {
 
   .hero-actions {
     display: grid;
-    grid-template-columns: 46px 46px minmax(0, 1fr);
+    grid-template-columns: 46px 46px minmax(0, 1fr) minmax(0, 1.15fr);
     gap: 10px;
     align-items: center;
   }
@@ -2848,6 +2880,7 @@ body.theme-light .build-shop-footer {
     width: 46px;
   }
 
+  .hero-actions > .hero-notify-btn,
   .hero-actions > .primary-btn {
     width: 100%;
   }

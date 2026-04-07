@@ -2,14 +2,41 @@
   "id": "./",
   "name": "AutoMoto Gallery",
   "short_name": "AutoMoto",
-  "description": "A bold installable vehicle gallery with compare tools, mini AI, local garage saves, and offline support.",
+  "description": "A bold installable vehicle gallery with compare tools, garage saves, notifications, and offline support.",
   "lang": "en",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
   "orientation": "portrait",
-  "background_color": "#07111f",
-  "theme_color": "#08111f",
+  "background_color": "#0c1630",
+  "theme_color": "#235bff",
+  "categories": [
+    "automotive",
+    "lifestyle",
+    "utilities"
+  ],
+  "shortcuts": [
+    {
+      "name": "Open Gallery",
+      "short_name": "Gallery",
+      "url": "./#gallery"
+    },
+    {
+      "name": "Open Leaderboard",
+      "short_name": "Leaderboard",
+      "url": "./#leaderboard"
+    },
+    {
+      "name": "My Garage",
+      "short_name": "Garage",
+      "url": "./#garage"
+    }
+  ],
   "icons": [
     {
       "src": "./icon-192.png",

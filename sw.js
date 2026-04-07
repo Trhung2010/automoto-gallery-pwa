@@ -1,10 +1,10 @@
-const CACHE_NAME = 'automoto-gallery-v17';
+const CACHE_NAME = 'automoto-gallery-v18';
 const APP_SHELL_URL = './index.html';
 const APP_ASSETS = [
   './',
   APP_SHELL_URL,
-  './styles.css?v=shop-v15',
-  './app.js?v=shop-v15',
+  './styles.css?v=shop-v16',
+  './app.js?v=shop-v16',
   './site.webmanifest',
   './icon-192.png',
   './icon-512.png',
@@ -25,6 +25,15 @@ function networkFirst(request, fallbackKey = request) {
   return fetch(request)
     .then(response => updateCache(CACHE_NAME, fallbackKey, response))
     .catch(async () => (await caches.match(request)) || caches.match(fallbackKey));
+}
+
+function staleWhileRevalidate(request) {
+  return caches.match(request).then(cached => {
+    const networkFetch = fetch(request)
+      .then(response => updateCache(CACHE_NAME, request, response))
+      .catch(() => cached);
+    return cached || networkFetch;
+  });
 }
 
 self.addEventListener('install', event => {
@@ -66,12 +75,35 @@ self.addEventListener('fetch', event => {
     return;
   }
 
+  if (request.destination === 'image' || request.destination === 'video') {
+    event.respondWith(staleWhileRevalidate(request));
+    return;
+  }
+
   event.respondWith(
     caches.match(request).then(cached => {
       if (cached) return cached;
       return fetch(request).then(response => {
         return updateCache(CACHE_NAME, request, response);
       });
+    })
+  );
+});
+
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  const targetUrl = new URL(event.notification.data?.url || APP_SHELL_URL, self.location.origin + self.location.pathname).toString();
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clients => {
+      const matchingClient = clients.find(client => client.url.includes(self.location.origin));
+      if (matchingClient) {
+        return matchingClient.focus().then(() => (
+          typeof matchingClient.navigate === 'function'
+            ? matchingClient.navigate(targetUrl)
+            : undefined
+        ));
+      }
+      return self.clients.openWindow(targetUrl);
     })
   );
 });

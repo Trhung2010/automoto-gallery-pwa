@@ -7,7 +7,9 @@ const STORAGE = {
   filters: "automoto.filters",
   galleryState: "automoto.galleryState",
   hotClicks: "automoto.hotClicks",
-  offlineToast: "automoto.offlineToastShown"
+  offlineToast: "automoto.offlineToastShown",
+  notificationsEnabled: "automoto.notificationsEnabled",
+  notificationDigest: "automoto.notificationDigest"
 };
 
 const USD_TO_VND = 26340;
@@ -349,8 +351,12 @@ const state = {
   buildItemIndex: 0,
   currentVehicleId: null,
   installPrompt: null,
+  notificationsEnabled: loadJson(STORAGE.notificationsEnabled, false),
+  swRegistration: null,
   priceBounds: { min: 0, max: DEFAULT_PLACEHOLDER_PRICE_MAX }
 };
+
+let lazyMediaObserver = null;
 
 const refs = {
   body: document.body,
@@ -358,6 +364,7 @@ const refs = {
   themeToggle: document.getElementById("themeToggle"),
   addVehicleBtn: document.getElementById("addVehicleBtn"),
   openGarageBtn: document.getElementById("openGarageBtn"),
+  notifyBtn: document.getElementById("notifyBtn"),
   installBtn: document.getElementById("installBtn"),
   mainTabs: [...document.querySelectorAll(".main-tab")],
   tabGallery: document.getElementById("tab-gallery"),
@@ -419,6 +426,7 @@ function init() {
   syncTypeButtons();
   bindEvents();
   syncInstallButton();
+  syncNotificationButton();
   renderAll();
   registerServiceWorker();
   handleHashState();
@@ -428,6 +436,7 @@ function bindEvents() {
   refs.themeToggle.addEventListener("click", toggleTheme);
   refs.addVehicleBtn.addEventListener("click", () => openOverlay("garage"));
   refs.openGarageBtn.addEventListener("click", () => openOverlay("garage"));
+  refs.notifyBtn.addEventListener("click", handleNotificationClick);
   refs.installBtn.addEventListener("click", handleInstallClick);
   refs.heroPanel.addEventListener("click", handleHeroPanelClick);
   refs.searchInput.addEventListener("input", () => {
@@ -518,12 +527,15 @@ function bindEvents() {
     event.preventDefault();
     state.installPrompt = event;
     syncInstallButton();
-    showToast("Ready to install", "Use the Install app button to pin AutoMoto to your home screen.");
+    showToast("Ready to install", "Use Add to home screen to pin AutoMoto with the new app icon.");
   });
   window.addEventListener("appinstalled", () => {
     state.installPrompt = null;
     syncInstallButton();
     showToast("App installed", "AutoMoto was added to your home screen.");
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") evaluateNotificationDigest();
   });
   window.addEventListener("hashchange", handleHashState);
 }
@@ -705,6 +717,7 @@ function renderHero() {
     buildReady ? renderHeroSignalCard("Build culture", buildReady, `${buildReady.type === "vn" ? "SEA icon" : buildReady.cat} • ${hasBuildSheet(buildReady) ? "Build sheet ready" : "Open gallery"}`, "build", `data-open="${escapeAttr(buildReady.id)}"`) : ""
   ].join("");
   refs.heroSpotlight.innerHTML = hottest ? renderHeroSpotlight(hottest) : "";
+  hydrateLazyMedia(refs.heroSpotlight);
 }
 
 function renderHeroSignalCard(label, vehicle, meta, tone, actionAttr) {
@@ -726,7 +739,7 @@ function renderHeroSpotlight(vehicle) {
         <span class="hero-spotlight-score">Heat ${spotlightHeat}%</span>
       </div>
       <div class="hero-spotlight-stage">
-        <div class="hero-spotlight-visual">${renderMedia(vehicle)}</div>
+        <div class="hero-spotlight-visual">${renderMedia(vehicle, { lazy: false, fetchpriority: "high" })}</div>
         <div class="hero-spotlight-copy">
           <div class="hero-spotlight-brand">${escapeHtml(vehicle.brand)} / ${vehicle.year}</div>
           <h2>${escapeHtml(vehicle.name)}</h2>
@@ -793,6 +806,7 @@ function renderGallery() {
     return;
   }
   refs.grid.innerHTML = visibleItems.map(renderVehicleCard).join("");
+  hydrateLazyMedia(refs.grid);
   renderPagination(allMatches.length, totalPages, startIndex, Math.min(endIndex, allMatches.length));
 }
 
@@ -986,6 +1000,7 @@ function openVehicleModal(vehicleId, preferredTab = "specs", options = {}) {
   }
   if (incrementView) incrementHot(vehicle);
   refs.vehicleContent.innerHTML = renderVehicleModal(vehicle);
+  hydrateLazyMedia(refs.vehicleContent);
   openOverlay("vehicle");
   drawVehicleChartIfNeeded(vehicle);
   syncHashForVehicle(vehicle.id);
@@ -1004,7 +1019,7 @@ function renderVehicleModal(vehicle) {
               ${promo ? `<span class="${promo.className}">${escapeHtml(promo.label)}</span>` : ""}
             </div>
           </div>
-          ${renderMedia(vehicle)}
+          ${renderMedia(vehicle, { lazy: false, fetchpriority: "high" })}
         </div>
         <div class="detail-info">
           <div>
@@ -1111,7 +1126,7 @@ function renderPhotosTab(vehicle) {
       `).join("")}</div>` : ""}
       ${photos.length ? `<div class="photo-grid">${photos.map((url, index) => `
         <figure>
-          <img src="${escapeAttr(url)}" alt="${escapeAttr(`${vehicle.name} ${index + 1}`)}" loading="lazy">
+          ${renderLazyImage(url, `${vehicle.name} ${index + 1}`, { className: "gallery-photo", loading: "lazy", fetchpriority: "low", fallbackToVisual: false })}
           <figcaption>${index === 0 ? "Ảnh chính" : `Góc chụp ${index + 1}`}</figcaption>
         </figure>
       `).join("")}</div>` : ""}
@@ -1320,6 +1335,7 @@ function openCompareModal() {
     return;
   }
   refs.compareContent.innerHTML = renderCompareModal(vehicles);
+  hydrateLazyMedia(refs.compareContent);
   openOverlay("compare");
 }
 
@@ -1357,6 +1373,7 @@ function handleVehicleModalClick(event) {
     state.detailTab = tabButton.dataset.detailTab;
     const vehicle = findVehicleById(state.currentVehicleId);
     refs.vehicleContent.innerHTML = renderVehicleModal(vehicle);
+    hydrateLazyMedia(refs.vehicleContent);
     drawVehicleChartIfNeeded(vehicle);
     return;
   }
@@ -1366,6 +1383,7 @@ function handleVehicleModalClick(event) {
     state.buildItemIndex = 0;
     const vehicle = findVehicleById(state.currentVehicleId);
     refs.vehicleContent.innerHTML = renderVehicleModal(vehicle);
+    hydrateLazyMedia(refs.vehicleContent);
     drawVehicleChartIfNeeded(vehicle);
     return;
   }
@@ -1374,6 +1392,7 @@ function handleVehicleModalClick(event) {
     state.buildItemIndex = Number(buildItemButton.dataset.buildItem || 0);
     const vehicle = findVehicleById(state.currentVehicleId);
     refs.vehicleContent.innerHTML = renderVehicleModal(vehicle);
+    hydrateLazyMedia(refs.vehicleContent);
     drawVehicleChartIfNeeded(vehicle);
     return;
   }
@@ -1398,6 +1417,7 @@ function handleVehicleModalSubmit(event) {
   saveReview(vehicleId, text);
   const vehicle = findVehicleById(vehicleId);
   refs.vehicleContent.innerHTML = renderVehicleModal(vehicle);
+  hydrateLazyMedia(refs.vehicleContent);
   showToast("Review saved", "This review is now stored locally in your browser.");
 }
 
@@ -1465,6 +1485,7 @@ function handleGarageSubmit(event) {
   persistGalleryState();
   renderAll();
   showToast("Vehicle added", `${newVehicle.name} is now live in the gallery and ready for compare.`);
+  evaluateNotificationDigest();
 }
 
 function getComparisonRows(list) {
@@ -1686,10 +1707,12 @@ function setTheme(theme) {
 
 function toggleFavorite(vehicleId, rerenderModal = false) {
   const key = String(vehicleId);
-  if (state.favorites.has(key)) state.favorites.delete(key);
+  const alreadyFavorite = state.favorites.has(key);
+  if (alreadyFavorite) state.favorites.delete(key);
   else state.favorites.add(key);
   saveJson(STORAGE.favorites, [...state.favorites]);
   renderAll();
+  if (!alreadyFavorite) evaluateNotificationDigest();
   if (rerenderModal && state.currentVehicleId === key) openVehicleModal(key, state.detailTab, { incrementView: false });
 }
 
@@ -1722,6 +1745,50 @@ function clearCompare() {
   renderGallery();
 }
 
+async function handleNotificationClick() {
+  if (!("Notification" in window)) {
+    showToast("Notifications unsupported", "This browser does not support app notifications.");
+    return;
+  }
+  if (Notification.permission === "granted") {
+    state.notificationsEnabled = !state.notificationsEnabled;
+    saveJson(STORAGE.notificationsEnabled, state.notificationsEnabled);
+    syncNotificationButton();
+    if (state.notificationsEnabled) {
+      showToast("Alerts on", "AutoMoto will notify you about hot cars and garage engagement.");
+      await showSystemNotification("Thông báo đã bật", {
+        body: "AutoMoto sẽ báo khi có xe mới hot và khi garage của bạn có thêm tương tác.",
+        tag: "alerts-enabled",
+        url: "./"
+      });
+      evaluateNotificationDigest(true);
+    } else {
+      showToast("Alerts paused", "System notifications are paused for this device.");
+    }
+    return;
+  }
+  if (Notification.permission === "denied") {
+    showToast("Notifications blocked", "Allow notifications in browser settings to turn alerts on.");
+    return;
+  }
+  const permission = await Notification.requestPermission();
+  if (permission !== "granted") {
+    syncNotificationButton();
+    showToast("Notifications not enabled", "Permission was not granted.");
+    return;
+  }
+  state.notificationsEnabled = true;
+  saveJson(STORAGE.notificationsEnabled, state.notificationsEnabled);
+  syncNotificationButton();
+  showToast("Alerts on", "AutoMoto can now push local notifications to this device.");
+  await showSystemNotification("Thông báo đã bật", {
+    body: "AutoMoto sẽ báo khi có xe mới hot và khi garage của bạn có thêm tương tác.",
+    tag: "alerts-enabled",
+    url: "./"
+  });
+  evaluateNotificationDigest(true);
+}
+
 function handleInstallClick() {
   if (isStandalone()) return void showToast("Already installed", "This app is already running in installed mode.");
   if (state.installPrompt) {
@@ -1733,17 +1800,33 @@ function handleInstallClick() {
     return;
   }
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  showToast(isIOS ? "Install on iPhone" : "How to install", isIOS ? "Open Share > Add to Home Screen in Safari." : "If your browser does not show a prompt, open the menu and choose Install App / Add to Home Screen.");
+  showToast(isIOS ? "Add to home screen" : "Install app", isIOS ? "Open Share > Add to Home Screen in Safari." : "If your browser does not show a prompt, open the browser menu and choose Install App / Add to Home Screen.");
 }
 
 function syncInstallButton() {
   if (isStandalone()) {
-    refs.installBtn.textContent = "Installed";
+    refs.installBtn.textContent = "On home screen";
     refs.installBtn.disabled = true;
     return;
   }
   refs.installBtn.disabled = false;
-  refs.installBtn.textContent = "Install app";
+  refs.installBtn.textContent = "Add to home screen";
+}
+
+function syncNotificationButton() {
+  if (!refs.notifyBtn) return;
+  if (!("Notification" in window)) {
+    refs.notifyBtn.textContent = "No alerts";
+    refs.notifyBtn.disabled = true;
+    return;
+  }
+  refs.notifyBtn.disabled = false;
+  const granted = Notification.permission === "granted";
+  if (granted && state.notificationsEnabled) refs.notifyBtn.textContent = "Alerts on";
+  else if (granted) refs.notifyBtn.textContent = "Alerts off";
+  else if (Notification.permission === "denied") refs.notifyBtn.textContent = "Alerts blocked";
+  else refs.notifyBtn.textContent = "Enable alerts";
+  refs.notifyBtn.classList.toggle("active", granted && state.notificationsEnabled);
 }
 
 function registerServiceWorker() {
@@ -1751,15 +1834,119 @@ function registerServiceWorker() {
   window.addEventListener("load", async () => {
     try {
       await navigator.serviceWorker.register("./sw.js");
-      await navigator.serviceWorker.ready;
+      state.swRegistration = await navigator.serviceWorker.ready;
       if (!loadJson(STORAGE.offlineToast, false)) {
         showToast("Offline ready", "The app is cached and ready to reopen from your home screen without a connection.");
         saveJson(STORAGE.offlineToast, true);
       }
+      evaluateNotificationDigest();
     } catch (error) {
       console.error("Service worker registration failed", error);
     }
   });
+}
+
+function buildNotificationDigest() {
+  const hottest = [...state.allVehicles].sort((a, b) => sortNumbers(hotScore(b), hotScore(a)) || sortNumbers(b.year, a.year))[0] || null;
+  const newest = [...state.allVehicles].sort((a, b) => sortNumbers(b.year, a.year) || sortNumbers(b.id, a.id))[0] || null;
+  const garageSignals = Object.fromEntries(
+    state.userVehicles.map((vehicle) => {
+      const key = String(vehicle.id);
+      const reviewCount = getReviews(key).length;
+      return [key, {
+        score: Math.round(rawHotScore(vehicle) + reviewCount * 6),
+        reviews: reviewCount
+      }];
+    })
+  );
+  return {
+    ts: Date.now(),
+    hottestId: hottest ? String(hottest.id) : "",
+    hottestHeat: hottest ? Math.round(normalizeHotScore(hottest) * 100) : 0,
+    newestId: newest ? String(newest.id) : "",
+    garageSignals
+  };
+}
+
+async function evaluateNotificationDigest(forceSave = false) {
+  const digest = buildNotificationDigest();
+  const previous = loadJson(STORAGE.notificationDigest, null);
+  if (
+    forceSave ||
+    !previous ||
+    !state.notificationsEnabled ||
+    !("Notification" in window) ||
+    Notification.permission !== "granted"
+  ) {
+    saveJson(STORAGE.notificationDigest, digest);
+    return;
+  }
+
+  const notificationJobs = [];
+  if (
+    digest.hottestId &&
+    (
+      digest.hottestId !== previous.hottestId ||
+      digest.hottestHeat >= Number(previous.hottestHeat || 0) + 8
+    )
+  ) {
+    const hottest = findVehicleById(digest.hottestId);
+    if (hottest) {
+      notificationJobs.push(showSystemNotification("Có xe mới hot 🔥", {
+        body: `${hottest.brand} ${hottest.name} đang dẫn heat ${digest.hottestHeat}%.`,
+        tag: `hot-${digest.hottestId}-${digest.hottestHeat}`,
+        url: buildVehicleShareUrl(hottest.id)
+      }));
+    }
+  }
+
+  const engagedGarageVehicle = state.userVehicles.find((vehicle) => {
+    const key = String(vehicle.id);
+    const nextScore = digest.garageSignals?.[key]?.score || 0;
+    const prevScore = previous.garageSignals?.[key]?.score || 0;
+    return nextScore >= prevScore + 12;
+  });
+  if (engagedGarageVehicle) {
+    const key = String(engagedGarageVehicle.id);
+    notificationJobs.push(showSystemNotification("Có người like xe bạn", {
+      body: `${engagedGarageVehicle.name} vừa có thêm tương tác trong My Garage.`,
+      tag: `garage-like-${key}-${digest.garageSignals[key].score}`,
+      url: buildVehicleShareUrl(engagedGarageVehicle.id)
+    }));
+  }
+
+  if (notificationJobs.length) await Promise.all(notificationJobs);
+  saveJson(STORAGE.notificationDigest, digest);
+}
+
+async function showSystemNotification(title, options = {}) {
+  if (
+    !state.notificationsEnabled ||
+    !("Notification" in window) ||
+    Notification.permission !== "granted"
+  ) return false;
+
+  const payload = {
+    body: "",
+    icon: "./icon-192.png",
+    badge: "./icon-192.png",
+    tag: "automoto",
+    renotify: true,
+    data: { url: "./" },
+    ...options
+  };
+
+  try {
+    if (state.swRegistration?.showNotification) {
+      await state.swRegistration.showNotification(title, payload);
+      return true;
+    }
+    new Notification(title, payload);
+    return true;
+  } catch (error) {
+    console.error("Notification failed", error);
+    return false;
+  }
 }
 
 function openOverlay(kind) {
@@ -1789,6 +1976,18 @@ function getOverlayElement(kind) {
 
 function handleHashState() {
   const hash = window.location.hash || "";
+  if (hash === "#leaderboard") {
+    setActiveTab("leaderboard");
+    return;
+  }
+  if (hash === "#gallery") {
+    setActiveTab("gallery");
+    return;
+  }
+  if (hash === "#garage") {
+    openOverlay("garage");
+    return;
+  }
   if (!hash.startsWith("#vehicle=")) return;
   const vehicleId = decodeURIComponent(hash.slice("#vehicle=".length));
   if (findVehicleById(vehicleId)) openVehicleModal(vehicleId, state.detailTab);
@@ -1824,6 +2023,8 @@ function saveReview(vehicleId, text) {
   list.unshift({ author: "You", text, ts: Date.now() });
   state.reviews[key] = list.slice(0, 20);
   saveJson(STORAGE.reviews, state.reviews);
+  const vehicle = findVehicleById(vehicleId);
+  if (vehicle?.isMine) evaluateNotificationDigest();
 }
 
 function getReviews(vehicleId) {
@@ -1918,10 +2119,66 @@ function detailTabButton(key, label) {
   return `<button class="detail-tab ${state.detailTab === key ? "active" : ""}" type="button" data-detail-tab="${escapeAttr(key)}">${escapeHtml(label)}</button>`;
 }
 
-function renderMedia(vehicle) {
+function renderMedia(vehicle, options = {}) {
+  const {
+    lazy = true,
+    fetchpriority = lazy ? "low" : "high"
+  } = options;
   const hasImage = Boolean(vehicle.imageUrl);
   const fallbackVisible = hasImage ? " hidden" : "";
-  return `${hasImage ? `<img src="${escapeAttr(vehicle.imageUrl)}" alt="${escapeAttr(vehicle.name)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.hidden=true;this.nextElementSibling.hidden=false;">` : ""}<div class="visual-fallback"${fallbackVisible}>${getVisual(vehicle)}</div>`;
+  return `${hasImage ? renderLazyImage(vehicle.imageUrl, vehicle.name, { loading: lazy ? "lazy" : "eager", lazy, fetchpriority, referrerpolicy: "no-referrer" }) : ""}<div class="visual-fallback"${fallbackVisible}>${getVisual(vehicle)}</div>`;
+}
+
+function renderLazyImage(url, alt, options = {}) {
+  const {
+    className = "lazy-media",
+    loading = "lazy",
+    lazy = true,
+    fetchpriority = "low",
+    referrerpolicy = "no-referrer",
+    fallbackToVisual = true
+  } = options;
+  const normalizedClassName = `${className}${lazy ? "" : " lazy-ready"}`.trim();
+  const attrs = [
+    `class="${escapeAttr(normalizedClassName)}"`,
+    lazy ? `data-src="${escapeAttr(url)}"` : `src="${escapeAttr(url)}"`,
+    `alt="${escapeAttr(alt)}"`,
+    `loading="${escapeAttr(loading)}"`,
+    `decoding="async"`,
+    `fetchpriority="${escapeAttr(fetchpriority)}"`,
+    `referrerpolicy="${escapeAttr(referrerpolicy)}"`,
+    fallbackToVisual
+      ? `onerror="this.hidden=true;this.nextElementSibling.hidden=false;"`
+      : `onerror="this.remove();"`
+  ];
+  return `<img ${attrs.join(" ")}>`;
+}
+
+function hydrateLazyMedia(root = document) {
+  const scope = root && typeof root.querySelectorAll === "function" ? root : document;
+  const images = [...scope.querySelectorAll("img[data-src]")];
+  if (!images.length) return;
+  if (!("IntersectionObserver" in window)) {
+    images.forEach(loadLazyImage);
+    return;
+  }
+  if (!lazyMediaObserver) {
+    lazyMediaObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        loadLazyImage(entry.target);
+        lazyMediaObserver.unobserve(entry.target);
+      });
+    }, { rootMargin: "220px 0px" });
+  }
+  images.forEach((img) => lazyMediaObserver.observe(img));
+}
+
+function loadLazyImage(img) {
+  if (!img?.dataset?.src) return;
+  img.src = img.dataset.src;
+  img.removeAttribute("data-src");
+  img.classList.add("lazy-ready");
 }
 
 function getVisual(vehicle) {
