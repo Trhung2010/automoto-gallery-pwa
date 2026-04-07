@@ -98,7 +98,7 @@
         <label class="field">
           <span>Sort by</span>
           <select id="sortSel" class="sel">
-            <option value="">Default</option>
+            <option value="new">Newest</option>
             <option value="hot">Hottest</option>
             <option value="power">Most power (HP)</option>
             <option value="speed">Fastest (km/h)</option>
@@ -136,7 +136,10 @@
     </div>
 
     <div class="grid" id="vGrid"></div>
-    <div id="gallerySentinel" class="sentinel"></div>
+    <div class="gallery-footer glass">
+      <div class="page-summary" id="galleryPageSummary"></div>
+      <div class="pagination" id="galleryPagination"></div>
+    </div>
   </section>
 
   <section id="tab-leaderboard" class="tab-panel hidden">

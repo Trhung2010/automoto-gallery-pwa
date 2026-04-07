@@ -5,6 +5,7 @@ const STORAGE = {
   userVehicles: "automoto.userVehicles",
   reviews: "automoto.reviews",
   filters: "automoto.filters",
+  galleryState: "automoto.galleryState",
   hotClicks: "automoto.hotClicks",
   offlineToast: "automoto.offlineToastShown"
 };
@@ -340,13 +341,12 @@ const state = {
   activeType: "all",
   activeTab: "gallery",
   lbMode: "power",
-  visibleCount: PAGE_SIZE,
+  currentPage: 1,
   detailTab: "specs",
   buildCategoryIndex: 0,
   buildItemIndex: 0,
   currentVehicleId: null,
   installPrompt: null,
-  observer: null,
   priceBounds: { min: 0, max: DEFAULT_PLACEHOLDER_PRICE_MAX },
   aiMessages: []
 };
@@ -382,7 +382,8 @@ const refs = {
   heroFavCount: document.getElementById("heroFavCount"),
   heroGarageCount: document.getElementById("heroGarageCount"),
   grid: document.getElementById("vGrid"),
-  sentinel: document.getElementById("gallerySentinel"),
+  pageSummary: document.getElementById("galleryPageSummary"),
+  pagination: document.getElementById("galleryPagination"),
   lbList: document.getElementById("lbList"),
   lbControls: [...document.querySelectorAll("[data-lb-mode]")],
   aiFab: document.getElementById("aiFab"),
@@ -413,11 +414,11 @@ function init() {
   rebuildVehicleState();
   applySavedTheme();
   hydrateFilters();
+  hydrateGalleryState();
   populateFilterOptions();
   syncFilterControls();
   syncTypeButtons();
   bindEvents();
-  setupInfiniteScroll();
   syncInstallButton();
   seedAiMessages();
   renderAll();
@@ -485,6 +486,11 @@ function bindEvents() {
       renderLeaderboard();
     });
   });
+  refs.pagination.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-page]");
+    if (!button) return;
+    goToGalleryPage(Number(button.dataset.page));
+  });
   refs.clearFiltersBtn.addEventListener("click", resetFilters);
   refs.compareToggle.addEventListener("click", toggleCompareMode);
   refs.compareNowBtn.addEventListener("click", openCompareModal);
@@ -543,7 +549,7 @@ function hydrateFilters() {
     engine: saved.engine || "",
     yearFrom: saved.yearFrom || "",
     yearTo: saved.yearTo || "",
-    sort: saved.sort || "hot",
+    sort: saved.sort || "new",
     priceMin: Number.isFinite(Number(saved.priceMin)) ? Number(saved.priceMin) : state.priceBounds.min,
     priceMax: Number.isFinite(Number(saved.priceMax)) ? Number(saved.priceMax) : state.priceBounds.max
   };
@@ -553,6 +559,13 @@ function hydrateFilters() {
     state.filters.priceMin = state.priceBounds.min;
     state.filters.priceMax = state.priceBounds.max;
   }
+}
+
+function hydrateGalleryState() {
+  const saved = loadJson(STORAGE.galleryState, {}) || {};
+  const allowedTypes = new Set(["all", "car", "bike", "vn", "mine"]);
+  state.activeType = allowedTypes.has(saved.activeType) ? saved.activeType : "all";
+  state.currentPage = Math.max(1, Number(saved.page) || 1);
 }
 
 function populateFilterOptions() {
@@ -585,7 +598,7 @@ function syncFilterControls() {
   refs.engineSel.value = state.filters.engine;
   refs.yearFromSel.value = state.filters.yearFrom;
   refs.yearToSel.value = state.filters.yearTo;
-  refs.sortSel.value = state.filters.sort;
+  refs.sortSel.value = state.filters.sort || "new";
   refs.priceMin.min = String(state.priceBounds.min);
   refs.priceMin.max = String(state.priceBounds.max);
   refs.priceMax.min = String(state.priceBounds.min);
@@ -601,7 +614,8 @@ function resetGalleryWindow() {
   saveJson(STORAGE.filters, state.filters);
   populateFilterOptions();
   syncFilterControls();
-  state.visibleCount = PAGE_SIZE;
+  state.currentPage = 1;
+  persistGalleryState();
   renderAll();
 }
 
@@ -619,7 +633,8 @@ function handlePriceInput(event) {
   state.filters.priceMax = Number(refs.priceMax.value);
   updatePriceRangeLabel();
   saveJson(STORAGE.filters, state.filters);
-  state.visibleCount = PAGE_SIZE;
+  state.currentPage = 1;
+  persistGalleryState();
   renderAll();
 }
 
@@ -632,14 +647,15 @@ function resetFilters() {
     engine: "",
     yearFrom: "",
     yearTo: "",
-    sort: "hot",
+    sort: "new",
     priceMin: state.priceBounds.min,
     priceMax: state.priceBounds.max
   };
   saveJson(STORAGE.filters, state.filters);
   populateFilterOptions();
   syncFilterControls();
-  state.visibleCount = PAGE_SIZE;
+  state.currentPage = 1;
+  persistGalleryState();
   renderAll();
 }
 
@@ -683,7 +699,12 @@ function renderHero() {
 
 function renderGallery() {
   const allMatches = getFilteredVehicles();
-  const visibleItems = allMatches.slice(0, state.visibleCount);
+  const totalPages = Math.max(1, Math.ceil(allMatches.length / PAGE_SIZE));
+  state.currentPage = clamp(state.currentPage, 1, totalPages);
+  persistGalleryState();
+  const startIndex = (state.currentPage - 1) * PAGE_SIZE;
+  const endIndex = startIndex + PAGE_SIZE;
+  const visibleItems = allMatches.slice(startIndex, endIndex);
   refs.countD.textContent = allMatches.length.toLocaleString("en-US");
   refs.carD.textContent = allMatches.filter((vehicle) => vehicle.type === "car").length.toLocaleString("en-US");
   refs.bikeD.textContent = allMatches.filter((vehicle) => vehicle.type === "bike").length.toLocaleString("en-US");
@@ -692,11 +713,40 @@ function renderGallery() {
   refs.favD.textContent = allMatches.filter((vehicle) => state.favorites.has(String(vehicle.id))).length.toLocaleString("en-US");
   if (!allMatches.length) {
     refs.grid.innerHTML = '<div class="empty-state"><strong>No matching vehicles found.</strong><div>Try another keyword, loosen the filters, or add your own machine to My Garage.</div></div>';
-    refs.sentinel.classList.add("hidden");
+    refs.pageSummary.textContent = "No pages";
+    refs.pagination.innerHTML = "";
+    refs.pagination.classList.add("hidden");
     return;
   }
   refs.grid.innerHTML = visibleItems.map(renderVehicleCard).join("");
-  refs.sentinel.classList.toggle("hidden", visibleItems.length >= allMatches.length);
+  renderPagination(allMatches.length, totalPages, startIndex, Math.min(endIndex, allMatches.length));
+}
+
+function renderPagination(totalItems, totalPages, startIndex, endIndex) {
+  refs.pageSummary.innerHTML = `Page <strong>${state.currentPage}</strong> / ${totalPages} <span>•</span> Showing ${startIndex + 1}-${endIndex} of ${totalItems}`;
+  refs.pagination.classList.toggle("hidden", totalPages <= 1);
+  if (totalPages <= 1) {
+    refs.pagination.innerHTML = "";
+    return;
+  }
+  refs.pagination.innerHTML = `
+    <button class="page-btn" type="button" data-page="${state.currentPage - 1}" ${state.currentPage === 1 ? "disabled" : ""}>Prev</button>
+    ${Array.from({ length: totalPages }, (_, index) => {
+      const page = index + 1;
+      return `<button class="page-btn ${page === state.currentPage ? "active" : ""}" type="button" data-page="${page}" aria-current="${page === state.currentPage ? "page" : "false"}">${page}</button>`;
+    }).join("")}
+    <button class="page-btn" type="button" data-page="${state.currentPage + 1}" ${state.currentPage === totalPages ? "disabled" : ""}>Next</button>
+  `;
+}
+
+function goToGalleryPage(page) {
+  const totalPages = Math.max(1, Math.ceil(getFilteredVehicles().length / PAGE_SIZE));
+  const nextPage = clamp(Number(page) || 1, 1, totalPages);
+  if (nextPage === state.currentPage) return;
+  state.currentPage = nextPage;
+  persistGalleryState();
+  renderGallery();
+  refs.tabGallery.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function renderVehicleCard(vehicle) {
@@ -810,16 +860,11 @@ function renderCompareDock() {
   refs.compareNowBtn.disabled = vehicles.length < 2;
 }
 
-function setupInfiniteScroll() {
-  if (!("IntersectionObserver" in window)) return;
-  state.observer = new IntersectionObserver((entries) => {
-    if (!entries.some((entry) => entry.isIntersecting)) return;
-    const list = getFilteredVehicles();
-    if (state.visibleCount >= list.length) return;
-    state.visibleCount += PAGE_SIZE;
-    renderGallery();
-  }, { rootMargin: "240px 0px" });
-  state.observer.observe(refs.sentinel);
+function persistGalleryState() {
+  saveJson(STORAGE.galleryState, {
+    activeType: state.activeType,
+    page: state.currentPage
+  });
 }
 
 function getFilteredVehicles() {
@@ -838,7 +883,8 @@ function getFilteredVehicles() {
     }
     return true;
   });
-  if (state.filters.sort === "power") list.sort((a, b) => sortNumbers(b.powerHp, a.powerHp));
+  if (state.filters.sort === "new") list.sort((a, b) => sortNumbers(b.year, a.year) || sortNumbers(b.id, a.id));
+  else if (state.filters.sort === "power") list.sort((a, b) => sortNumbers(b.powerHp, a.powerHp));
   else if (state.filters.sort === "speed") list.sort((a, b) => sortNumbers(b.topSpeedKph, a.topSpeedKph));
   else if (state.filters.sort === "price_asc") list.sort((a, b) => sortNumbers(a.priceUsd, b.priceUsd));
   else if (state.filters.sort === "price_desc") list.sort((a, b) => sortNumbers(b.priceUsd, a.priceUsd));
@@ -1441,7 +1487,8 @@ function handleGarageSubmit(event) {
   closeOverlay("garageModalOverlay");
   state.activeType = "mine";
   syncTypeButtons();
-  state.visibleCount = PAGE_SIZE;
+  state.currentPage = 1;
+  persistGalleryState();
   renderAll();
   showToast("Vehicle added", `${newVehicle.name} is now live in the gallery and ready for compare.`);
 }

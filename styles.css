@@ -525,6 +525,57 @@ input[type="range"] {
   gap: 18px;
 }
 
+.gallery-footer {
+  display: grid;
+  gap: 16px;
+  margin-top: 22px;
+  padding: 18px 20px;
+  border-radius: 24px;
+}
+
+.page-summary {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.page-summary strong {
+  color: var(--text);
+}
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.page-btn {
+  min-width: 46px;
+  min-height: 46px;
+  padding: 0 14px;
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  font-weight: 800;
+  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+}
+
+.page-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.page-btn.active {
+  background: linear-gradient(135deg, rgba(59, 167, 255, 0.18), rgba(255, 106, 26, 0.16));
+  border-color: rgba(106, 153, 255, 0.36);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.14);
+}
+
+.page-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .vehicle-card {
   position: relative;
   display: grid;
@@ -1949,6 +2000,10 @@ input[type="range"] {
     grid-template-columns: 1fr;
   }
 
+  .gallery-footer {
+    padding: 16px;
+  }
+
   .control-grid,
   .share-grid {
     grid-template-columns: 1fr;
@@ -2066,6 +2121,14 @@ input[type="range"] {
 
   .hero-actions > .primary-btn {
     width: 100%;
+  }
+
+  .pagination {
+    gap: 8px;
+  }
+
+  .page-btn {
+    flex: 1 1 calc(25% - 8px);
   }
 
   .type-filters {
