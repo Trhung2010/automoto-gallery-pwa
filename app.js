@@ -325,6 +325,8 @@ const state = {
   lbMode: "power",
   visibleCount: PAGE_SIZE,
   detailTab: "specs",
+  buildCategoryIndex: 0,
+  buildItemIndex: 0,
   currentVehicleId: null,
   installPrompt: null,
   observer: null,
@@ -832,8 +834,19 @@ function openVehicleModal(vehicleId, preferredTab = "specs", options = {}) {
   const vehicle = findVehicleById(vehicleId);
   if (!vehicle) return;
   const { incrementView = true } = options;
+  const previousVehicleId = state.currentVehicleId;
   state.currentVehicleId = String(vehicle.id);
   state.detailTab = preferredTab;
+  if (hasBuildSheet(vehicle)) {
+    if (previousVehicleId !== state.currentVehicleId) {
+      state.buildCategoryIndex = 0;
+      state.buildItemIndex = 0;
+    }
+    syncBuildSelection(vehicle);
+  } else {
+    state.buildCategoryIndex = 0;
+    state.buildItemIndex = 0;
+  }
   if (incrementView) incrementHot(vehicle);
   refs.vehicleContent.innerHTML = renderVehicleModal(vehicle);
   openOverlay("vehicle");
@@ -985,59 +998,150 @@ function hasBuildSheet(vehicle) {
   return Array.isArray(vehicle.buildCategories) && vehicle.buildCategories.length > 0;
 }
 
-function renderBuildTab(vehicle) {
+function syncBuildSelection(vehicle) {
   const categories = vehicle.buildCategories || [];
   if (!categories.length) {
+    state.buildCategoryIndex = 0;
+    state.buildItemIndex = 0;
+    return;
+  }
+  state.buildCategoryIndex = clamp(Number(state.buildCategoryIndex) || 0, 0, categories.length - 1);
+  const items = categories[state.buildCategoryIndex]?.items || [];
+  state.buildItemIndex = clamp(Number(state.buildItemIndex) || 0, 0, Math.max(items.length - 1, 0));
+}
+
+function activeBuildSelection(vehicle) {
+  syncBuildSelection(vehicle);
+  const categories = vehicle.buildCategories || [];
+  const category = categories[state.buildCategoryIndex] || { title: "", items: [] };
+  const item = category.items[state.buildItemIndex] || null;
+  return { categories, category, item };
+}
+
+function buildCategoryLabel(title) {
+  return String(title || "").replace(/^[IVXLCDM]+\.\s*/i, "").trim();
+}
+
+function buildItemStatus(item) {
+  const source = normalizeText(item.source || "");
+  const price = normalizeText(item.price || "");
+  if (source.includes("khong tim thay")) return "Research";
+  if (price.includes("chua ro") || price.includes("lien he")) return "Lookup";
+  return "Ready";
+}
+
+function renderBuildTab(vehicle) {
+  const { categories, category, item } = activeBuildSelection(vehicle);
+  if (!categories.length || !item) {
     return '<div class="empty-state"><strong>Chưa có danh sách độ xe.</strong><div>Entry này hiện chưa có build sheet riêng.</div></div>';
   }
   const totalItems = categories.reduce((sum, category) => sum + category.items.length, 0);
+  const selectedStatus = buildItemStatus(item);
+  const categoryTitle = buildCategoryLabel(category.title);
   return `
-    <div class="build-sheet">
-      <div class="build-intro">
-        <div>
-          <strong>Build sheet cho ${escapeHtml(vehicle.name)}</strong>
-          <div class="build-category-note">Danh sách đồ chơi, nâng cấp và các hạng mục đang tìm kiếm cho Exciter 155. Giá, fitment và ghi chú được giữ theo dữ liệu đã nhập.</div>
+    <div class="build-shop">
+      <div class="build-shop-header">
+        <div class="build-shop-badge">Upgrade Shop</div>
+        <div class="build-shop-vehicle">
+          <span class="build-shop-brand">${escapeHtml(vehicle.brand)}</span>
+          <strong>${escapeHtml(vehicle.name)}</strong>
+          <span>${vehicle.year} / ${escapeHtml(vehicle.cat)}</span>
         </div>
-        <div class="build-summary">
-          <span>${categories.length} nhóm</span>
-          <span>${totalItems} món</span>
-        </div>
-      </div>
-      <div class="build-category-list">${categories.map((category) => `
-        <section class="build-category">
-          <div class="build-category-head">
-            <div>
-              <p class="eyebrow">${escapeHtml(category.title)}</p>
-              ${category.note ? `<div class="build-category-note">${escapeHtml(category.note)}</div>` : ""}
-            </div>
-            <span class="type-pill">${category.items.length} món</span>
+        <div class="build-shop-stats">
+          <div class="build-shop-stat">
+            <span>Stock</span>
+            <strong>${escapeHtml(vehicle.priceStr || formatUsd(vehicle.priceUsd))}</strong>
           </div>
-          <div class="build-items">${category.items.map(renderBuildItem).join("")}</div>
-        </section>
-      `).join("")}</div>
-    </div>
-  `;
-}
-
-function renderBuildItem(item) {
-  const labelParts = [];
-  if (item.brand && item.brand !== "–") labelParts.push(item.brand);
-  if (item.sku && item.sku !== "–") labelParts.push(`SKU ${item.sku}`);
-  const meta = [];
-  if (item.fitment && item.fitment !== "–") meta.push(`Lắp cho: ${item.fitment}`);
-  if (item.source) meta.push(`Nguồn: ${item.source}`);
-  return `
-    <article class="build-item">
-      <div class="build-item-head">
-        <div>
-          <strong>${escapeHtml(item.name)}</strong>
-          ${labelParts.length ? `<div class="build-item-sub">${escapeHtml(labelParts.join(" • "))}</div>` : ""}
+          <div class="build-shop-stat">
+            <span>Power</span>
+            <strong>${escapeHtml(formatPower(vehicle))}</strong>
+          </div>
+          <div class="build-shop-stat">
+            <span>Groups</span>
+            <strong>${categories.length}</strong>
+          </div>
+          <div class="build-shop-stat">
+            <span>Parts</span>
+            <strong>${totalItems}</strong>
+          </div>
         </div>
-        <div class="build-price">${escapeHtml(item.price || "Chưa rõ")}</div>
       </div>
-      ${item.desc ? `<div class="build-item-desc">${escapeHtml(item.desc)}</div>` : ""}
-      ${meta.length ? `<div class="build-meta">${meta.map((entry) => `<span>${escapeHtml(entry)}</span>`).join("")}</div>` : ""}
-    </article>
+      <div class="build-shop-nav">${categories.map((entry, index) => `
+        <button class="build-nav-tab ${index === state.buildCategoryIndex ? "active" : ""}" type="button" data-build-category="${index}">
+          ${escapeHtml(buildCategoryLabel(entry.title))}
+        </button>
+      `).join("")}</div>
+      <div class="build-workbench">
+        <aside class="build-panel build-part-list">
+          <div class="build-panel-head">
+            <span class="build-panel-kicker">Category</span>
+            <strong>${escapeHtml(categoryTitle)}</strong>
+            ${category.note ? `<div class="build-panel-note">${escapeHtml(category.note)}</div>` : ""}
+          </div>
+          <div class="build-part-rows">${category.items.map((entry, index) => `
+            <button class="build-part-row ${index === state.buildItemIndex ? "active" : ""}" type="button" data-build-item="${index}">
+              <div>
+                <strong>${escapeHtml(entry.name)}</strong>
+                <div class="build-part-sub">${escapeHtml(entry.brand || "Aftermarket")} ${entry.sku && entry.sku !== "–" ? `• ${escapeHtml(entry.sku)}` : ""}</div>
+              </div>
+              <div class="build-part-meta">
+                <span class="build-part-status">${escapeHtml(buildItemStatus(entry))}</span>
+                <span class="build-part-price">${escapeHtml(entry.price || "Chưa rõ")}</span>
+              </div>
+            </button>
+          `).join("")}</div>
+        </aside>
+        <section class="build-stage-panel">
+          <div class="build-stage">
+            <div class="build-stage-copy">
+              <span class="build-panel-kicker">Selected Upgrade</span>
+              <h3>${escapeHtml(item.name)}</h3>
+              <div class="build-stage-note">${escapeHtml(item.fitment || item.desc || category.note || "Exciter 155 performance and styling upgrade.")}</div>
+            </div>
+            <div class="build-stage-visual">
+              ${renderMedia(vehicle)}
+            </div>
+          </div>
+          <div class="build-stage-strip">${category.items.map((entry, index) => `
+            <button class="build-stage-chip ${index === state.buildItemIndex ? "active" : ""}" type="button" data-build-item="${index}">
+              <span>${String(index + 1).padStart(2, "0")}</span>
+              <strong>${escapeHtml((entry.brand || "Part").split(" ")[0])}</strong>
+            </button>
+          `).join("")}</div>
+        </section>
+        <aside class="build-panel build-detail-panel">
+          <div class="build-panel-head">
+            <span class="build-panel-kicker">Detail</span>
+            <strong>${escapeHtml(item.name)}</strong>
+          </div>
+          <div class="build-detail-price">${escapeHtml(item.price || "Chưa rõ")}</div>
+          <div class="build-detail-status">${escapeHtml(selectedStatus)}</div>
+          <p class="build-detail-desc">${escapeHtml(item.desc || "Chưa có mô tả chi tiết.")}</p>
+          <div class="build-detail-grid">
+            <div class="build-detail-row">
+              <span>Brand</span>
+              <strong>${escapeHtml(item.brand || "–")}</strong>
+            </div>
+            <div class="build-detail-row">
+              <span>SKU</span>
+              <strong>${escapeHtml(item.sku || "–")}</strong>
+            </div>
+            <div class="build-detail-row">
+              <span>Lắp cho</span>
+              <strong>${escapeHtml(item.fitment || "–")}</strong>
+            </div>
+            <div class="build-detail-row">
+              <span>Nguồn</span>
+              <strong>${escapeHtml(item.source || "Đã nhập tay")}</strong>
+            </div>
+          </div>
+        </aside>
+      </div>
+      <div class="build-shop-footer">
+        <span>${escapeHtml(vehicle.brand)} ${escapeHtml(vehicle.name)} / ${escapeHtml(categoryTitle)}</span>
+        <span>${state.buildItemIndex + 1} / ${category.items.length}</span>
+      </div>
+    </div>
   `;
 }
 
@@ -1183,6 +1287,23 @@ function handleVehicleModalClick(event) {
   const tabButton = event.target.closest("[data-detail-tab]");
   if (tabButton && state.currentVehicleId) {
     state.detailTab = tabButton.dataset.detailTab;
+    const vehicle = findVehicleById(state.currentVehicleId);
+    refs.vehicleContent.innerHTML = renderVehicleModal(vehicle);
+    drawVehicleChartIfNeeded(vehicle);
+    return;
+  }
+  const buildCategoryButton = event.target.closest("[data-build-category]");
+  if (buildCategoryButton && state.currentVehicleId) {
+    state.buildCategoryIndex = Number(buildCategoryButton.dataset.buildCategory || 0);
+    state.buildItemIndex = 0;
+    const vehicle = findVehicleById(state.currentVehicleId);
+    refs.vehicleContent.innerHTML = renderVehicleModal(vehicle);
+    drawVehicleChartIfNeeded(vehicle);
+    return;
+  }
+  const buildItemButton = event.target.closest("[data-build-item]");
+  if (buildItemButton && state.currentVehicleId) {
+    state.buildItemIndex = Number(buildItemButton.dataset.buildItem || 0);
     const vehicle = findVehicleById(state.currentVehicleId);
     refs.vehicleContent.innerHTML = renderVehicleModal(vehicle);
     drawVehicleChartIfNeeded(vehicle);
