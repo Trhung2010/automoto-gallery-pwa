@@ -11,7 +11,7 @@
 <link rel="manifest" href="./site.webmanifest">
 <link rel="icon" type="image/png" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
-<link rel="stylesheet" href="./styles.css?v=shop-v4">
+<link rel="stylesheet" href="./styles.css?v=shop-v5">
 </head>
 <body class="theme-dark">
 <div class="app-shell">
@@ -231,15 +231,21 @@
       <h2>Hỏi ngân sách build, nhận diện xe từ ảnh, và auto generate list đồ</h2>
     </div>
     <div class="ai-tools">
-      <div class="ai-tool-card">
+      <button class="ai-tool-card ai-prompt-card" type="button" data-ai-prompt="Bạn có 20 triệu thì build gì cho Exciter 155?">
         <strong>Budget Build</strong>
         <div>Ví dụ: “Bạn có 20 triệu thì build gì cho Exciter 155?”</div>
-      </div>
+        <span class="ai-tool-cta">Bấm để chạy ví dụ này</span>
+      </button>
       <label class="ai-tool-card ai-upload-card" for="aiImageInput">
         <strong>Nhận diện từ ảnh</strong>
         <div>Upload ảnh xe, local AI sẽ khớp model theo filename/catalog rồi gợi ý build sheet.</div>
         <input id="aiImageInput" type="file" accept="image/*">
       </label>
+    </div>
+    <div class="ai-quick-actions">
+      <button class="chip-btn" type="button" data-ai-prompt="Bạn có 20 triệu thì build gì cho Exciter 155?">20 triệu cho Ex155</button>
+      <button class="chip-btn" type="button" data-ai-prompt="Compare Exciter vs Winner X">Compare Ex155 vs Winner X</button>
+      <button class="chip-btn" type="button" data-ai-prompt="Build 15 triệu thì nên đi món nào?">Build 15 triệu</button>
     </div>
     <div class="ai-image-preview hidden" id="aiImagePreviewCard">
       <img id="aiImagePreview" alt="AI upload preview">
@@ -249,13 +255,14 @@
       </div>
     </div>
     <div class="ai-chat" id="aiChat"></div>
+    <div class="ai-compose-note">Bấm ví dụ ở trên hoặc nhập câu hỏi rồi nhấn <strong>Enter</strong> hay <strong>Gửi AI</strong>.</div>
     <form id="aiForm" class="ai-form">
       <input id="aiInput" type="text" placeholder="Ví dụ: 20 triệu build gì, compare Exciter vs Winner X, hoặc hỏi tiếp sau khi upload ảnh">
-      <button class="primary-btn" type="submit">Send</button>
+      <button class="primary-btn" type="submit">Gửi AI</button>
     </form>
   </div>
 </div>
 
-<script type="module" src="./app.js?v=shop-v4"></script>
+<script type="module" src="./app.js?v=shop-v5"></script>
 </body>
 </html>

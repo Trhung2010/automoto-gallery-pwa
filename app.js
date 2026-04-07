@@ -521,7 +521,7 @@ function bindEvents() {
   refs.aiFab.addEventListener("click", () => openOverlay("ai"));
   refs.aiForm.addEventListener("submit", handleAiSubmit);
   refs.aiImageInput.addEventListener("change", handleAiImageInput);
-  refs.aiChat.addEventListener("click", handleAiChatClick);
+  refs.aiOverlay.addEventListener("click", handleAiOverlayClick);
   refs.closeButtons.forEach((button) => {
     button.addEventListener("click", () => closeOverlay(button.dataset.close));
   });
@@ -1286,7 +1286,7 @@ function renderAiChat() {
 function seedAiMessages() {
   state.aiMessages = [{
     role: "assistant",
-    html: '<div class="ai-help">Mini AI chạy hoàn toàn local trong app này. Nó có thể gợi ý build theo ngân sách, nhận diện xe từ ảnh bằng catalog matching, và auto generate list đồ từ build sheet sẵn có.</div><div class="ai-suggestion"><div class="ai-result"><strong>Thử hỏi</strong><div>Bạn có 20 triệu thì build gì cho Exciter 155?</div></div><div class="ai-result"><strong>Hoặc</strong><div>Compare Exciter vs Winner X</div></div><div class="ai-result"><strong>Hoặc</strong><div>Upload ảnh xe rồi hỏi tiếp: build 15 triệu nên đi món nào?</div></div></div>'
+    html: '<div class="ai-help">Mini AI chạy hoàn toàn local trong app này. Nó có thể gợi ý build theo ngân sách, nhận diện xe từ ảnh bằng catalog matching, và auto generate list đồ từ build sheet sẵn có.</div><div class="ai-suggestion"><div class="ai-result"><strong>Build theo ngân sách</strong><div>Bạn có 20 triệu thì build gì cho Exciter 155?</div><div class="ai-inline-actions"><button class="chip-btn" type="button" data-ai-prompt="Bạn có 20 triệu thì build gì cho Exciter 155?">Chạy ví dụ này</button></div></div><div class="ai-result"><strong>So sánh nhanh</strong><div>Compare Exciter vs Winner X</div><div class="ai-inline-actions"><button class="chip-btn" type="button" data-ai-prompt="Compare Exciter vs Winner X">So sánh ngay</button></div></div><div class="ai-result"><strong>Build từ ảnh</strong><div>Upload ảnh xe rồi hỏi tiếp: build 15 triệu nên đi món nào?</div><div class="ai-inline-actions"><button class="chip-btn" type="button" data-ai-prompt="Build 15 triệu thì nên đi món nào?">Dùng câu follow-up này</button></div></div></div>'
   }];
 }
 
@@ -1294,22 +1294,30 @@ function handleAiSubmit(event) {
   event.preventDefault();
   const text = refs.aiInput.value.trim();
   if (!text) return;
-  state.aiMessages.push({ role: "user", html: escapeHtml(text) });
-  state.aiMessages.push({ role: "assistant", html: answerAi(text) });
+  submitAiPrompt(text);
   refs.aiInput.value = "";
-  renderAiChat();
 }
 
 function handleAiImageInput(event) {
   const file = event.target.files?.[0];
   if (!file) return;
-  const result = analyzeAiImage(file);
-  state.aiMessages.push({ role: "assistant", html: result.html });
+  try {
+    const result = analyzeAiImage(file);
+    state.aiMessages.push({ role: "assistant", html: result.html });
+  } catch (error) {
+    console.error("AI image analysis failed", error);
+    state.aiMessages.push({ role: "assistant", html: '<div class="ai-result"><strong>AI chưa xử lý được ảnh này.</strong><div>Local image flow vừa gặp lỗi runtime. Đổi ảnh khác hoặc hỏi trực tiếp theo tên xe để tiếp tục.</div></div>' });
+  }
   renderAiChat();
   refs.aiImageInput.value = "";
 }
 
-function handleAiChatClick(event) {
+function handleAiOverlayClick(event) {
+  const promptButton = event.target.closest("[data-ai-prompt]");
+  if (promptButton) {
+    submitAiPrompt(promptButton.dataset.aiPrompt || "");
+    return;
+  }
   const openButton = event.target.closest("[data-ai-open]");
   if (openButton) {
     openVehicleModal(openButton.dataset.aiOpen);
@@ -1329,6 +1337,26 @@ function handleAiChatClick(event) {
     renderCompareDock();
     openCompareModal();
   }
+}
+
+function submitAiPrompt(rawPrompt) {
+  const prompt = String(rawPrompt || "").trim();
+  if (!prompt) return;
+  state.aiMessages.push({ role: "user", html: escapeHtml(prompt) });
+  try {
+    const reply = answerAi(prompt);
+    state.aiMessages.push({
+      role: "assistant",
+      html: reply || '<div class="ai-result"><strong>Mini AI chưa có câu trả lời rõ.</strong><div>Thử viết rõ hơn như: 20 triệu build gì cho Exciter 155?</div></div>'
+    });
+  } catch (error) {
+    console.error("AI prompt failed", error);
+    state.aiMessages.push({
+      role: "assistant",
+      html: '<div class="ai-result"><strong>AI vừa gặp lỗi khi xử lý câu hỏi.</strong><div>Tôi đã chặn crash để app không đứng. Thử lại bằng câu ngắn hơn hoặc reload trang.</div></div>'
+    });
+  }
+  renderAiChat();
 }
 
 function answerAi(rawQuery) {
@@ -1372,7 +1400,7 @@ function answerAi(rawQuery) {
   if (/anh|image|photo/.test(query)) {
     return '<div class="ai-result"><strong>Chưa có ảnh làm context.</strong><div>Hãy upload một ảnh ở ngay phía trên. Local AI sẽ match tên file với catalog xe trong app rồi tự sinh gợi ý build.</div></div>';
   }
-  return '<div>Mini AI hiện hợp nhất 3 kiểu câu hỏi:</div><div class="ai-suggestion"><div class="ai-result"><strong>Build theo ngân sách</strong><div>Bạn có 20 triệu thì build gì cho Exciter 155?</div></div><div class="ai-result"><strong>Nhận diện từ ảnh</strong><div>Upload ảnh xe, rồi hỏi tiếp build 15 triệu nên đi món nào.</div></div><div class="ai-result"><strong>So sánh / khám phá</strong><div>Compare Exciter vs Winner X / Fastest vehicle / Cheapest vehicle</div></div></div>';
+  return '<div>Mini AI hiện hợp nhất 3 kiểu câu hỏi:</div><div class="ai-suggestion"><div class="ai-result"><strong>Build theo ngân sách</strong><div>Bạn có 20 triệu thì build gì cho Exciter 155?</div><div class="ai-inline-actions"><button class="chip-btn" type="button" data-ai-prompt="Bạn có 20 triệu thì build gì cho Exciter 155?">Chạy ví dụ này</button></div></div><div class="ai-result"><strong>Nhận diện từ ảnh</strong><div>Upload ảnh xe, rồi hỏi tiếp build 15 triệu nên đi món nào.</div><div class="ai-inline-actions"><button class="chip-btn" type="button" data-ai-prompt="Build 15 triệu thì nên đi món nào?">Gợi ý build follow-up</button></div></div><div class="ai-result"><strong>So sánh / khám phá</strong><div>Compare Exciter vs Winner X / Fastest vehicle / Cheapest vehicle</div><div class="ai-inline-actions"><button class="chip-btn" type="button" data-ai-prompt="Compare Exciter vs Winner X">So sánh ngay</button></div></div></div>';
 }
 
 function analyzeAiImage(file) {
@@ -1383,7 +1411,7 @@ function analyzeAiImage(file) {
     refs.aiImageStatus.textContent = `Chưa match được model`;
     refs.aiImageHint.textContent = "Local AI đang nhận diện theo tên file và catalog nội bộ. Đổi tên file rõ hơn như exciter-155.webp để tăng độ chính xác.";
     return {
-      html: `<div class="ai-result"><strong>Chưa nhận diện chắc chắn từ ảnh này.</strong><div>File <code>${escapeHtml(file.name)}</code> chưa khớp rõ với catalog xe trong app. Bạn có thể đổi tên file hoặc hỏi thẳng: build 20 triệu cho Exciter 155.</div></div>`
+      html: `<div class="ai-result"><strong>Chưa nhận diện chắc chắn từ ảnh này.</strong><div>File <code>${escapeHtml(file.name)}</code> chưa khớp rõ với catalog xe trong app. Bạn có thể đổi tên file hoặc hỏi thẳng: build 20 triệu cho Exciter 155.</div><div class="ai-inline-actions"><button class="chip-btn" type="button" data-ai-prompt="Bạn có 20 triệu thì build gì cho Exciter 155?">Dùng ví dụ ngân sách</button></div></div>`
     };
   }
   state.aiContextVehicleId = String(detection.vehicle.id);
@@ -1469,7 +1497,10 @@ function compactText(value) {
 }
 
 function isBuildBudgetQuery(query) {
-  return /(build|do gi|do xe|mod gi|goi y do|list do|len do|setup do)/.test(query) && parseMoneyFromText(query)?.vnd != null;
+  if (parseMoneyFromText(query)?.vnd == null) return false;
+  if (/(build|do gi|do xe|mod gi|goi y do|list do|len do|setup do|ngan sach|budget|goi y|de xuat|mon nao|thi sao)/.test(query)) return true;
+  if (state.aiContextVehicleId || state.currentVehicleId) return true;
+  return state.allVehicles.some((vehicle) => hasBuildSheet(vehicle) && aiVehicleMatch(query, vehicle).score >= 6);
 }
 
 function answerBudgetBuildQuery(rawQuery) {
@@ -1999,6 +2030,9 @@ function openOverlay(kind) {
   if (!overlay) return;
   overlay.classList.add("show");
   refs.body.classList.add("modal-open");
+  if (overlay === refs.aiOverlay) {
+    requestAnimationFrame(() => refs.aiInput.focus());
+  }
 }
 
 function closeOverlay(idOrKind) {
