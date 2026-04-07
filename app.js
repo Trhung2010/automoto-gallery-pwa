@@ -24,6 +24,8 @@ const usdFormatter = new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 0
 });
 
+const vndFormatter = new Intl.NumberFormat("vi-VN");
+
 const SEED_VEHICLES = [];
 
 const PHOTO_POOLS = {
@@ -348,7 +350,9 @@ const state = {
   currentVehicleId: null,
   installPrompt: null,
   priceBounds: { min: 0, max: DEFAULT_PLACEHOLDER_PRICE_MAX },
-  aiMessages: []
+  aiMessages: [],
+  aiContextVehicleId: null,
+  aiPreviewUrl: ""
 };
 
 const refs = {
@@ -391,6 +395,11 @@ const refs = {
   aiChat: document.getElementById("aiChat"),
   aiForm: document.getElementById("aiForm"),
   aiInput: document.getElementById("aiInput"),
+  aiImageInput: document.getElementById("aiImageInput"),
+  aiImagePreviewCard: document.getElementById("aiImagePreviewCard"),
+  aiImagePreview: document.getElementById("aiImagePreview"),
+  aiImageStatus: document.getElementById("aiImageStatus"),
+  aiImageHint: document.getElementById("aiImageHint"),
   toastStack: document.getElementById("toastStack"),
   compareDock: document.getElementById("compareDock"),
   compareSlots: document.getElementById("compareSlots"),
@@ -511,6 +520,7 @@ function bindEvents() {
   refs.garageForm.addEventListener("submit", handleGarageSubmit);
   refs.aiFab.addEventListener("click", () => openOverlay("ai"));
   refs.aiForm.addEventListener("submit", handleAiSubmit);
+  refs.aiImageInput.addEventListener("change", handleAiImageInput);
   refs.aiChat.addEventListener("click", handleAiChatClick);
   refs.closeButtons.forEach((button) => {
     button.addEventListener("click", () => closeOverlay(button.dataset.close));
@@ -1276,7 +1286,7 @@ function renderAiChat() {
 function seedAiMessages() {
   state.aiMessages = [{
     role: "assistant",
-    html: '<div class="ai-help">Mini AI answers from the local garage data only, with no external API.</div><div class="ai-suggestion"><div class="ai-result"><strong>Try this</strong><div>What is the most powerful vehicle under $50,000?</div></div><div class="ai-result"><strong>Or this</strong><div>Compare Exciter vs Winner X</div></div></div>'
+    html: '<div class="ai-help">Mini AI chạy hoàn toàn local trong app này. Nó có thể gợi ý build theo ngân sách, nhận diện xe từ ảnh bằng catalog matching, và auto generate list đồ từ build sheet sẵn có.</div><div class="ai-suggestion"><div class="ai-result"><strong>Thử hỏi</strong><div>Bạn có 20 triệu thì build gì cho Exciter 155?</div></div><div class="ai-result"><strong>Hoặc</strong><div>Compare Exciter vs Winner X</div></div><div class="ai-result"><strong>Hoặc</strong><div>Upload ảnh xe rồi hỏi tiếp: build 15 triệu nên đi món nào?</div></div></div>'
   }];
 }
 
@@ -1290,10 +1300,24 @@ function handleAiSubmit(event) {
   renderAiChat();
 }
 
+function handleAiImageInput(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  const result = analyzeAiImage(file);
+  state.aiMessages.push({ role: "assistant", html: result.html });
+  renderAiChat();
+  refs.aiImageInput.value = "";
+}
+
 function handleAiChatClick(event) {
   const openButton = event.target.closest("[data-ai-open]");
   if (openButton) {
     openVehicleModal(openButton.dataset.aiOpen);
+    return;
+  }
+  const buildButton = event.target.closest("[data-ai-build]");
+  if (buildButton) {
+    openVehicleModal(buildButton.dataset.aiBuild, "build");
     return;
   }
   const compareButton = event.target.closest("[data-ai-compare]");
@@ -1310,6 +1334,15 @@ function handleAiChatClick(event) {
 function answerAi(rawQuery) {
   const query = normalizeText(rawQuery);
   const allVehicles = [...state.allVehicles];
+  if (isBuildBudgetQuery(query)) {
+    return answerBudgetBuildQuery(rawQuery);
+  }
+  if (/(build|do gi|do xe|goi y do|list do|do tu anh|auto generate|generate list)/i.test(query) && state.aiContextVehicleId) {
+    const vehicle = findVehicleById(state.aiContextVehicleId);
+    if (vehicle && hasBuildSheet(vehicle)) {
+      return buildStarterPlanAnswer(vehicle, `Dùng context từ ảnh gần nhất của ${vehicle.brand} ${vehicle.name}.`);
+    }
+  }
   if (/so sanh|compare|vs/.test(query)) {
     const matches = allVehicles.filter((vehicle) => query.includes(normalizeText(vehicle.name)) || query.includes(normalizeText(`${vehicle.brand} ${vehicle.name}`)));
     if (matches.length >= 2) return buildCompareAnswer(matches[0], matches[1]);
@@ -1336,7 +1369,253 @@ function answerAi(rawQuery) {
   }
   const matches = allVehicles.filter((vehicle) => normalizeText(`${vehicle.brand} ${vehicle.name} ${vehicle.cat}`).includes(query)).slice(0, 3);
   if (matches.length) return `<div>I found ${matches.length} related vehicles:</div><div class="ai-suggestion">${matches.map((vehicle) => aiResultCard(vehicle)).join("")}</div>`;
-  return '<div>Mini AI works best with prompts like these:</div><div class="ai-suggestion"><div class="ai-result"><strong>Find by budget</strong><div>What is the most powerful vehicle under $50,000?</div></div><div class="ai-result"><strong>Compare two entries</strong><div>Compare Exciter vs Winner X</div></div><div class="ai-result"><strong>Quick discovery</strong><div>Fastest vehicle / Cheapest vehicle / Hottest vehicle</div></div></div>';
+  if (/anh|image|photo/.test(query)) {
+    return '<div class="ai-result"><strong>Chưa có ảnh làm context.</strong><div>Hãy upload một ảnh ở ngay phía trên. Local AI sẽ match tên file với catalog xe trong app rồi tự sinh gợi ý build.</div></div>';
+  }
+  return '<div>Mini AI hiện hợp nhất 3 kiểu câu hỏi:</div><div class="ai-suggestion"><div class="ai-result"><strong>Build theo ngân sách</strong><div>Bạn có 20 triệu thì build gì cho Exciter 155?</div></div><div class="ai-result"><strong>Nhận diện từ ảnh</strong><div>Upload ảnh xe, rồi hỏi tiếp build 15 triệu nên đi món nào.</div></div><div class="ai-result"><strong>So sánh / khám phá</strong><div>Compare Exciter vs Winner X / Fastest vehicle / Cheapest vehicle</div></div></div>';
+}
+
+function analyzeAiImage(file) {
+  updateAiImagePreview(file);
+  const detection = detectVehicleFromImageFile(file);
+  if (!detection.vehicle) {
+    state.aiContextVehicleId = null;
+    refs.aiImageStatus.textContent = `Chưa match được model`;
+    refs.aiImageHint.textContent = "Local AI đang nhận diện theo tên file và catalog nội bộ. Đổi tên file rõ hơn như exciter-155.webp để tăng độ chính xác.";
+    return {
+      html: `<div class="ai-result"><strong>Chưa nhận diện chắc chắn từ ảnh này.</strong><div>File <code>${escapeHtml(file.name)}</code> chưa khớp rõ với catalog xe trong app. Bạn có thể đổi tên file hoặc hỏi thẳng: build 20 triệu cho Exciter 155.</div></div>`
+    };
+  }
+  state.aiContextVehicleId = String(detection.vehicle.id);
+  refs.aiImageStatus.textContent = `Nhận diện: ${detection.vehicle.brand} ${detection.vehicle.name}`;
+  refs.aiImageHint.textContent = `Độ tin cậy ${escapeHtml(detection.confidence)}. Từ giờ AI sẽ dùng xe này làm context cho các câu hỏi build tiếp theo.`;
+  if (!hasBuildSheet(detection.vehicle)) {
+    return {
+      html: `<div class="ai-result"><strong>Đã nhận diện xe từ ảnh</strong><div>${escapeHtml(detection.vehicle.brand)} ${escapeHtml(detection.vehicle.name)} / độ tin cậy ${escapeHtml(detection.confidence)}.</div><div>Entry này chưa có build sheet riêng, nên AI chưa thể auto generate list đồ chi tiết.</div><div class="ai-inline-actions"><button class="chip-btn" type="button" data-ai-open="${escapeAttr(detection.vehicle.id)}">View vehicle</button></div></div>`
+    };
+  }
+  return {
+    html: buildStarterPlanAnswer(detection.vehicle, `Nhận diện từ file ${escapeHtml(file.name)} với độ tin cậy ${escapeHtml(detection.confidence)}. Vì bạn chưa nhập budget, AI tạm sinh preset street build khoảng 20 triệu.`)
+  };
+}
+
+function updateAiImagePreview(file) {
+  if (state.aiPreviewUrl) URL.revokeObjectURL(state.aiPreviewUrl);
+  state.aiPreviewUrl = URL.createObjectURL(file);
+  refs.aiImagePreview.src = state.aiPreviewUrl;
+  refs.aiImagePreviewCard.classList.remove("hidden");
+  refs.aiImageStatus.textContent = file.name;
+  refs.aiImageHint.textContent = "Đang phân tích local image context...";
+}
+
+function detectVehicleFromImageFile(file) {
+  const source = `${file.name} ${file.type || ""}`;
+  const candidates = state.allVehicles.map((vehicle) => {
+    const match = aiVehicleMatch(source, vehicle);
+    return { vehicle, ...match };
+  }).filter((entry) => entry.score > 0).sort((a, b) => sortNumbers(b.score, a.score));
+  if (!candidates.length) return { vehicle: null, confidence: "thấp" };
+  const best = candidates[0];
+  return {
+    vehicle: best.vehicle,
+    confidence: best.score >= 9 ? "cao" : best.score >= 6 ? "trung bình" : "thấp",
+    alias: best.alias
+  };
+}
+
+function aiVehicleMatch(text, vehicle) {
+  const normalized = normalizeText(text);
+  const compact = compactText(text);
+  let bestScore = 0;
+  let bestAlias = "";
+  vehicleAiAliases(vehicle).forEach((alias) => {
+    const cleanAlias = normalizeText(alias);
+    const compactAlias = compactText(alias);
+    let score = 0;
+    if (cleanAlias && normalized.includes(cleanAlias)) score = Math.max(score, 9);
+    else if (compactAlias && compact.includes(compactAlias)) score = Math.max(score, 8);
+    else {
+      const parts = cleanAlias.split(" ").filter((part) => part.length > 2);
+      const hits = parts.filter((part) => normalized.includes(part)).length;
+      if (hits >= 2) score = Math.max(score, hits * 2 + 1);
+    }
+    if (score > bestScore) {
+      bestScore = score;
+      bestAlias = alias;
+    }
+  });
+  return { score: bestScore, alias: bestAlias };
+}
+
+function vehicleAiAliases(vehicle) {
+  const aliases = [
+    vehicle.name,
+    `${vehicle.brand} ${vehicle.name}`,
+    `${vehicle.brand} ${vehicle.cat || ""}`.trim()
+  ];
+  const custom = {
+    70: ["exciter 155", "exciter155", "ex155", "exciter vva", "yamaha exciter 155"],
+    71: ["winner x", "winnerx", "winner150"],
+    72: ["nvx 155", "nvx155"],
+    79: ["adv 160", "adv160"],
+    80: ["raider r150", "raiderr150"]
+  };
+  if (custom[vehicle.id]) aliases.push(...custom[vehicle.id]);
+  return [...new Set(aliases.filter(Boolean))];
+}
+
+function compactText(value) {
+  return normalizeText(value).replace(/[^a-z0-9]/g, "");
+}
+
+function isBuildBudgetQuery(query) {
+  return /(build|do gi|do xe|mod gi|goi y do|list do|len do|setup do)/.test(query) && parseMoneyFromText(query)?.vnd != null;
+}
+
+function answerBudgetBuildQuery(rawQuery) {
+  const money = parseMoneyFromText(rawQuery);
+  if (!money?.vnd) {
+    return '<div class="ai-result"><strong>Chưa đọc được ngân sách.</strong><div>Thử viết như: 20 triệu build gì cho Exciter 155?</div></div>';
+  }
+  const resolved = resolveBuildVehicleFromQuery(rawQuery);
+  if (!resolved.vehicle || !hasBuildSheet(resolved.vehicle)) {
+    return '<div class="ai-result"><strong>Chưa có build sheet phù hợp.</strong><div>AI hiện chỉ auto build chi tiết cho các xe đã có danh sách đồ nội bộ, như Exciter 155.</div></div>';
+  }
+  const plan = recommendBuildPlan(resolved.vehicle, money.vnd, rawQuery);
+  if (!plan.items.length) {
+    return `<div class="ai-result"><strong>Ngân sách ${escapeHtml(formatVnd(money.vnd))} hơi gắt cho preset hiện tại.</strong><div>Hãy tăng budget hoặc chuyển sang câu hỏi cụ thể hơn như: ưu tiên đồ kiểng trong 5 triệu.</div></div>`;
+  }
+  return renderBuildPlanAnswer(resolved.vehicle, plan, money.vnd, resolved.sourceNote);
+}
+
+function resolveBuildVehicleFromQuery(query) {
+  const buildVehicles = state.allVehicles.filter(hasBuildSheet);
+  const normalized = normalizeText(query);
+  const directMatch = buildVehicles.map((vehicle) => ({ vehicle, ...aiVehicleMatch(normalized, vehicle) }))
+    .filter((entry) => entry.score >= 6)
+    .sort((a, b) => sortNumbers(b.score, a.score))[0];
+  if (directMatch) return { vehicle: directMatch.vehicle, sourceNote: `AI nhận diện đúng tên xe trong câu hỏi: ${directMatch.vehicle.brand} ${directMatch.vehicle.name}.` };
+  if (state.aiContextVehicleId) {
+    const vehicle = findVehicleById(state.aiContextVehicleId);
+    if (vehicle && hasBuildSheet(vehicle)) return { vehicle, sourceNote: `Dùng context từ ảnh vừa upload: ${vehicle.brand} ${vehicle.name}.` };
+  }
+  if (state.currentVehicleId) {
+    const vehicle = findVehicleById(state.currentVehicleId);
+    if (vehicle && hasBuildSheet(vehicle)) return { vehicle, sourceNote: `Dùng xe bạn đang mở trong modal: ${vehicle.brand} ${vehicle.name}.` };
+  }
+  const fallback = buildVehicles.find((vehicle) => vehicle.id === 70) || buildVehicles[0] || null;
+  return { vehicle: fallback, sourceNote: fallback ? `Bạn chưa nêu rõ model, nên AI đang dùng mặc định ${fallback.brand} ${fallback.name}.` : "" };
+}
+
+function recommendBuildPlan(vehicle, budgetVnd, rawQuery = "") {
+  const kindOrder = inferBuildPresetKinds(rawQuery);
+  const allItems = flattenBuildItems(vehicle)
+    .filter((item) => item.priceVnd != null && !["Lookup", "Research"].includes(item.status));
+  const picked = [];
+  let spent = 0;
+  kindOrder.forEach((kind) => {
+    const option = allItems
+      .filter((item) => item.kind === kind && !picked.some((pickedItem) => pickedItem.name === item.name))
+      .sort((a, b) => sortNumbers(a.priceVnd, b.priceVnd))[0];
+    if (option && spent + option.priceVnd <= budgetVnd) {
+      picked.push(option);
+      spent += option.priceVnd;
+    }
+  });
+  allItems
+    .filter((item) => !picked.some((pickedItem) => pickedItem.name === item.name))
+    .sort((a, b) => {
+      const kindDelta = sortNumbers(kindOrder.indexOf(a.kind), kindOrder.indexOf(b.kind));
+      return kindDelta || sortNumbers(a.priceVnd, b.priceVnd);
+    })
+    .forEach((item) => {
+      if (picked.length >= 8) return;
+      if (spent + item.priceVnd > budgetVnd) return;
+      picked.push(item);
+      spent += item.priceVnd;
+    });
+  return {
+    items: picked,
+    spent,
+    remaining: Math.max(0, budgetVnd - spent),
+    presetLabel: describeBuildPreset(rawQuery)
+  };
+}
+
+function buildStarterPlanAnswer(vehicle, note = "") {
+  const defaultBudget = 20000000;
+  const plan = recommendBuildPlan(vehicle, defaultBudget, "street look");
+  return renderBuildPlanAnswer(vehicle, plan, defaultBudget, note);
+}
+
+function renderBuildPlanAnswer(vehicle, plan, budgetVnd, note = "") {
+  return `
+    <div class="ai-result">
+      <strong>${escapeHtml(vehicle.brand)} ${escapeHtml(vehicle.name)} / build budget ${escapeHtml(formatVnd(budgetVnd))}</strong>
+      ${note ? `<div>${note}</div>` : ""}
+      <div>Preset: ${escapeHtml(plan.presetLabel)}. AI ưu tiên món có giá rõ ràng trong build sheet local.</div>
+      <div class="ai-plan-list">${plan.items.map((item) => `
+        <div class="ai-plan-item">
+          <strong>${escapeHtml(item.name)}</strong>
+          <span>${escapeHtml(item.categoryLabel)} • ${escapeHtml(item.price || formatVnd(item.priceVnd))}</span>
+        </div>
+      `).join("")}</div>
+      <div class="ai-plan-total">Tổng dự kiến: <strong>${escapeHtml(formatVnd(plan.spent))}</strong> • Còn lại: <strong>${escapeHtml(formatVnd(plan.remaining))}</strong></div>
+      <div class="ai-inline-actions">
+        <button class="chip-btn" type="button" data-ai-open="${escapeAttr(vehicle.id)}">View vehicle</button>
+        <button class="primary-btn" type="button" data-ai-build="${escapeAttr(vehicle.id)}">Open build sheet</button>
+      </div>
+    </div>
+  `;
+}
+
+function flattenBuildItems(vehicle) {
+  return (vehicle.buildCategories || []).flatMap((category) =>
+    (category.items || []).map((item) => ({
+      ...item,
+      categoryLabel: buildCategoryLabel(category.title),
+      kind: buildCategoryKind(category.title),
+      status: buildItemStatus(item),
+      priceVnd: parseBuildPriceVnd(item.price)
+    }))
+  );
+}
+
+function buildCategoryKind(title) {
+  const source = normalizeText(title);
+  if (source.includes("phanh")) return "brake";
+  if (source.includes("treo") || source.includes("dan chan")) return "suspension";
+  if (source.includes("tham my") || source.includes("vo xe")) return "aesthetic";
+  if (source.includes("chieu sang")) return "lighting";
+  if (source.includes("bao ve") || source.includes("phu kien")) return "protection";
+  if (source.includes("ghi dong")) return "cockpit";
+  if (source.includes("cong nghe") || source.includes("tien ich")) return "tech";
+  return "engine";
+}
+
+function inferBuildPresetKinds(query) {
+  const source = normalizeText(query);
+  if (/kieng|ngoai hinh|look|style|tham my/.test(source)) return ["aesthetic", "lighting", "protection", "cockpit", "brake", "suspension", "tech", "engine"];
+  if (/performance|may|phanh|treo|handling|hieu nang/.test(source)) return ["brake", "suspension", "engine", "cockpit", "protection", "aesthetic", "lighting", "tech"];
+  return ["aesthetic", "lighting", "protection", "cockpit", "brake", "suspension", "engine", "tech"];
+}
+
+function describeBuildPreset(query) {
+  const source = normalizeText(query);
+  if (/kieng|ngoai hinh|look|style|tham my/.test(source)) return "Street look / đồ kiểng";
+  if (/performance|may|phanh|treo|handling|hieu nang/.test(source)) return "Hiệu năng / kiểm soát";
+  return "Cân bằng street-use";
+}
+
+function parseBuildPriceVnd(value) {
+  const source = String(value || "");
+  if (!/\d/.test(source)) return null;
+  const matches = [...source.matchAll(/(\d{1,3}(?:[.,]\d{3})+|\d+(?:[.,]\d+)?)/g)].map((match) => match[1]);
+  const values = matches.map((token) => {
+    if (/[.,]\d{3}/.test(token)) return Number(token.replace(/[.,]/g, ""));
+    return Number(token.replace(",", "."));
+  }).filter((entry) => Number.isFinite(entry));
+  return values.length ? Math.min(...values) : null;
 }
 
 function buildSingleVehicleAnswer(title, vehicle, note) {
@@ -1365,7 +1644,7 @@ function buildCompareAnswer(first, second) {
 }
 
 function aiResultCard(vehicle, note = "") {
-  return `<div class="ai-result"><strong>${escapeHtml(vehicle.brand)} ${escapeHtml(vehicle.name)}</strong><div>${formatUsd(vehicle.priceUsd)} / ${formatPower(vehicle)} / ${formatTopSpeed(vehicle)}</div>${note ? `<div>${escapeHtml(note)}</div>` : ""}<div class="ai-inline-actions"><button class="chip-btn" type="button" data-ai-open="${escapeAttr(vehicle.id)}">View details</button></div></div>`;
+  return `<div class="ai-result"><strong>${escapeHtml(vehicle.brand)} ${escapeHtml(vehicle.name)}</strong><div>${formatUsd(vehicle.priceUsd)} / ${formatPower(vehicle)} / ${formatTopSpeed(vehicle)}</div>${note ? `<div>${escapeHtml(note)}</div>` : ""}<div class="ai-inline-actions"><button class="chip-btn" type="button" data-ai-open="${escapeAttr(vehicle.id)}">View details</button>${hasBuildSheet(vehicle) ? `<button class="ghost-btn" type="button" data-ai-build="${escapeAttr(vehicle.id)}">Build sheet</button>` : ""}</div></div>`;
 }
 
 function handleGridClick(event) {
@@ -1900,6 +2179,10 @@ function formatUsd(value) {
   return usdFormatter.format(Math.round(Number(value || 0)));
 }
 
+function formatVnd(value) {
+  return `${vndFormatter.format(Math.round(Number(value || 0)))} VNĐ`;
+}
+
 function formatPower(vehicle) {
   return `${formatNumber(vehicle.powerHp, vehicle.powerHp < 100 ? 1 : 0)} HP`;
 }
@@ -2008,14 +2291,23 @@ function normalizeEngineLabel(text) {
 }
 
 function parseBudgetFromQuery(query) {
-  const match = query.match(/(\d+(?:[.,]\d+)?)/);
+  return parseMoneyFromText(query)?.usd ?? null;
+}
+
+function parseMoneyFromText(query) {
+  const source = normalizeText(query);
+  const match = source.match(/(\d{1,3}(?:[.,]\d{3})+|\d+(?:[.,]\d+)?)/);
   if (!match) return null;
-  const value = Number(match[1].replace(/,/g, ""));
-  if (/million/.test(query)) return value * 1000000;
-  if (/trieu| tr\b/.test(query)) return (value * 1000000) / USD_TO_VND;
-  if (/usd|\$/.test(query)) return value;
-  if (value > 1000) return value;
-  return value;
+  const token = match[1];
+  const value = /[.,]\d{3}/.test(token) ? Number(token.replace(/[.,]/g, "")) : Number(token.replace(/,/g, "."));
+  if (!Number.isFinite(value)) return null;
+  if (/million/.test(source)) return { currency: "usd", usd: value * 1000000, vnd: value * 1000000 * USD_TO_VND };
+  if (/usd|\$|dollar/.test(source)) return { currency: "usd", usd: value, vnd: value * USD_TO_VND };
+  if (/ty|ti\b/.test(source)) return { currency: "vnd", vnd: value * 1000000000, usd: (value * 1000000000) / USD_TO_VND };
+  if (/trieu|tr\b/.test(source)) return { currency: "vnd", vnd: value * 1000000, usd: (value * 1000000) / USD_TO_VND };
+  if (/ngan|k\b/.test(source) && value < 100000) return { currency: "vnd", vnd: value * 1000, usd: (value * 1000) / USD_TO_VND };
+  if (/vnd|dong/.test(source) || value >= 100000) return { currency: "vnd", vnd: value, usd: value / USD_TO_VND };
+  return { currency: value > 1000 ? "vnd" : "usd", usd: value > 1000 ? value / USD_TO_VND : value, vnd: value > 1000 ? value : value * USD_TO_VND };
 }
 
 function roundUpPrice(value) {

@@ -11,7 +11,7 @@
 <link rel="manifest" href="./site.webmanifest">
 <link rel="icon" type="image/png" href="./icon-192.png">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
-<link rel="stylesheet" href="./styles.css?v=shop-v3">
+<link rel="stylesheet" href="./styles.css?v=shop-v4">
 </head>
 <body class="theme-dark">
 <div class="app-shell">
@@ -228,16 +228,34 @@
     <button class="close-btn" data-close="aiModalOverlay" type="button">&times;</button>
     <div class="ai-head">
       <p class="eyebrow">Mini AI</p>
-      <h2>Ask quick questions about the vehicles in this app</h2>
+      <h2>Hỏi ngân sách build, nhận diện xe từ ảnh, và auto generate list đồ</h2>
+    </div>
+    <div class="ai-tools">
+      <div class="ai-tool-card">
+        <strong>Budget Build</strong>
+        <div>Ví dụ: “Bạn có 20 triệu thì build gì cho Exciter 155?”</div>
+      </div>
+      <label class="ai-tool-card ai-upload-card" for="aiImageInput">
+        <strong>Nhận diện từ ảnh</strong>
+        <div>Upload ảnh xe, local AI sẽ khớp model theo filename/catalog rồi gợi ý build sheet.</div>
+        <input id="aiImageInput" type="file" accept="image/*">
+      </label>
+    </div>
+    <div class="ai-image-preview hidden" id="aiImagePreviewCard">
+      <img id="aiImagePreview" alt="AI upload preview">
+      <div class="ai-image-meta">
+        <strong id="aiImageStatus">Chưa có ảnh</strong>
+        <div id="aiImageHint">AI sẽ dùng ảnh này làm context cho câu hỏi tiếp theo.</div>
+      </div>
     </div>
     <div class="ai-chat" id="aiChat"></div>
     <form id="aiForm" class="ai-form">
-      <input id="aiInput" type="text" placeholder="Example: What is the most powerful vehicle under $50,000?">
+      <input id="aiInput" type="text" placeholder="Ví dụ: 20 triệu build gì, compare Exciter vs Winner X, hoặc hỏi tiếp sau khi upload ảnh">
       <button class="primary-btn" type="submit">Send</button>
     </form>
   </div>
 </div>
 
-<script type="module" src="./app.js?v=shop-v3"></script>
+<script type="module" src="./app.js?v=shop-v4"></script>
 </body>
 </html>
