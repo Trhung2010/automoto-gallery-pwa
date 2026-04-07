@@ -1522,15 +1522,26 @@ function drawVehicleChartIfNeeded(vehicle) {
 function drawRadar(canvas, vehicle) {
   if (!canvas) return;
   const ctx = canvas.getContext("2d");
-  const width = canvas.width;
-  const height = canvas.height;
+  const rect = canvas.getBoundingClientRect();
+  const width = Math.round(rect.width || canvas.width || 360);
+  const height = Math.round(rect.height || canvas.height || 360);
+  const dpr = Math.max(window.devicePixelRatio || 1, 1);
+  canvas.width = width * dpr;
+  canvas.height = height * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   const centerX = width / 2;
   const centerY = height / 2;
-  const radius = Math.min(width, height) / 2 - 34;
-  const accent = vehicle.type === "car" ? "#3ba7ff" : vehicle.type === "bike" ? "#ff9b3d" : "#29d37b";
+  const radius = Math.min(width, height) / 2 - 46;
+  const palette = radarPalette(vehicle);
   const metrics = performanceMetrics(vehicle);
   const count = metrics.length;
   ctx.clearRect(0, 0, width, height);
+
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, radius + 10, 0, Math.PI * 2);
+  ctx.fillStyle = palette.panel;
+  ctx.fill();
+
   for (let ring = 1; ring <= 4; ring += 1) {
     ctx.beginPath();
     for (let index = 0; index < count; index += 1) {
@@ -1542,18 +1553,21 @@ function drawRadar(canvas, vehicle) {
       else ctx.lineTo(x, y);
     }
     ctx.closePath();
-    ctx.strokeStyle = "rgba(255,255,255,0.12)";
+    ctx.strokeStyle = palette.ring;
     ctx.lineWidth = 1;
     ctx.stroke();
   }
+
   metrics.forEach((metric, index) => {
     const angle = (-Math.PI / 2) + ((Math.PI * 2) / count) * index;
     ctx.beginPath();
     ctx.moveTo(centerX, centerY);
     ctx.lineTo(centerX + Math.cos(angle) * radius, centerY + Math.sin(angle) * radius);
-    ctx.strokeStyle = "rgba(255,255,255,0.12)";
+    ctx.strokeStyle = palette.axis;
+    ctx.lineWidth = 1;
     ctx.stroke();
   });
+
   ctx.beginPath();
   metrics.forEach((metric, index) => {
     const angle = (-Math.PI / 2) + ((Math.PI * 2) / count) * index;
@@ -1564,20 +1578,79 @@ function drawRadar(canvas, vehicle) {
     else ctx.lineTo(x, y);
   });
   ctx.closePath();
-  ctx.fillStyle = `${accent}33`;
+  ctx.fillStyle = palette.fill;
   ctx.fill();
-  ctx.strokeStyle = accent;
-  ctx.lineWidth = 2;
+  ctx.strokeStyle = palette.accent;
+  ctx.lineWidth = 2.5;
   ctx.stroke();
+
   metrics.forEach((metric, index) => {
     const angle = (-Math.PI / 2) + ((Math.PI * 2) / count) * index;
-    const x = centerX + Math.cos(angle) * radius;
-    const y = centerY + Math.sin(angle) * radius;
-    ctx.fillStyle = "rgba(255,255,255,0.78)";
-    ctx.font = "12px Segoe UI";
-    ctx.textAlign = "center";
-    ctx.fillText(metric.label, x, y + 18);
+    const scoreRadius = radius * metric.score;
+    const pointX = centerX + Math.cos(angle) * scoreRadius;
+    const pointY = centerY + Math.sin(angle) * scoreRadius;
+    ctx.beginPath();
+    ctx.arc(pointX, pointY, 4, 0, Math.PI * 2);
+    ctx.fillStyle = palette.accent;
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = palette.pointOutline;
+    ctx.stroke();
+
+    const labelRadius = radius + 16;
+    const labelX = centerX + Math.cos(angle) * labelRadius;
+    const labelY = centerY + Math.sin(angle) * labelRadius;
+    ctx.fillStyle = palette.label;
+    ctx.font = '700 13px "Bahnschrift", "Segoe UI", sans-serif';
+    ctx.textAlign = Math.cos(angle) > 0.35 ? "left" : Math.cos(angle) < -0.35 ? "right" : "center";
+    ctx.textBaseline = Math.sin(angle) > 0.45 ? "top" : Math.sin(angle) < -0.45 ? "bottom" : "middle";
+    ctx.fillText(metric.label, labelX, labelY);
   });
+}
+
+function radarPalette(vehicle) {
+  const styles = getComputedStyle(refs.body);
+  const accent = vehicle.type === "car"
+    ? readCssVar(styles, "--blue-strong", "#3d86ff")
+    : vehicle.type === "bike"
+      ? readCssVar(styles, "--orange", "#f0b26a")
+      : readCssVar(styles, "--green", "#7fb8ae");
+  const themeIsLight = refs.body.classList.contains("theme-light");
+  return {
+    accent,
+    fill: toAlphaColor(accent, themeIsLight ? 0.18 : 0.24),
+    panel: themeIsLight ? "rgba(42, 63, 95, 0.06)" : "rgba(255, 255, 255, 0.03)",
+    ring: themeIsLight ? "rgba(32, 48, 72, 0.16)" : "rgba(255, 255, 255, 0.12)",
+    axis: themeIsLight ? "rgba(32, 48, 72, 0.24)" : "rgba(255, 255, 255, 0.18)",
+    label: readCssVar(styles, "--text", themeIsLight ? "#162335" : "#f6f7fb"),
+    pointOutline: themeIsLight ? "#ffffff" : "rgba(8, 14, 24, 0.92)"
+  };
+}
+
+function readCssVar(styleMap, name, fallback) {
+  const value = String(styleMap.getPropertyValue(name) || "").trim();
+  return value || fallback;
+}
+
+function toAlphaColor(color, alpha) {
+  const value = String(color || "").trim();
+  const normalizedAlpha = clamp(Number(alpha) || 0, 0, 1);
+  const shortHex = /^#([\da-f]{3})$/i;
+  const longHex = /^#([\da-f]{6})$/i;
+  if (shortHex.test(value)) {
+    const [, hex] = value.match(shortHex);
+    const expanded = hex.split("").map((char) => char + char).join("");
+    const int = Number.parseInt(expanded, 16);
+    return `rgba(${(int >> 16) & 255}, ${(int >> 8) & 255}, ${int & 255}, ${normalizedAlpha})`;
+  }
+  if (longHex.test(value)) {
+    const [, hex] = value.match(longHex);
+    const int = Number.parseInt(hex, 16);
+    return `rgba(${(int >> 16) & 255}, ${(int >> 8) & 255}, ${int & 255}, ${normalizedAlpha})`;
+  }
+  if (value.startsWith("rgb(")) return value.replace(/^rgb\((.+)\)$/i, `rgba($1, ${normalizedAlpha})`);
+  if (value.startsWith("rgba(")) return value.replace(/^rgba\((.+),\s*[\d.]+\)$/i, `rgba($1, ${normalizedAlpha})`);
+  return color;
 }
 
 function performanceMetrics(vehicle) {

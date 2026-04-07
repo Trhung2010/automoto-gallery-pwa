@@ -2136,10 +2136,37 @@ input[type="range"] {
 }
 
 .chart-wrap {
+  position: relative;
+  overflow: hidden;
+  min-height: 396px;
   padding: 18px;
   border-radius: 24px;
   border: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.04);
+  background:
+    radial-gradient(circle at top, rgba(126, 194, 255, 0.08), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.025));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.chart-wrap::before {
+  content: "";
+  position: absolute;
+  inset: 14% 14%;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.04), transparent 66%);
+  pointer-events: none;
+}
+
+body.theme-light .chart-wrap {
+  background:
+    radial-gradient(circle at top, rgba(126, 194, 255, 0.1), transparent 36%),
+    linear-gradient(180deg, rgba(88, 113, 150, 0.06), rgba(255, 255, 255, 0.72));
+}
+
+body.theme-light .chart-wrap::before {
+  border-color: rgba(33, 54, 86, 0.08);
+  background: radial-gradient(circle, rgba(62, 92, 138, 0.04), transparent 66%);
 }
 
 .chart-wrap canvas {
@@ -2147,6 +2174,8 @@ input[type="range"] {
   max-width: 360px;
   margin: 0 auto;
   display: block;
+  position: relative;
+  z-index: 1;
 }
 
 .performance-grid {
@@ -2164,6 +2193,10 @@ input[type="range"] {
 .perf-item {
   display: grid;
   gap: 8px;
+  padding: 12px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .perf-item .bar {
