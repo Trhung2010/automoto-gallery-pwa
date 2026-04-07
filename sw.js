@@ -1,10 +1,10 @@
-const CACHE_NAME = 'automoto-gallery-v14';
+const CACHE_NAME = 'automoto-gallery-v15';
 const APP_SHELL_URL = './index.html';
 const APP_ASSETS = [
   './',
   APP_SHELL_URL,
-  './styles.css?v=shop-v12',
-  './app.js?v=shop-v12',
+  './styles.css?v=shop-v13',
+  './app.js?v=shop-v13',
   './site.webmanifest',
   './icon-192.png',
   './icon-512.png',
