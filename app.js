@@ -1362,7 +1362,7 @@ function submitAiPrompt(rawPrompt) {
 function answerAi(rawQuery) {
   const query = normalizeText(rawQuery);
   const allVehicles = [...state.allVehicles];
-  if (isBuildBudgetQuery(query)) {
+  if (isBuildBudgetQuery(rawQuery)) {
     return answerBudgetBuildQuery(rawQuery);
   }
   if (/(build|do gi|do xe|goi y do|list do|do tu anh|auto generate|generate list)/i.test(query) && state.aiContextVehicleId) {
@@ -1372,8 +1372,8 @@ function answerAi(rawQuery) {
     }
   }
   if (/so sanh|compare|vs/.test(query)) {
-    const matches = allVehicles.filter((vehicle) => query.includes(normalizeText(vehicle.name)) || query.includes(normalizeText(`${vehicle.brand} ${vehicle.name}`)));
-    if (matches.length >= 2) return buildCompareAnswer(matches[0], matches[1]);
+    const pair = resolveCompareVehicles(rawQuery, allVehicles);
+    if (pair) return buildCompareAnswer(pair[0], pair[1]);
   }
   if ((/most powerful|highest power|strongest|manh nhat|cong suat cao nhat/.test(query)) && /(under|below|less than|duoi|nho hon)/.test(query)) {
     const budget = parseBudgetFromQuery(query);
@@ -1395,7 +1395,7 @@ function answerAi(rawQuery) {
     const result = [...allVehicles].sort((a, b) => sortNumbers(hotScore(b), hotScore(a)))[0];
     return buildSingleVehicleAnswer("Hottest vehicle", result, `Its heat score is ${Math.round(normalizeHotScore(result) * 100)}%, based on favorites and detail views.`);
   }
-  const matches = allVehicles.filter((vehicle) => normalizeText(`${vehicle.brand} ${vehicle.name} ${vehicle.cat}`).includes(query)).slice(0, 3);
+  const matches = findAiVehicleCandidates(rawQuery, allVehicles, 4).slice(0, 3).map((entry) => entry.vehicle);
   if (matches.length) return `<div>I found ${matches.length} related vehicles:</div><div class="ai-suggestion">${matches.map((vehicle) => aiResultCard(vehicle)).join("")}</div>`;
   if (/anh|image|photo/.test(query)) {
     return '<div class="ai-result"><strong>Chưa có ảnh làm context.</strong><div>Hãy upload một ảnh ở ngay phía trên. Local AI sẽ match tên file với catalog xe trong app rồi tự sinh gợi ý build.</div></div>';
@@ -1438,10 +1438,7 @@ function updateAiImagePreview(file) {
 
 function detectVehicleFromImageFile(file) {
   const source = `${file.name} ${file.type || ""}`;
-  const candidates = state.allVehicles.map((vehicle) => {
-    const match = aiVehicleMatch(source, vehicle);
-    return { vehicle, ...match };
-  }).filter((entry) => entry.score > 0).sort((a, b) => sortNumbers(b.score, a.score));
+  const candidates = findAiVehicleCandidates(source, state.allVehicles, 1);
   if (!candidates.length) return { vehicle: null, confidence: "thấp" };
   const best = candidates[0];
   return {
@@ -1482,11 +1479,11 @@ function vehicleAiAliases(vehicle) {
     `${vehicle.brand} ${vehicle.cat || ""}`.trim()
   ];
   const custom = {
-    70: ["exciter 155", "exciter155", "ex155", "exciter vva", "yamaha exciter 155"],
-    71: ["winner x", "winnerx", "winner150"],
-    72: ["nvx 155", "nvx155"],
-    79: ["adv 160", "adv160"],
-    80: ["raider r150", "raiderr150"]
+    70: ["exciter", "exciter 155", "exciter155", "ex155", "exciter vva", "yamaha exciter", "yamaha exciter 155"],
+    71: ["winner", "winner x", "winnerx", "winner150", "honda winner", "honda winner x"],
+    72: ["nvx", "nvx 155", "nvx155", "yamaha nvx"],
+    79: ["adv", "adv 160", "adv160", "honda adv"],
+    80: ["raider", "raider r150", "raiderr150", "suzuki raider"]
   };
   if (custom[vehicle.id]) aliases.push(...custom[vehicle.id]);
   return [...new Set(aliases.filter(Boolean))];
@@ -1496,11 +1493,52 @@ function compactText(value) {
   return normalizeText(value).replace(/[^a-z0-9]/g, "");
 }
 
+function findAiVehicleCandidates(query, vehicles = state.allVehicles, minScore = 1) {
+  const normalized = normalizeText(query);
+  return vehicles.map((vehicle) => {
+    const aliasMatch = aiVehicleMatch(normalized, vehicle);
+    let score = aliasMatch.score;
+    const brandName = normalizeText(`${vehicle.brand} ${vehicle.name}`);
+    const shortName = normalizeText(vehicle.name).split(" ").slice(0, 2).join(" ").trim();
+    if (brandName && normalized.includes(brandName)) score = Math.max(score, 10);
+    if (shortName && normalized.includes(shortName)) score = Math.max(score, shortName.includes(" ") ? 8 : 6);
+    return { vehicle, score, alias: aliasMatch.alias };
+  }).filter((entry) => entry.score >= minScore).sort((a, b) => sortNumbers(b.score, a.score) || sortStrings(a.vehicle.name, b.vehicle.name));
+}
+
+function resolveAiVehicleReference(query, vehicles = state.allVehicles, minScore = 4) {
+  return findAiVehicleCandidates(query, vehicles, minScore)[0] || null;
+}
+
+function resolveCompareVehicles(query, vehicles = state.allVehicles) {
+  const source = normalizeText(query)
+    .replace(/\bcompare\b/g, " ")
+    .replace(/\bso sanh\b/g, " ")
+    .trim();
+  const segments = source.split(/\bvs\b|\bvoi\b|,/).map((segment) => segment.trim()).filter(Boolean);
+  if (segments.length >= 2) {
+    const first = resolveAiVehicleReference(segments[0], vehicles, 4)?.vehicle;
+    const second = resolveAiVehicleReference(segments[1], vehicles, 4)?.vehicle;
+    if (first && second && first.id !== second.id) return [first, second];
+  }
+  const ranked = findAiVehicleCandidates(source, vehicles, 6).map((entry) => entry.vehicle);
+  if (ranked.length >= 2) {
+    const first = ranked[0];
+    const second = ranked.find((vehicle) => vehicle.id !== first.id);
+    if (second) return [first, second];
+  }
+  return null;
+}
+
 function isBuildBudgetQuery(query) {
-  if (parseMoneyFromText(query)?.vnd == null) return false;
-  if (/(build|do gi|do xe|mod gi|goi y do|list do|len do|setup do|ngan sach|budget|goi y|de xuat|mon nao|thi sao)/.test(query)) return true;
-  if (state.aiContextVehicleId || state.currentVehicleId) return true;
-  return state.allVehicles.some((vehicle) => hasBuildSheet(vehicle) && aiVehicleMatch(query, vehicle).score >= 6);
+  const source = normalizeText(query);
+  if (parseMoneyFromText(source)?.vnd == null) return false;
+  if (/(so sanh|compare|vs|fastest|highest top speed|nhanh nhat|cheapest|lowest price|re nhat|gia thap nhat|most powerful|highest power|strongest|manh nhat|cong suat cao nhat|hottest|most popular|hot nhat|noi bat nhat)/.test(source)) {
+    return false;
+  }
+  if (/(build|do gi|do xe|mod gi|goi y do|list do|len do|setup do|ngan sach|budget|goi y|de xuat|mon nao|thi sao|nen di)/.test(source)) return true;
+  if ((state.aiContextVehicleId || state.currentVehicleId) && /(mon nao|nen di|goi y|de xuat|setup|len do|do gi)/.test(source)) return true;
+  return state.allVehicles.some((vehicle) => hasBuildSheet(vehicle) && aiVehicleMatch(source, vehicle).score >= 4);
 }
 
 function answerBudgetBuildQuery(rawQuery) {
@@ -1521,10 +1559,7 @@ function answerBudgetBuildQuery(rawQuery) {
 
 function resolveBuildVehicleFromQuery(query) {
   const buildVehicles = state.allVehicles.filter(hasBuildSheet);
-  const normalized = normalizeText(query);
-  const directMatch = buildVehicles.map((vehicle) => ({ vehicle, ...aiVehicleMatch(normalized, vehicle) }))
-    .filter((entry) => entry.score >= 6)
-    .sort((a, b) => sortNumbers(b.score, a.score))[0];
+  const directMatch = resolveAiVehicleReference(query, buildVehicles, 4);
   if (directMatch) return { vehicle: directMatch.vehicle, sourceNote: `AI nhận diện đúng tên xe trong câu hỏi: ${directMatch.vehicle.brand} ${directMatch.vehicle.name}.` };
   if (state.aiContextVehicleId) {
     const vehicle = findVehicleById(state.aiContextVehicleId);
@@ -2330,18 +2365,74 @@ function parseBudgetFromQuery(query) {
 
 function parseMoneyFromText(query) {
   const source = normalizeText(query);
-  const match = source.match(/(\d{1,3}(?:[.,]\d{3})+|\d+(?:[.,]\d+)?)/);
-  if (!match) return null;
-  const token = match[1];
-  const value = /[.,]\d{3}/.test(token) ? Number(token.replace(/[.,]/g, "")) : Number(token.replace(/,/g, "."));
+  const usdMatch = findLastMoneyMatch(source, [
+    {
+      regex: /\$\s*(\d{1,3}(?:[.,]\d{3})+|\d+(?:[.,]\d+)?)(?:\s*(k|m))?/g,
+      toResult: (value, unit = "") => {
+        const multiplier = unit === "m" ? 1000000 : unit === "k" ? 1000 : 1;
+        const usd = value * multiplier;
+        return { currency: "usd", usd, vnd: usd * USD_TO_VND };
+      }
+    },
+    {
+      regex: /(\d{1,3}(?:[.,]\d{3})+|\d+(?:[.,]\d+)?)(?:\s*)(million|usd|dollar)\b/g,
+      toResult: (value, unit = "") => {
+        const multiplier = unit === "million" ? 1000000 : 1;
+        const usd = value * multiplier;
+        return { currency: "usd", usd, vnd: usd * USD_TO_VND };
+      }
+    }
+  ]);
+  if (usdMatch) return usdMatch;
+
+  const vndMatch = findLastMoneyMatch(source, [
+    {
+      regex: /(\d{1,3}(?:[.,]\d{3})+|\d+(?:[.,]\d+)?)(?:\s*)(ty|ti)\b/g,
+      toResult: (value) => ({ currency: "vnd", vnd: value * 1000000000, usd: (value * 1000000000) / USD_TO_VND })
+    },
+    {
+      regex: /(\d{1,3}(?:[.,]\d{3})+|\d+(?:[.,]\d+)?)(?:\s*)(trieu|tr)\b/g,
+      toResult: (value) => ({ currency: "vnd", vnd: value * 1000000, usd: (value * 1000000) / USD_TO_VND })
+    },
+    {
+      regex: /(\d{1,3}(?:[.,]\d{3})+|\d+(?:[.,]\d+)?)(?:\s*)(ngan|k)\b/g,
+      toResult: (value) => ({ currency: "vnd", vnd: value * 1000, usd: (value * 1000) / USD_TO_VND })
+    },
+    {
+      regex: /(\d{1,3}(?:[.,]\d{3})+|\d+(?:[.,]\d+)?)(?:\s*)(vnd|dong)\b/g,
+      toResult: (value) => ({ currency: "vnd", vnd: value, usd: value / USD_TO_VND })
+    }
+  ]);
+  if (vndMatch) return vndMatch;
+
+  const tokens = [...source.matchAll(/(\d{1,3}(?:[.,]\d{3})+|\d+(?:[.,]\d+)?)/g)];
+  if (!tokens.length) return null;
+  const token = tokens[tokens.length - 1][1];
+  const value = parseMoneyTokenValue(token);
   if (!Number.isFinite(value)) return null;
-  if (/million/.test(source)) return { currency: "usd", usd: value * 1000000, vnd: value * 1000000 * USD_TO_VND };
-  if (/usd|\$|dollar/.test(source)) return { currency: "usd", usd: value, vnd: value * USD_TO_VND };
-  if (/ty|ti\b/.test(source)) return { currency: "vnd", vnd: value * 1000000000, usd: (value * 1000000000) / USD_TO_VND };
-  if (/trieu|tr\b/.test(source)) return { currency: "vnd", vnd: value * 1000000, usd: (value * 1000000) / USD_TO_VND };
-  if (/ngan|k\b/.test(source) && value < 100000) return { currency: "vnd", vnd: value * 1000, usd: (value * 1000) / USD_TO_VND };
   if (/vnd|dong/.test(source) || value >= 100000) return { currency: "vnd", vnd: value, usd: value / USD_TO_VND };
   return { currency: value > 1000 ? "vnd" : "usd", usd: value > 1000 ? value / USD_TO_VND : value, vnd: value > 1000 ? value : value * USD_TO_VND };
+}
+
+function findLastMoneyMatch(source, definitions) {
+  let candidate = null;
+  definitions.forEach(({ regex, toResult }) => {
+    regex.lastIndex = 0;
+    let match;
+    while ((match = regex.exec(source)) !== null) {
+      const value = parseMoneyTokenValue(match[1]);
+      if (!Number.isFinite(value)) continue;
+      const unit = match[2] || "";
+      if (!candidate || match.index >= candidate.index) {
+        candidate = { index: match.index, result: toResult(value, unit) };
+      }
+    }
+  });
+  return candidate?.result || null;
+}
+
+function parseMoneyTokenValue(token) {
+  return /[.,]\d{3}/.test(token) ? Number(token.replace(/[.,]/g, "")) : Number(token.replace(/,/g, "."));
 }
 
 function roundUpPrice(value) {
