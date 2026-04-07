@@ -27,19 +27,27 @@
 }
 
 body.theme-light {
-  --bg: #f6f8fc;
-  --bg-soft: #edf2f8;
-  --bg-deep: #e2e9f3;
+  --bg: #f8fbff;
+  --bg-soft: #eef4ff;
+  --bg-deep: #fff1e6;
   --panel: rgba(255, 255, 255, 0.88);
   --panel-strong: rgba(255, 255, 255, 0.97);
-  --card: rgba(255, 255, 255, 0.94);
-  --card-soft: rgba(21, 32, 51, 0.04);
-  --line: rgba(29, 46, 78, 0.08);
-  --text: #152033;
-  --text-muted: #627289;
-  --text-soft: #8390a5;
-  --shadow: 0 28px 56px rgba(34, 52, 83, 0.12);
-  --shadow-soft: 0 16px 34px rgba(34, 52, 83, 0.08);
+  --card: rgba(255, 255, 255, 0.95);
+  --card-soft: rgba(35, 91, 255, 0.045);
+  --line: rgba(36, 68, 128, 0.09);
+  --text: #13213b;
+  --text-muted: #64748f;
+  --text-soft: #8794aa;
+  --blue: #70d0ff;
+  --blue-strong: #235bff;
+  --orange: #ff8d44;
+  --orange-strong: #dd5b2d;
+  --green: #18bc9a;
+  --danger: #e56d6d;
+  --yellow: #ffb84a;
+  --lime: #30c66e;
+  --shadow: 0 28px 56px rgba(28, 48, 87, 0.12);
+  --shadow-soft: 0 16px 34px rgba(28, 48, 87, 0.08);
 }
 
 * {
@@ -94,13 +102,13 @@ body::after {
 }
 
 body.theme-light::before {
-  background: radial-gradient(circle, rgba(96, 125, 182, 0.22), transparent 66%);
-  opacity: 0.28;
+  background: radial-gradient(circle, rgba(35, 91, 255, 0.22), transparent 66%);
+  opacity: 0.22;
 }
 
 body.theme-light::after {
-  background: radial-gradient(circle, rgba(223, 176, 74, 0.18), transparent 64%);
-  opacity: 0.22;
+  background: radial-gradient(circle, rgba(255, 141, 68, 0.18), transparent 64%);
+  opacity: 0.2;
 }
 
 body.modal-open {
@@ -2179,23 +2187,230 @@ body.theme-light .chart-wrap::before {
   background: radial-gradient(circle, rgba(62, 92, 138, 0.04), transparent 66%);
 }
 
+body.theme-light .brand-badge {
+  background: linear-gradient(135deg, #235bff 0%, #70d0ff 54%, #ff8d44 100%);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.2),
+    0 18px 34px rgba(35, 91, 255, 0.22);
+}
+
+body.theme-light .logo-auto {
+  background-image: linear-gradient(135deg, #16346a 0%, #235bff 88%);
+}
+
+body.theme-light .logo-moto {
+  background-image: linear-gradient(135deg, #ff7f38 0%, #ffb84a 100%);
+}
+
+body.theme-light .eyebrow {
+  color: #235bff;
+}
+
+body.theme-light .icon-btn,
+body.theme-light .ghost-btn,
+body.theme-light .chip-btn {
+  background: rgba(255, 255, 255, 0.76);
+  border-color: rgba(36, 68, 128, 0.09);
+  box-shadow: 0 10px 22px rgba(28, 48, 87, 0.06);
+}
+
+body.theme-light .primary-btn {
+  background: linear-gradient(135deg, #235bff 0%, #49bfff 62%, #ffb84a 100%);
+  color: #fff;
+  box-shadow: 0 18px 34px rgba(35, 91, 255, 0.22);
+}
+
+body.theme-light .chip-btn.active,
+body.theme-light .chip-btn.accent {
+  background: linear-gradient(135deg, rgba(35, 91, 255, 0.12), rgba(255, 141, 68, 0.14));
+  border-color: rgba(35, 91, 255, 0.14);
+}
+
+body.theme-light .main-tabs {
+  background:
+    linear-gradient(135deg, rgba(35, 91, 255, 0.08), rgba(255, 141, 68, 0.08)),
+    rgba(255, 255, 255, 0.82);
+}
+
+body.theme-light .main-tab.active {
+  background: linear-gradient(135deg, rgba(35, 91, 255, 0.16), rgba(112, 208, 255, 0.16));
+  color: #17305c;
+}
+
+body.theme-light .controls {
+  background:
+    radial-gradient(circle at top right, rgba(255, 141, 68, 0.12), transparent 24%),
+    radial-gradient(circle at bottom left, rgba(35, 91, 255, 0.1), transparent 24%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(244, 248, 255, 0.88)),
+    var(--panel);
+}
+
+body.theme-light .search-wrap,
+body.theme-light .field,
+body.theme-light .range-wrap {
+  border-color: rgba(36, 68, 128, 0.09);
+  background:
+    linear-gradient(135deg, rgba(35, 91, 255, 0.06), rgba(255, 255, 255, 0.82)),
+    rgba(255, 255, 255, 0.78);
+  box-shadow:
+    0 14px 28px rgba(28, 48, 87, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.84);
+}
+
+body.theme-light .sel,
+body.theme-light .garage-form input,
+body.theme-light .garage-form textarea,
+body.theme-light .share-link input,
+body.theme-light .review-form textarea {
+  background: rgba(255, 255, 255, 0.86);
+}
+
+body.theme-light .stat-tile {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(244, 248, 255, 0.88)),
+    var(--panel);
+  box-shadow:
+    0 18px 34px rgba(28, 48, 87, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+body.theme-light .stat-primary {
+  background: linear-gradient(180deg, rgba(255, 184, 74, 0.18), rgba(255, 255, 255, 0.88));
+}
+
+body.theme-light .stat-cars {
+  background: linear-gradient(180deg, rgba(35, 91, 255, 0.16), rgba(255, 255, 255, 0.88));
+}
+
+body.theme-light .stat-bikes {
+  background: linear-gradient(180deg, rgba(24, 188, 154, 0.14), rgba(255, 255, 255, 0.88));
+}
+
+body.theme-light .stat-vn {
+  background: linear-gradient(180deg, rgba(255, 141, 68, 0.16), rgba(255, 255, 255, 0.88));
+}
+
+body.theme-light .stat-mine {
+  background: linear-gradient(180deg, rgba(112, 208, 255, 0.16), rgba(255, 255, 255, 0.88));
+}
+
+body.theme-light .stat-favorites {
+  background: linear-gradient(180deg, rgba(35, 91, 255, 0.12), rgba(255, 255, 255, 0.88));
+}
+
+body.theme-light .gallery-footer {
+  background:
+    linear-gradient(135deg, rgba(35, 91, 255, 0.08), rgba(255, 141, 68, 0.08)),
+    rgba(255, 255, 255, 0.88);
+}
+
+body.theme-light .page-btn {
+  background: rgba(255, 255, 255, 0.82);
+  border-color: rgba(36, 68, 128, 0.09);
+}
+
+body.theme-light .page-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.96);
+}
+
+body.theme-light .page-btn.active {
+  background: linear-gradient(135deg, rgba(35, 91, 255, 0.16), rgba(255, 184, 74, 0.18));
+  border-color: rgba(35, 91, 255, 0.16);
+  box-shadow: 0 14px 26px rgba(35, 91, 255, 0.14);
+}
+
+body.theme-light .vehicle-card {
+  border-color: rgba(36, 68, 128, 0.09);
+  background:
+    radial-gradient(circle at top right, rgba(255, 141, 68, 0.12), transparent 26%),
+    radial-gradient(circle at left bottom, rgba(35, 91, 255, 0.08), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(243, 247, 255, 0.9)),
+    var(--panel);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    0 22px 42px rgba(28, 48, 87, 0.1);
+}
+
+body.theme-light .vehicle-card::before {
+  background: radial-gradient(circle, rgba(35, 91, 255, 0.14), transparent 68%);
+}
+
+body.theme-light .vehicle-card[data-type="vn"]::before {
+  background: radial-gradient(circle, rgba(255, 141, 68, 0.16), transparent 68%);
+}
+
+body.theme-light .vehicle-card[data-type="bike"]::before {
+  background: radial-gradient(circle, rgba(24, 188, 154, 0.14), transparent 68%);
+}
+
+body.theme-light .vehicle-card::after {
+  background: linear-gradient(145deg, rgba(35, 91, 255, 0.16), rgba(255, 141, 68, 0.14), transparent 58%);
+}
+
+body.theme-light .vehicle-card:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.94),
+    0 28px 56px rgba(28, 48, 87, 0.14);
+  border-color: rgba(35, 91, 255, 0.16);
+}
+
+body.theme-light .card-media {
+  background:
+    radial-gradient(circle at top left, rgba(35, 91, 255, 0.1), transparent 28%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(238, 245, 255, 0.86));
+  border-color: rgba(36, 68, 128, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88);
+}
+
+body.theme-light .card-media::after {
+  background: linear-gradient(180deg, transparent, rgba(35, 91, 255, 0.12));
+}
+
+body.theme-light .type-pill,
+body.theme-light .mini-icon-btn {
+  background: rgba(255, 255, 255, 0.82);
+  border-color: rgba(36, 68, 128, 0.09);
+  color: var(--text);
+}
+
+body.theme-light .promo-pill {
+  background: linear-gradient(135deg, #ff8d44, #ffb84a);
+}
+
+body.theme-light .promo-pill.new {
+  background: linear-gradient(135deg, #49bfff, #235bff);
+}
+
+body.theme-light .card-meta span:last-child,
+body.theme-light .metric-chip,
+body.theme-light .quick-metrics .metric-chip,
+body.theme-light .hot-strip {
+  background: rgba(35, 91, 255, 0.05);
+  border-color: rgba(36, 68, 128, 0.08);
+}
+
+body.theme-light .bar {
+  background: rgba(35, 91, 255, 0.08);
+}
+
 body.theme-light .hero-panel {
   background:
-    radial-gradient(circle at top left, rgba(110, 127, 168, 0.14), transparent 30%),
-    radial-gradient(circle at 88% 18%, rgba(201, 175, 84, 0.12), transparent 24%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.96), rgba(243, 247, 252, 0.92));
+    radial-gradient(circle at 10% 14%, rgba(35, 91, 255, 0.18), transparent 26%),
+    radial-gradient(circle at 84% 16%, rgba(255, 141, 68, 0.14), transparent 24%),
+    radial-gradient(circle at 68% 84%, rgba(24, 188, 154, 0.1), transparent 26%),
+    linear-gradient(135deg, rgba(250, 252, 255, 0.98), rgba(241, 246, 255, 0.94) 58%, rgba(255, 244, 234, 0.92));
   box-shadow: 0 26px 56px rgba(34, 52, 83, 0.08);
 }
 
 body.theme-light .hero-panel::before {
-  background: radial-gradient(circle, rgba(96, 125, 182, 0.16), transparent 64%);
+  background: radial-gradient(circle, rgba(35, 91, 255, 0.16), transparent 64%);
 }
 
 body.theme-light .hero-panel::after {
   background:
-    linear-gradient(112deg, transparent 0 54%, rgba(29, 46, 78, 0.04) 54% 55.5%, transparent 55.5% 100%),
-    linear-gradient(180deg, transparent 0 84%, rgba(29, 46, 78, 0.025) 84% 100%),
-    repeating-linear-gradient(90deg, rgba(29, 46, 78, 0.035) 0 1px, transparent 1px 96px);
+    linear-gradient(112deg, transparent 0 54%, rgba(35, 91, 255, 0.04) 54% 55.5%, transparent 55.5% 100%),
+    linear-gradient(180deg, transparent 0 84%, rgba(255, 141, 68, 0.03) 84% 100%),
+    repeating-linear-gradient(90deg, rgba(35, 91, 255, 0.035) 0 1px, transparent 1px 96px);
 }
 
 body.theme-light .hero-panel h1 {
@@ -2211,110 +2426,114 @@ body.theme-light .leaderboard-head,
 body.theme-light .lb-row,
 body.theme-light .compare-dock,
 body.theme-light .build-shop {
-  border-color: rgba(29, 46, 78, 0.08);
+  border-color: rgba(36, 68, 128, 0.09);
   box-shadow: 0 18px 40px rgba(34, 52, 83, 0.08);
 }
 
 body.theme-light .hero-signal-card {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(244, 247, 252, 0.86));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(243, 248, 255, 0.88));
   box-shadow:
     0 18px 36px rgba(34, 52, 83, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.86);
 }
 
 body.theme-light .hero-signal-card.newest {
-  background: linear-gradient(180deg, rgba(110, 127, 168, 0.14), rgba(255, 255, 255, 0.92));
+  background: linear-gradient(180deg, rgba(35, 91, 255, 0.16), rgba(255, 255, 255, 0.92));
 }
 
 body.theme-light .hero-signal-card.heat {
-  background: linear-gradient(180deg, rgba(201, 175, 84, 0.16), rgba(255, 255, 255, 0.92));
+  background: linear-gradient(180deg, rgba(255, 141, 68, 0.18), rgba(255, 255, 255, 0.92));
 }
 
 body.theme-light .hero-signal-card.build {
-  background: linear-gradient(180deg, rgba(130, 133, 142, 0.12), rgba(255, 255, 255, 0.92));
+  background: linear-gradient(180deg, rgba(24, 188, 154, 0.14), rgba(255, 255, 255, 0.92));
 }
 
 body.theme-light .hero-spotlight {
   background:
-    radial-gradient(circle at top right, rgba(201, 175, 84, 0.12), transparent 32%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(244, 247, 252, 0.9));
+    radial-gradient(circle at top right, rgba(255, 141, 68, 0.14), transparent 32%),
+    radial-gradient(circle at left bottom, rgba(35, 91, 255, 0.08), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(243, 248, 255, 0.9));
   box-shadow:
     0 24px 48px rgba(34, 52, 83, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.86);
 }
 
 body.theme-light .hero-spotlight-score {
-  color: #9e8741;
+  color: #ff8d44;
 }
 
 body.theme-light .hero-spotlight-visual {
   background:
-    radial-gradient(circle at top left, rgba(110, 127, 168, 0.14), transparent 34%),
-    linear-gradient(180deg, rgba(251, 252, 255, 0.96), rgba(237, 242, 249, 0.88));
+    radial-gradient(circle at top left, rgba(35, 91, 255, 0.14), transparent 34%),
+    radial-gradient(circle at 82% 14%, rgba(112, 208, 255, 0.14), transparent 22%),
+    linear-gradient(180deg, rgba(252, 253, 255, 0.98), rgba(236, 243, 255, 0.9));
 }
 
 body.theme-light .kpi {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(244, 247, 252, 0.88));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(243, 248, 255, 0.88));
   box-shadow:
     0 16px 34px rgba(34, 52, 83, 0.07),
     inset 0 1px 0 rgba(255, 255, 255, 0.84);
 }
 
 body.theme-light .kpi-total {
-  background: linear-gradient(180deg, rgba(110, 127, 168, 0.14), rgba(255, 255, 255, 0.92));
+  background: linear-gradient(180deg, rgba(35, 91, 255, 0.14), rgba(255, 255, 255, 0.92));
 }
 
 body.theme-light .kpi-favorites {
-  background: linear-gradient(180deg, rgba(201, 175, 84, 0.16), rgba(255, 255, 255, 0.92));
+  background: linear-gradient(180deg, rgba(255, 141, 68, 0.16), rgba(255, 255, 255, 0.92));
 }
 
 body.theme-light .kpi-garage {
-  background: linear-gradient(180deg, rgba(130, 133, 142, 0.12), rgba(255, 255, 255, 0.92));
+  background: linear-gradient(180deg, rgba(24, 188, 154, 0.14), rgba(255, 255, 255, 0.92));
 }
 
 body.theme-light .leaderboard-head {
   background:
-    linear-gradient(135deg, rgba(201, 175, 84, 0.12), rgba(255, 255, 255, 0.92)),
+    linear-gradient(135deg, rgba(35, 91, 255, 0.1), rgba(255, 141, 68, 0.1)),
     rgba(255, 255, 255, 0.92);
 }
 
 body.theme-light .lb-row {
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(243, 247, 252, 0.88)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(243, 248, 255, 0.88)),
     rgba(255, 255, 255, 0.92);
 }
 
 body.theme-light .lb-rank {
-  background: rgba(29, 46, 78, 0.07);
+  background: rgba(35, 91, 255, 0.07);
   color: var(--text);
 }
 
 body.theme-light .lb-bar-wrap {
-  background: rgba(29, 46, 78, 0.08);
+  background: rgba(35, 91, 255, 0.08);
 }
 
 body.theme-light .compare-dock {
-  background: rgba(250, 252, 255, 0.94);
-  border-color: rgba(29, 46, 78, 0.1);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(243, 248, 255, 0.92)),
+    rgba(255, 255, 255, 0.94);
+  border-color: rgba(36, 68, 128, 0.1);
   box-shadow: 0 26px 54px rgba(34, 52, 83, 0.16);
 }
 
 body.theme-light .compare-slot {
-  background: rgba(21, 32, 51, 0.03);
-  border-color: rgba(29, 46, 78, 0.14);
+  background: rgba(35, 91, 255, 0.04);
+  border-color: rgba(36, 68, 128, 0.14);
   color: var(--text-muted);
 }
 
 body.theme-light .compare-slot.filled {
-  background: linear-gradient(180deg, rgba(110, 127, 168, 0.14), rgba(255, 255, 255, 0.82));
+  background: linear-gradient(180deg, rgba(35, 91, 255, 0.14), rgba(255, 255, 255, 0.82));
   color: var(--text);
 }
 
 body.theme-light .build-shop {
   background:
-    radial-gradient(circle at top left, rgba(110, 127, 168, 0.14), transparent 26%),
-    radial-gradient(circle at 84% 14%, rgba(201, 175, 84, 0.12), transparent 22%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(242, 246, 252, 0.92));
+    radial-gradient(circle at top left, rgba(35, 91, 255, 0.14), transparent 26%),
+    radial-gradient(circle at 84% 14%, rgba(255, 141, 68, 0.12), transparent 22%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(243, 248, 255, 0.92));
   box-shadow:
     0 24px 52px rgba(34, 52, 83, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.9);
@@ -2327,13 +2546,13 @@ body.theme-light .build-panel,
 body.theme-light .build-stage,
 body.theme-light .build-stage-chip,
 body.theme-light .build-nav-tab {
-  border-color: rgba(29, 46, 78, 0.08);
-  background: rgba(21, 32, 51, 0.03);
+  border-color: rgba(36, 68, 128, 0.08);
+  background: rgba(35, 91, 255, 0.03);
 }
 
 body.theme-light .build-shop-badge {
-  background: linear-gradient(135deg, rgba(201, 175, 84, 0.18), rgba(255, 255, 255, 0.9));
-  color: #886f2a;
+  background: linear-gradient(135deg, rgba(255, 141, 68, 0.16), rgba(255, 255, 255, 0.9));
+  color: #ca5a21;
 }
 
 body.theme-light .build-shop-brand,
