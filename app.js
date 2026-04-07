@@ -192,6 +192,23 @@ const EXCITER_155_BUILD_CATEGORIES = [
   }
 ];
 
+const EXCITER_155_MEDIA = {
+  imageUrl: "./media/exciter-155/exciter-155-front-three-quarter-right.webp",
+  photoUrls: [
+    "./media/exciter-155/exciter-155-front-three-quarter-right.webp",
+    "./media/exciter-155/exciter-155-front-three-quarter-left.webp",
+    "./media/exciter-155/exciter-155-front.webp",
+    "./media/exciter-155/exciter-155-side-right.webp",
+    "./media/exciter-155/exciter-155-side-left.webp",
+    "./media/exciter-155/exciter-155-rear-three-quarter-right.webp",
+    "./media/exciter-155/exciter-155-rear-three-quarter-left.webp",
+    "./media/exciter-155/exciter-155-rear.webp"
+  ],
+  videoUrls: [
+    "./media/exciter-155/exciter-155-walkaround.mp4"
+  ]
+};
+
 SEED_VEHICLES.push(
   { id: 1, type: "car", brand: "Toyota", name: "GR Supra", year: 2024, price: 43695, priceStr: "$43,695", cat: "Sports", power: 382, torque: 368, topSpeed: 155, zeroSixty: 3.9, weightLb: 3181, specs: { Engine: "3.0L Turbo I6", Power: "382 HP", Torque: "368 lb-ft", Drivetrain: "RWD", Trans: "8-spd Auto", "0-60": "3.9s", "Top Speed": "155 mph", Weight: "3,181 lbs" }, variants: [{ n: "2.0", p: "$43,695" }, { n: "3.0", p: "$54,195" }, { n: "3.0 A91 Edition", p: "$58,945" }], col: "#1a2e3a" },
   { id: 2, type: "car", brand: "Toyota", name: "GR86", year: 2024, price: 29015, priceStr: "$29,015", cat: "Sports", power: 228, torque: 184, topSpeed: 140, zeroSixty: 6.1, weightLb: 2822, specs: { Engine: "2.4L NA H4", Power: "228 HP", Torque: "184 lb-ft", Drivetrain: "RWD", Trans: "6-spd Manual", "0-60": "6.1s", "Top Speed": "140 mph", Weight: "2,822 lbs" }, variants: [{ n: "Base", p: "$29,015" }, { n: "Premium", p: "$32,415" }], col: "#2a1a1a" },
@@ -246,7 +263,7 @@ SEED_VEHICLES.push(
   { id: 59, type: "bike", brand: "Triumph", name: "Speed Triple 1200 RS", year: 2024, price: 18900, priceStr: "$18,900", cat: "Naked", power: 180, torque: 100, topSpeed: 165, zeroSixty: 2.9, weightLb: 437, specs: { Engine: "1160cc Inline-3", Power: "180 HP", Torque: "100 lb-ft", Seat: "830 mm", Weight: "198 kg", "0-60": "2.9s", "Top Speed": "165 mph", Electronics: "Ohlins Smart EC" }, variants: [{ n: "Speed Triple 1200 RR", p: "$17,200" }, { n: "Speed Triple 1200 RS", p: "$18,900" }], col: "#0a1a2a" },
   { id: 60, type: "bike", brand: "Triumph", name: "Daytona 660", year: 2024, price: 9595, priceStr: "$9,595", cat: "Sports", power: 95, torque: 52, topSpeed: 135, zeroSixty: 4, weightLb: 397, specs: { Engine: "660cc Inline-3", Power: "95 HP", Torque: "52 lb-ft", Seat: "820 mm", Weight: "180 kg", "Top Speed": "135 mph", Tank: "15L", Electronics: "2-mode TC" }, variants: [{ n: "Daytona 660", p: "$9,595" }], col: "#0a1a2a" },
   { id: 61, type: "bike", brand: "Harley-Davidson", name: "Nightster Special", year: 2024, price: 14299, priceStr: "$14,299", cat: "Cruiser", power: 90, torque: 70, topSpeed: 120, zeroSixty: 5, weightLb: 503, specs: { Engine: "975cc Revolution Max", Power: "90 HP", Torque: "70 lb-ft", Seat: "705 mm", Weight: "228 kg", "Top Speed": "120 mph", Tank: "11.7L", Electronics: "Drag Torque SC" }, variants: [{ n: "Nightster", p: "$12,299" }, { n: "Nightster Special", p: "$14,299" }], col: "#2a1a1a" },
-  { id: 70, type: "vn", brand: "Yamaha", name: "Exciter 155 VVA", year: 2024, price: 1150, priceStr: "~47tr VND", cat: "Underbone Sport", power: 19.3, torque: 14.4, topSpeed: 122, zeroSixty: 9.5, weightLb: 268, specs: { Engine: "155cc VVA SOHC", Power: "19.3 HP", Torque: "14.4 Nm", Seat: "795 mm", Weight: "117 kg", "Top Speed": "122 km/h", Tank: "4.2L", Fuel: "~2.5L/100km" }, variants: [{ n: "Exciter 155 Standard", p: "~45.9tr" }, { n: "Exciter 155 Connected", p: "~47.4tr" }, { n: "Exciter 155 RC", p: "~48.9tr" }], buildCategories: EXCITER_155_BUILD_CATEGORIES, col: "#1a1a0a" },
+  { id: 70, type: "vn", brand: "Yamaha", name: "Exciter 155 VVA", year: 2024, price: 1150, priceStr: "~47tr VND", cat: "Underbone Sport", power: 19.3, torque: 14.4, topSpeed: 122, zeroSixty: 9.5, weightLb: 268, specs: { Engine: "155cc VVA SOHC", Power: "19.3 HP", Torque: "14.4 Nm", Seat: "795 mm", Weight: "117 kg", "Top Speed": "122 km/h", Tank: "4.2L", Fuel: "~2.5L/100km" }, variants: [{ n: "Exciter 155 Standard", p: "~45.9tr" }, { n: "Exciter 155 Connected", p: "~47.4tr" }, { n: "Exciter 155 RC", p: "~48.9tr" }], ...EXCITER_155_MEDIA, buildCategories: EXCITER_155_BUILD_CATEGORIES, col: "#1a1a0a" },
   { id: 71, type: "vn", brand: "Honda", name: "Winner X", year: 2024, price: 1100, priceStr: "~46.5tr VND", cat: "Underbone Sport", power: 14.8, torque: 13.5, topSpeed: 118, zeroSixty: 10.2, weightLb: 253, specs: { Engine: "150cc eSP+ SOHC", Power: "14.8 HP", Torque: "13.5 Nm", Seat: "785 mm", Weight: "115 kg", "Top Speed": "118 km/h", Tank: "4.1L", Fuel: "~2.0L/100km" }, variants: [{ n: "Standard", p: "~45.9tr" }, { n: "Special Edition", p: "~48.9tr" }], col: "#2a1a0a" },
   { id: 72, type: "vn", brand: "Yamaha", name: "NVX 155", year: 2024, price: 1050, priceStr: "~50tr VND", cat: "Maxi Scooter", power: 15.1, torque: 13.8, topSpeed: 115, zeroSixty: 9.8, weightLb: 291, specs: { Engine: "155cc VVA SOHC", Power: "15.1 HP", Torque: "13.8 Nm", Seat: "785 mm", Weight: "132 kg", "Top Speed": "115 km/h", Tank: "5.5L", Fuel: "~2.4L/100km" }, variants: [{ n: "NVX 155", p: "~49.9tr" }, { n: "NVX 155 Premium", p: "~52.9tr" }], col: "#0f1a2a" },
   { id: 73, type: "vn", brand: "Honda", name: "Air Blade 150", year: 2024, price: 980, priceStr: "~43.5tr VND", cat: "Scooter", power: 13.6, torque: 13.1, topSpeed: 110, zeroSixty: 10.5, weightLb: 255, specs: { Engine: "150cc eSP+ SOHC", Power: "13.6 HP", Torque: "13.1 Nm", Seat: "764 mm", Weight: "113 kg", "Top Speed": "110 km/h", Tank: "3.7L", Fuel: "~1.9L/100km" }, variants: [{ n: "Standard", p: "~43.5tr" }, { n: "Special", p: "~44.9tr" }], col: "#1a2a1a" },
@@ -891,7 +908,7 @@ function renderVehicleModal(vehicle) {
       <div class="detail-tabs">
         ${detailTabButton("specs", "Specs")}
         ${detailTabButton("performance", "Performance")}
-        ${detailTabButton("photos", "Real Photos")}
+        ${detailTabButton("photos", "Ảnh & video")}
         ${detailTabButton("reviews", "Review")}
         ${detailTabButton("share", "Share")}
         ${hasBuildSheet(vehicle) ? detailTabButton("build", "Độ xe") : ""}
@@ -946,9 +963,40 @@ function renderPerformanceTab(vehicle) {
 }
 
 function renderPhotosTab(vehicle) {
-  const photos = vehicle.photoUrls.length ? vehicle.photoUrls : [vehicle.imageUrl].filter(Boolean);
-  if (!photos.length) return '<div class="empty-state"><strong>No real-world photos yet.</strong><div>Add your own machine with multiple image URLs to populate this gallery.</div></div>';
-  return `<div class="photo-grid">${photos.map((url, index) => `<figure><img src="${escapeAttr(url)}" alt="${escapeAttr(`${vehicle.name} ${index + 1}`)}" loading="lazy" referrerpolicy="no-referrer"><figcaption>${index === 0 ? "Primary shot" : `Real photo ${index + 1}`}</figcaption></figure>`).join("")}</div>`;
+  const photos = Array.isArray(vehicle.photoUrls) ? vehicle.photoUrls.filter(Boolean) : [vehicle.imageUrl].filter(Boolean);
+  const videos = Array.isArray(vehicle.videoUrls) ? vehicle.videoUrls.filter(Boolean) : [];
+  if (!photos.length && !videos.length) return '<div class="empty-state"><strong>No images or videos yet.</strong><div>Add your own machine with photo URLs or local media to populate this gallery.</div></div>';
+  return `
+    <div class="media-gallery">
+      <div class="media-gallery-head">
+        <div>
+          <strong>${escapeHtml(vehicle.name)} media</strong>
+          <div>${videos.length ? "Bộ ảnh chi tiết và video walkaround cho xe này." : "Bộ ảnh chi tiết cho xe này."}</div>
+        </div>
+        <div class="media-gallery-stats">
+          ${videos.length ? `<span class="media-count">${videos.length} video</span>` : ""}
+          ${photos.length ? `<span class="media-count">${photos.length} ảnh</span>` : ""}
+        </div>
+      </div>
+      ${videos.length ? `<div class="media-video-grid">${videos.map((url, index) => `
+        <figure class="media-video-card">
+          <video controls preload="metadata" playsinline poster="${escapeAttr(photos[0] || "")}">
+            <source src="${escapeAttr(url)}" type="video/mp4">
+          </video>
+          <figcaption>
+            <strong>${index === 0 ? "Video chính" : `Video ${index + 1}`}</strong>
+            <span>MP4 local clip</span>
+          </figcaption>
+        </figure>
+      `).join("")}</div>` : ""}
+      ${photos.length ? `<div class="photo-grid">${photos.map((url, index) => `
+        <figure>
+          <img src="${escapeAttr(url)}" alt="${escapeAttr(`${vehicle.name} ${index + 1}`)}" loading="lazy">
+          <figcaption>${index === 0 ? "Ảnh chính" : `Góc chụp ${index + 1}`}</figcaption>
+        </figure>
+      `).join("")}</div>` : ""}
+    </div>
+  `;
 }
 
 function renderReviewsTab(vehicle) {
@@ -1749,6 +1797,7 @@ function normalizeVehicle(vehicle, isUser = false) {
     engineType: inferEngineType(specs.Engine || vehicle.engineType || ""),
     imageUrl: vehicle.imageUrl || "",
     photoUrls: buildPhotoUrls(vehicle),
+    videoUrls: Array.isArray(vehicle.videoUrls) ? [...new Set(vehicle.videoUrls.filter(Boolean))] : [],
     variants,
     specs,
     badgeLabel: vehicle.badgeLabel || PROMO_BADGES[vehicle.id] || (vehicle.year >= 2025 ? "New 2025" : ""),
@@ -1760,10 +1809,12 @@ function buildPhotoUrls(vehicle) {
   const given = [];
   if (vehicle.imageUrl) given.push(vehicle.imageUrl);
   if (Array.isArray(vehicle.photoUrls)) given.push(...vehicle.photoUrls);
+  const curated = [...new Set(given.filter(Boolean))];
+  if (curated.length) return curated;
   const pool = PHOTO_POOLS[vehicle.type] || PHOTO_POOLS.car;
   const seedIndex = Math.abs(hashCode(String(vehicle.id))) % pool.length;
   const fallback = [pool[seedIndex], pool[(seedIndex + 1) % pool.length], pool[(seedIndex + 2) % pool.length]];
-  return [...new Set([...given.filter(Boolean), ...fallback])];
+  return [...new Set(fallback)];
 }
 
 function metricChip(label, value) {
