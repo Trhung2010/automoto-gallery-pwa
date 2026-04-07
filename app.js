@@ -1362,6 +1362,7 @@ function submitAiPrompt(rawPrompt) {
 function answerAi(rawQuery) {
   const query = normalizeText(rawQuery);
   const allVehicles = [...state.allVehicles];
+  const comparePair = resolveCompareVehicles(rawQuery, allVehicles);
   if (isBuildBudgetQuery(rawQuery)) {
     return answerBudgetBuildQuery(rawQuery);
   }
@@ -1371,9 +1372,8 @@ function answerAi(rawQuery) {
       return buildStarterPlanAnswer(vehicle, `Dùng context từ ảnh gần nhất của ${vehicle.brand} ${vehicle.name}.`);
     }
   }
-  if (/so sanh|compare|vs/.test(query)) {
-    const pair = resolveCompareVehicles(rawQuery, allVehicles);
-    if (pair) return buildCompareAnswer(pair[0], pair[1]);
+  if (comparePair && isCompareIntent(query)) {
+    return buildCompareAnswer(rawQuery, comparePair[0], comparePair[1]);
   }
   if ((/most powerful|highest power|strongest|manh nhat|cong suat cao nhat/.test(query)) && /(under|below|less than|duoi|nho hon)/.test(query)) {
     const budget = parseBudgetFromQuery(query);
@@ -1515,7 +1515,7 @@ function resolveCompareVehicles(query, vehicles = state.allVehicles) {
     .replace(/\bcompare\b/g, " ")
     .replace(/\bso sanh\b/g, " ")
     .trim();
-  const segments = source.split(/\bvs\b|\bvoi\b|,/).map((segment) => segment.trim()).filter(Boolean);
+  const segments = source.split(/\bvs\b|\bvoi\b|\bhay\b|,|\/|&/).map((segment) => segment.trim()).filter(Boolean);
   if (segments.length >= 2) {
     const first = resolveAiVehicleReference(segments[0], vehicles, 4)?.vehicle;
     const second = resolveAiVehicleReference(segments[1], vehicles, 4)?.vehicle;
@@ -1528,6 +1528,10 @@ function resolveCompareVehicles(query, vehicles = state.allVehicles) {
     if (second) return [first, second];
   }
   return null;
+}
+
+function isCompareIntent(query) {
+  return /(so sanh|compare|vs|voi|hay|khac nhau|hon nhau|xe nao hon|xe nao ngon hon|tot hon|ngon hon|nen mua|chon xe nao|xe nao hop hon)/.test(query);
 }
 
 function isBuildBudgetQuery(query) {
@@ -1688,17 +1692,33 @@ function buildSingleVehicleAnswer(title, vehicle, note) {
   return `<div>${escapeHtml(title)}:</div>${aiResultCard(vehicle, note)}`;
 }
 
-function buildCompareAnswer(first, second) {
-  const faster = first.topSpeedKph > second.topSpeedKph ? first : second;
-  const stronger = first.powerHp > second.powerHp ? first : second;
-  const cheaper = first.priceUsd < second.priceUsd ? first : second;
+function buildCompareAnswer(rawQuery, first, second) {
+  const focus = inferCompareFocus(rawQuery);
+  const stronger = compareVehiclesByMetric(first, second, (vehicle) => vehicle.powerHp, "higher");
+  const torquier = compareVehiclesByMetric(first, second, (vehicle) => vehicle.torqueNm, "higher");
+  const faster = compareVehiclesByMetric(first, second, (vehicle) => vehicle.topSpeedKph, "higher");
+  const cheaper = compareVehiclesByMetric(first, second, (vehicle) => vehicle.priceUsd, "lower");
+  const lighter = compareVehiclesByMetric(first, second, (vehicle) => vehicle.weightKg, "lower");
+  const thriftier = compareVehiclesByMetric(first, second, (vehicle) => vehicle.fuelUseL, "lower");
+  const buildWinner = hasBuildSheet(first) !== hasBuildSheet(second) ? (hasBuildSheet(first) ? first : second) : (stronger.winner || first);
+  const verdict = compareVerdictText(focus, { first, second, stronger, torquier, faster, cheaper, lighter, thriftier, buildWinner });
   return `
     <div class="ai-suggestion">
       <div class="ai-result">
         <strong>${escapeHtml(first.name)} vs ${escapeHtml(second.name)}</strong>
-        <div>More power: ${escapeHtml(stronger.name)} (${formatPower(stronger)})</div>
-        <div>Faster: ${escapeHtml(faster.name)} (${formatTopSpeed(faster)})</div>
-        <div>Cheaper: ${escapeHtml(cheaper.name)} (${formatUsd(cheaper.priceUsd)})</div>
+        <div>${verdict}</div>
+        <div class="ai-plan-list">
+          ${compareHighlightRow("Power", stronger, formatPower)}
+          ${compareHighlightRow("Torque", torquier, formatTorque)}
+          ${compareHighlightRow("Top speed", faster, formatTopSpeed)}
+          ${compareHighlightRow("Price", cheaper, comparePriceLabel)}
+          ${thriftier.winner ? compareHighlightRow("Consumption", thriftier, (vehicle) => formatFuelUse(vehicle.fuelUseL)) : ""}
+          ${lighter.winner ? compareHighlightRow("Weight", lighter, formatWeight) : ""}
+          <div class="ai-plan-item">
+            <strong>Build support</strong>
+            <span>${escapeHtml(compareBuildSupportLabel(first, second))}</span>
+          </div>
+        </div>
         <div class="ai-inline-actions">
           <button class="chip-btn" type="button" data-ai-open="${escapeAttr(first.id)}">View ${escapeHtml(first.name)}</button>
           <button class="chip-btn" type="button" data-ai-open="${escapeAttr(second.id)}">View ${escapeHtml(second.name)}</button>
@@ -1707,6 +1727,86 @@ function buildCompareAnswer(first, second) {
       </div>
     </div>
   `;
+}
+
+function compareVehiclesByMetric(first, second, getter, preference = "higher") {
+  const firstValue = getter(first);
+  const secondValue = getter(second);
+  if (firstValue == null || secondValue == null || !Number.isFinite(firstValue) || !Number.isFinite(secondValue)) {
+    return { winner: null, loser: null, firstValue, secondValue, delta: null };
+  }
+  if (firstValue === secondValue) {
+    return { winner: null, loser: null, firstValue, secondValue, delta: 0 };
+  }
+  const firstWins = preference === "lower" ? firstValue < secondValue : firstValue > secondValue;
+  return {
+    winner: firstWins ? first : second,
+    loser: firstWins ? second : first,
+    firstValue,
+    secondValue,
+    delta: Math.abs(firstValue - secondValue)
+  };
+}
+
+function compareHighlightRow(label, metric, formatter) {
+  if (!metric?.winner || !metric.loser) return "";
+  return `
+    <div class="ai-plan-item">
+      <strong>${escapeHtml(label)}</strong>
+      <span>${escapeHtml(metric.winner.name)} dẫn với ${escapeHtml(formatter(metric.winner))} so với ${escapeHtml(formatter(metric.loser))}</span>
+    </div>
+  `;
+}
+
+function comparePriceLabel(vehicle) {
+  return vehicle.priceStr || formatUsd(vehicle.priceUsd);
+}
+
+function compareBuildSupportLabel(first, second) {
+  if (hasBuildSheet(first) && hasBuildSheet(second)) return `${first.name} và ${second.name} đều có build sheet nội bộ`;
+  if (hasBuildSheet(first)) return `${first.name} có build sheet nội bộ, ${second.name} thì chưa`;
+  if (hasBuildSheet(second)) return `${second.name} có build sheet nội bộ, ${first.name} thì chưa`;
+  return "Cả hai xe hiện chưa có build sheet nội bộ";
+}
+
+function inferCompareFocus(query) {
+  const source = normalizeText(query);
+  if (/(manh|power|torque|top speed|nhanh|performance|hieu nang|boc)/.test(source)) return "performance";
+  if (/(gia|re|value|dang tien|kinh te|chi phi)/.test(source)) return "value";
+  if (/(xang|fuel|tiet kiem|economy|consumption)/.test(source)) return "economy";
+  if (/(do|mod|build|setup|len do)/.test(source)) return "build";
+  if (/(hang ngay|daily|pho|di pho|de lai|de di|commute)/.test(source)) return "daily";
+  return "general";
+}
+
+function compareVerdictText(focus, context) {
+  const { first, second, stronger, faster, cheaper, thriftier, lighter, buildWinner } = context;
+  const powerLeader = stronger.winner || first;
+  const speedLeader = faster.winner || powerLeader;
+  const priceLeader = cheaper.winner || first;
+  const fuelLeader = thriftier.winner;
+  const lightLeader = lighter.winner;
+
+  if (focus === "performance") {
+    return `${escapeHtml(powerLeader.name)} hợp hơn nếu bạn ưu tiên hiệu năng. Nó nhỉnh hơn về công suất${speedLeader ? ` và tốc độ tối đa` : ""}${context.torquier.winner ? `, còn ${escapeHtml(context.torquier.winner.name)} cũng đang dẫn về torque` : ""}.`;
+  }
+  if (focus === "value") {
+    return `${escapeHtml(priceLeader.name)} đáng tiền hơn nếu bạn ưu tiên chi phí đầu vào. ${escapeHtml(powerLeader.name)} vẫn nhỉnh hơn về sức mạnh, nên chọn theo việc bạn cần tiết kiệm hay cần hiệu năng.`;
+  }
+  if (focus === "economy") {
+    if (fuelLeader) {
+      return `${escapeHtml(fuelLeader.name)} hợp hơn cho bài toán tiết kiệm xăng. ${escapeHtml(priceLeader.name)} cũng dễ chịu hơn ở chi phí đầu tư nếu bạn ưu tiên đi hằng ngày.`;
+    }
+    return `${escapeHtml(priceLeader.name)} có lợi thế hơn về chi phí đầu vào. Dataset hiện chưa đủ dữ liệu tiêu thụ nhiên liệu cho cả hai để chốt tuyệt đối về độ tiết kiệm.`;
+  }
+  if (focus === "build") {
+    return `${escapeHtml(buildWinner.name)} hợp hơn nếu bạn hỏi theo hướng độ xe. Nó có nền hiệu năng tốt hơn${hasBuildSheet(buildWinner) ? " và đã có build sheet nội bộ để AI gợi ý đồ tiếp" : ""}.`;
+  }
+  if (focus === "daily") {
+    const dailyWinner = fuelLeader || priceLeader || lightLeader || second;
+    return `${escapeHtml(dailyWinner.name)} hợp hơn để đi hằng ngày nếu bạn ưu tiên dễ nuôi và dễ sống. ${escapeHtml(powerLeader.name)} vẫn hấp dẫn hơn nếu bạn muốn cảm giác máy bốc hơn.`;
+  }
+  return `${escapeHtml(powerLeader.name)} nhỉnh hơn về hiệu năng, còn ${escapeHtml(priceLeader.name)} dễ tiếp cận hơn về giá${fuelLeader ? ` và ${escapeHtml(fuelLeader.name)} cũng có lợi thế hơn về mức tiêu thụ` : ""}. Nếu ưu tiên chạy bốc và chơi đồ thì nghiêng về ${escapeHtml(buildWinner.name)}; nếu ưu tiên chi phí và đi hằng ngày thì nghiêng về ${escapeHtml(priceLeader.name)}.`;
 }
 
 function aiResultCard(vehicle, note = "") {
