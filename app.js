@@ -429,7 +429,6 @@ function init() {
   syncTypeButtons();
   bindEvents();
   syncInstallButton();
-  seedAiMessages();
   renderAll();
   registerServiceWorker();
   handleHashState();
@@ -518,10 +517,6 @@ function bindEvents() {
   refs.vehicleContent.addEventListener("submit", handleVehicleModalSubmit);
   refs.compareContent.addEventListener("click", handleCompareModalClick);
   refs.garageForm.addEventListener("submit", handleGarageSubmit);
-  refs.aiFab.addEventListener("click", () => openOverlay("ai"));
-  refs.aiForm.addEventListener("submit", handleAiSubmit);
-  refs.aiImageInput.addEventListener("change", handleAiImageInput);
-  refs.aiOverlay.addEventListener("click", handleAiOverlayClick);
   refs.closeButtons.forEach((button) => {
     button.addEventListener("click", () => closeOverlay(button.dataset.close));
   });
@@ -696,7 +691,6 @@ function renderAll() {
   renderGallery();
   renderLeaderboard();
   renderCompareDock();
-  renderAiChat();
 }
 
 function renderHero() {
@@ -2165,9 +2159,6 @@ function openOverlay(kind) {
   if (!overlay) return;
   overlay.classList.add("show");
   refs.body.classList.add("modal-open");
-  if (overlay === refs.aiOverlay) {
-    requestAnimationFrame(() => refs.aiInput.focus());
-  }
 }
 
 function closeOverlay(idOrKind) {
@@ -2185,7 +2176,6 @@ function getOverlayElement(kind) {
   if (kind === "vehicle" || kind === "vehicleModalOverlay") return refs.vehicleOverlay;
   if (kind === "compare" || kind === "compareModalOverlay") return refs.compareOverlay;
   if (kind === "garage" || kind === "garageModalOverlay") return refs.garageOverlay;
-  if (kind === "ai" || kind === "aiModalOverlay") return refs.aiOverlay;
   return document.getElementById(kind);
 }
 
