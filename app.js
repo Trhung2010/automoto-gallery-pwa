@@ -83,6 +83,115 @@ const PROMO_BADGES = {
   109: "New 2025"
 };
 
+const EXCITER_155_BUILD_CATEGORIES = [
+  {
+    title: "I. HỆ THỐNG PHANH & KIỂM SOÁT",
+    note: "Phanh trước, phanh sau, dây dầu và combo đĩa dành cho Exciter 155.",
+    items: [
+      { name: "Cùm thắng dầu Brembo Corsacorta RCS 19", brand: "Brembo", sku: "–", desc: "Cùm thắng dầu đúc CNC (front master cylinder).", fitment: "Màu đen, kẹp 17–18mm", price: "7.700.000 VNĐ" },
+      { name: "Cùm thắng dầu Brembo Billet 19x18", brand: "Brembo", sku: "–", desc: "Cùm thắng dầu CNC Billet (nhôm nguyên khối).", fitment: "Màu đen, kẹp 17–18mm", price: "Liên hệ" },
+      { name: "Cùm thắng dầu Brembo RCS 16", brand: "Brembo", sku: "–", desc: "Cùm thắng dầu Brembo RCS 16 có núm chỉnh.", fitment: "–", price: "6.500.000 VNĐ" },
+      { name: "Cùm thắng dầu GALESPEED VRC φ19", brand: "GaleSpeed", sku: "VRC19A-17BT", desc: "Master Cylinder GALESPEED VRC φ19.", fitment: "Kẹp tiêu chuẩn 17x19mm", price: "7.800.000 VNĐ" },
+      { name: "Cùm thắng dầu GALESPEED RM φ14", brand: "GaleSpeed", sku: "RM14X-17B", desc: "Master Cylinder GALESPEED RM φ14.", fitment: "Kẹp tiêu chuẩn 17mm", price: "6.700.000 VNĐ" },
+      { name: "Cùm thắng dầu GALESPEED Elaborate φ19", brand: "GaleSpeed", sku: "RE19A-17B", desc: "Cùm thắng dầu Elaborate φ19 mẫu mới.", fitment: "Kẹp 17/18mm, bánh răng tích hợp", price: "14.000.000 VNĐ" },
+      { name: "Cùm thắng dầu GALESPEED Elaborate φ17.5", brand: "GaleSpeed", sku: "VRE17A-17BT", desc: "Cùm thắng dầu Elaborate φ17.5 có chân bình dầu.", fitment: "Kẹp 17.5mm, có chân bình dầu", price: "15.600.000 VNĐ" },
+      { name: "Cần thắng sau GALESPEED (Brake Pedal)", brand: "GaleSpeed", sku: "GSTH12-17B", desc: "Thanh thắng sau nhôm CNC GALESPEED.", fitment: "Màu đen / nhiều màu theo hãng", price: "13.200.000 VNĐ" },
+      { name: "Heo dầu Brembo 2 piston đối xứng", brand: "Brembo", sku: "–", desc: "Heo dầu Brembo 2 piston logo lớn.", fitment: "Màu đỏ / đen theo hãng", price: "2.950.000 VNĐ" },
+      { name: "Đĩa phanh KingSpeed 245/200mm", brand: "KingSpeed", sku: "–", desc: "Combo đĩa phanh lớn KingSpeed trước 245mm, sau 200mm.", fitment: "Gắn zin Exciter 155", price: "Chưa rõ" },
+      { name: "Dây dầu HEL (bấm đầu Earl’s)", brand: "HEL (Earl's)", sku: "–", desc: "Dây dầu phanh HEL bấm đầu Earl’s 90°.", fitment: "Dài khoảng 50cm, màu đỏ / đen", price: "~1.950.000 VNĐ" },
+      { name: "Dây dầu Piranha (bấm đầu Earl’s)", brand: "Piranha", sku: "–", desc: "Dây dầu phanh Piranha bấm đầu Earl’s 90°.", fitment: "–", price: "450.000 VNĐ" },
+      { name: "Dây dầu Swit (Renna) (bấm Earl’s)", brand: "Swit (Renna)", sku: "–", desc: "Dây dầu phanh Swit bấm đầu Earl’s 90°.", fitment: "–", price: "950.000 VNĐ" }
+    ]
+  },
+  {
+    title: "II. DÀN CHÂN & HỆ THỐNG TREO",
+    note: "Mâm, lốp và phuộc trước / sau cho bản độ thiên street - track.",
+    items: [
+      { name: "Mâm Enkei 3 Đao Exciter 150/155", brand: "Enkei", sku: "–", desc: "Mâm xe CNC 3 chấu 17 inch cho Exciter 150/155.", fitment: "Nhiều màu: đen, đỏ, xanh", price: "~9.500.000–10.500.000 VNĐ" },
+      { name: "Lốp Pirelli Diablo Rosso II 90/80-17", brand: "Pirelli", sku: "–", desc: "Vỏ thể thao trước, tăng ma sát.", fitment: "90/80-17", price: "~1.500.000 VNĐ" },
+      { name: "Lốp Pirelli Diablo Rosso II 120/70-17", brand: "Pirelli", sku: "–", desc: "Vỏ thể thao sau, tăng bám đường.", fitment: "120/70-17", price: "~1.800.000 VNĐ" },
+      { name: "Phuộc trước LCM V2 cho Exciter 150/155", brand: "LCM (Ý)", sku: "–", desc: "Phuộc trước truyền thống ty 32mm.", fitment: "VVA, nhiều màu", price: "3.800.000 VNĐ" },
+      { name: "Phuộc trước LCM V1 cho Exciter 150/155", brand: "LCM (Ý)", sku: "–", desc: "Phuộc trước truyền thống ty 32mm.", fitment: "VVA, có ty vàng hoặc 7 màu", price: "3.600.000–4.000.000 VNĐ" },
+      { name: "Phuộc sau Ohlins YA-769 (208mm)", brand: "Ohlins", sku: "KG071005", desc: "Phuộc sau hơi, bình dầu rời, điều chỉnh full.", fitment: "Đen / Carbon, có bình dầu", price: "15.950.000 VNĐ" },
+      { name: "Phuộc sau RCB E2 (bình dầu, ty vàng)", brand: "RCB (Nhật)", sku: "E-280", desc: "Phuộc sau bình dầu DB-2, ty vàng 50mm.", fitment: "Ty trước 50mm", price: "4.500.000 VNĐ" },
+      { name: "Phuộc sau RCB E2 (bình dầu)", brand: "RCB (Nhật)", sku: "–", desc: "Phuộc sau bình dầu DB-2.", fitment: "Ty vàng / bạc", price: "1.600.000 VNĐ" },
+      { name: "Phuộc sau RCB M2 (bình dầu)", brand: "RCB (Nhật)", sku: "–", desc: "Phuộc sau bình dầu M2.", fitment: "Có nhiều màu: xanh, vàng", price: "1.100.000 VNĐ" }
+    ]
+  },
+  {
+    title: "III. THẨM MỸ & VỎ XE",
+    note: "Các món dọn ngoài, nhấn mạnh ngoại hình và chi tiết CNC.",
+    items: [
+      { name: "Ốp mặt nạ vân carbon Candy Red", brand: "Hoàng Trí Racing", sku: "Ex155-037", desc: "Ốp mặt nạ sơn Candy màu đỏ có vân carbon.", fitment: "Exciter 155 Plug & Play", price: "150.000 VNĐ" },
+      { name: "Ốp pô vân carbon (chính hãng)", brand: "Yamaha (VN)", sku: "90798VT00500", desc: "Ốp pô nhựa hàng chính hãng vân carbon.", fitment: "Exciter 155 loại zin", price: "279.000 VNĐ" },
+      { name: "Ốc đĩa Salaya inox 8ly (bộ 5 con)", brand: "Salaya", sku: "–", desc: "Bộ ốc đĩa CNC 8ly bằng inox.", fitment: "5 con / bộ", price: "155.000 VNĐ" },
+      { name: "Kính gù CRG 1.1 (bar-end mirror)", brand: "CRG (Ý)", sku: "Kinh-k", desc: "Gương gù CNC CRG 1.1 chính hãng Taiwan.", fitment: "Màu bạc inox", price: "350.000 VNĐ" }
+    ]
+  },
+  {
+    title: "IV. HỆ THỐNG CHIẾU SÁNG",
+    note: "Xi-nhan, đèn cos / pha và đèn hậu phong cách MotoGP.",
+    items: [
+      { name: "Cụm xi-nhan LED Shark Power (bộ 2 cái)", brand: "Shark Power", sku: "–", desc: "Xi-nhan LED đơn lắp trước plug & play.", fitment: "Màu trong, LED trắng", price: "750.000 VNĐ" },
+      { name: "Cụm đèn cos Bi-xenon Shark Power (45°)", brand: "Shark Power", sku: "–", desc: "Cụm đèn cos Bi-xenon thay cho cos zin.", fitment: "LED trắng, bóng Bi-xenon", price: "1.800.000 VNĐ" },
+      { name: "Cụm đèn pha Bi-xenon Shark Power", brand: "Shark Power", sku: "–", desc: "Cụm đèn pha Bi-xenon thay thế toàn bộ.", fitment: "LED trắng, bóng Bi-xenon", price: "2.500.000 VNĐ" },
+      { name: "Đèn hậu LED TST V2.0", brand: "TST Industries", sku: "–", desc: "Đèn hậu LED tích hợp xi-nhan kiểu MotoGP.", fitment: "–", price: "850.000 VNĐ" },
+      { name: "Xi-nhan LED Spirit Beast L14 (bộ 4 đèn)", brand: "Spirit Beast", sku: "–", desc: "Xi-nhan LED Spirit Beast L14, 4 bóng LED.", fitment: "4 đèn LED, vỏ nhựa trong", price: "Chưa rõ" }
+    ]
+  },
+  {
+    title: "V. PHỤ KIỆN & BẢO VỆ",
+    note: "Bảo vệ két nước, lốc máy và các chi tiết chống đổ / tay dắt.",
+    items: [
+      { name: "Gù chống đổ sau K20 (chắn chân)", brand: "K20", sku: "–", desc: "Gù chống đổ lắp gác chân sau, nhôm CNC.", fitment: "Màu vàng, bạc", price: "Chưa rõ" },
+      { name: "Che két nước nhôm CNC Exciter 155", brand: "Hoàng Trí Racing", sku: "–", desc: "Ốp bảo vệ két nước nhôm CNC.", fitment: "Exciter 155", price: "Chưa rõ" },
+      { name: "Cảng sau nhôm CNC (tay dắt sau)", brand: "–", sku: "–", desc: "Tay vịn / giữ sau nhôm CNC cho xe.", fitment: "–", price: "Chưa rõ", source: "Không tìm thấy" },
+      { name: "Ốp bảo vệ lốc máy (CNC)", brand: "–", sku: "–", desc: "Ốp bảo vệ lốc máy nhôm CNC.", fitment: "–", price: "Chưa rõ", source: "Không tìm thấy" }
+    ]
+  },
+  {
+    title: "VI. KHU VỰC GHI ĐÔNG",
+    note: "Bao tay, gương gù, trợ lực và đồng hồ điện tử cho cockpit.",
+    items: [
+      { name: "Bao tay Barracuda (cặp)", brand: "Barracuda", sku: "–", desc: "Bao tay nhôm / cao su Barracuda chính hãng Đài Loan.", fitment: "Nhiều màu: đen, đỏ", price: "Chưa rõ" },
+      { name: "Gương gù CRG 1.1 (cặp)", brand: "CRG (Ý)", sku: "Kinh-k", desc: "Gương gù bar-end CRG 1.1, CNC.", fitment: "Màu inox bạc", price: "350.000 VNĐ" },
+      { name: "Trợ lực Ohlins SBK (cổ)", brand: "Ohlins", sku: "–", desc: "Trợ lực tay lái Ohlins SBK gắn cổ phuộc.", fitment: "Màu vàng", price: "Chưa rõ", source: "Không tìm thấy" },
+      { name: "Trợ lực Matris (cổ)", brand: "Matris", sku: "–", desc: "Trợ lực tay lái Matris Italy.", fitment: "Màu đen, vàng", price: "Chưa rõ", source: "Không tìm thấy" },
+      { name: "Đồng hồ LCD màu (đa sắc)", brand: "Koso / Full màu", sku: "–", desc: "Đồng hồ điện tử màu đa sắc plug & play.", fitment: "–", price: "~1.000.000–2.000.000 VNĐ", source: "Không tìm thấy" }
+    ]
+  },
+  {
+    title: "VII. TIỆN ÍCH & CÔNG NGHỆ",
+    note: "Smartkey, báo động, GPS, sạc nhanh và camera hành trình.",
+    items: [
+      { name: "Ổ khóa Smartkey Exciter 155 (nâng cấp)", brand: "Yamaha / aftermarket", sku: "–", desc: "Module Smartkey thay thế khóa cơ.", fitment: "Màu vàng / đen", price: "4.500.000 VNĐ" },
+      { name: "Thiết bị chống trộm (cảm biến rung)", brand: "–", sku: "–", desc: "Module báo động rung / va chạm không dây.", fitment: "–", price: "Chưa rõ", source: "Không tìm thấy" },
+      { name: "Thiết bị định vị GPS (tracker)", brand: "–", sku: "–", desc: "Thiết bị định vị GPS chống trộm cho xe máy.", fitment: "–", price: "500.000–1.200.000 VNĐ", source: "Không tìm thấy" },
+      { name: "Cổng sạc USB nhanh (QC3.0)", brand: "–", sku: "–", desc: "Cổng sạc điện thoại USB nhanh 3.0A.", fitment: "1-2 cổng, QC3.0", price: "300.000–500.000 VNĐ", source: "Không tìm thấy" },
+      { name: "Camera hành trình (Full HD)", brand: "–", sku: "–", desc: "Camera hành trình gắn đầu xe, quay Full HD.", fitment: "–", price: "1.000.000–2.000.000 VNĐ", source: "Không tìm thấy" }
+    ]
+  },
+  {
+    title: "VIII. MÁY MÓC",
+    note: "ECU, lọc gió, họng xăng, truyền động và các hạng mục nâng cấp hiệu năng.",
+    items: [
+      { name: "Bộ PXL Redleo Exciter 150/155 VVA (bản thương mại)", brand: "Redleo", sku: "–", desc: "ECU plug-and-play Redleo bản thương mại.", fitment: "Cho Exciter 155 VVA", price: "5.960.000 VNĐ" },
+      { name: "ECU aRacer Super X / Kozi (đang tìm kiếm)", brand: "–", sku: "–", desc: "Đang tìm thêm ECU khác cho Exciter 155.", fitment: "–", price: "Chưa rõ", source: "Không tìm thấy" },
+      { name: "Mobin MSD / Uma, bugi Iridium, dây cao áp", brand: "–", sku: "–", desc: "Nhóm sản phẩm đánh lửa đang tìm kiếm.", fitment: "–", price: "Chưa rõ", source: "Không tìm thấy" },
+      { name: "Lọc gió K&N YA-1515 cho Exciter 155", brand: "K&N (USA)", sku: "YA-1515", desc: "Lọc gió thể thao thay thế zin.", fitment: "Dùng cho Exciter 155", price: "1.100.000 VNĐ" },
+      { name: "Họng xăng BRT CNC (32/34/36mm)", brand: "BRT (VN)", sku: "BRTTB00015", desc: "Họng xăng độ CNC 32 / 34 / 36mm.", fitment: "Cho Exciter 155 VVA", price: "1.500.000 VNĐ" },
+      { name: "Các mẫu họng xăng khác (đang tìm kiếm)", brand: "–", sku: "–", desc: "Chưa tìm thấy thêm sản phẩm họng xăng khác.", fitment: "–", price: "Chưa rõ", source: "Không tìm thấy" },
+      { name: "Hệ thống xả Uma / STB / LeoVince, cổ pô Titan, tiêu pô", brand: "–", sku: "–", desc: "Danh mục pô và cổ pô đang tìm kiếm.", fitment: "–", price: "Chưa rõ", source: "Không tìm thấy" },
+      { name: "Cam độ, xupap, lò xo Titan, chén chặn Titan", brand: "–", sku: "–", desc: "Danh mục độ cam và valvetrain đang tìm kiếm.", fitment: "–", price: "Chưa rõ", source: "Không tìm thấy" },
+      { name: "Lá bố Uma / Kozi, lò xo côn, nồi CNC", brand: "–", sku: "–", desc: "Các sản phẩm ly hợp và nồi đang tìm kiếm.", fitment: "–", price: "Chưa rõ", source: "Không tìm thấy" },
+      { name: "Bộ kit tăng dung tích (bore-up 200cc)", brand: "Athena / P2R", sku: "–", desc: "Bộ độ xi-lanh / piston 200cc.", fitment: "–", price: "Chưa rõ", source: "Không tìm thấy" },
+      { name: "Nhông-sên-dĩa DID 14-46-126L (10ly) bộ full", brand: "DID (Japon)", sku: "428HDS", desc: "Bộ nhông, dĩa, xích DID cho Exciter.", fitment: "Nhông 14T, dĩa 46T, sên 126L", price: "620.000 VNĐ" },
+      { name: "Ống nước Samco, két nhớt, bơm nước", brand: "–", sku: "–", desc: "Nhóm nâng cấp làm mát đang tìm kiếm.", fitment: "–", price: "Chưa rõ", source: "Không tìm thấy" },
+      { name: "Nhớt hiệu suất cao, lọc nhớt vĩnh cửu", brand: "–", sku: "–", desc: "Danh mục tiêu hao hiệu suất cao đang tìm kiếm.", fitment: "–", price: "Chưa rõ", source: "Không tìm thấy" }
+    ]
+  }
+];
+
 SEED_VEHICLES.push(
   { id: 1, type: "car", brand: "Toyota", name: "GR Supra", year: 2024, price: 43695, priceStr: "$43,695", cat: "Sports", power: 382, torque: 368, topSpeed: 155, zeroSixty: 3.9, weightLb: 3181, specs: { Engine: "3.0L Turbo I6", Power: "382 HP", Torque: "368 lb-ft", Drivetrain: "RWD", Trans: "8-spd Auto", "0-60": "3.9s", "Top Speed": "155 mph", Weight: "3,181 lbs" }, variants: [{ n: "2.0", p: "$43,695" }, { n: "3.0", p: "$54,195" }, { n: "3.0 A91 Edition", p: "$58,945" }], col: "#1a2e3a" },
   { id: 2, type: "car", brand: "Toyota", name: "GR86", year: 2024, price: 29015, priceStr: "$29,015", cat: "Sports", power: 228, torque: 184, topSpeed: 140, zeroSixty: 6.1, weightLb: 2822, specs: { Engine: "2.4L NA H4", Power: "228 HP", Torque: "184 lb-ft", Drivetrain: "RWD", Trans: "6-spd Manual", "0-60": "6.1s", "Top Speed": "140 mph", Weight: "2,822 lbs" }, variants: [{ n: "Base", p: "$29,015" }, { n: "Premium", p: "$32,415" }], col: "#2a1a1a" },
@@ -137,7 +246,7 @@ SEED_VEHICLES.push(
   { id: 59, type: "bike", brand: "Triumph", name: "Speed Triple 1200 RS", year: 2024, price: 18900, priceStr: "$18,900", cat: "Naked", power: 180, torque: 100, topSpeed: 165, zeroSixty: 2.9, weightLb: 437, specs: { Engine: "1160cc Inline-3", Power: "180 HP", Torque: "100 lb-ft", Seat: "830 mm", Weight: "198 kg", "0-60": "2.9s", "Top Speed": "165 mph", Electronics: "Ohlins Smart EC" }, variants: [{ n: "Speed Triple 1200 RR", p: "$17,200" }, { n: "Speed Triple 1200 RS", p: "$18,900" }], col: "#0a1a2a" },
   { id: 60, type: "bike", brand: "Triumph", name: "Daytona 660", year: 2024, price: 9595, priceStr: "$9,595", cat: "Sports", power: 95, torque: 52, topSpeed: 135, zeroSixty: 4, weightLb: 397, specs: { Engine: "660cc Inline-3", Power: "95 HP", Torque: "52 lb-ft", Seat: "820 mm", Weight: "180 kg", "Top Speed": "135 mph", Tank: "15L", Electronics: "2-mode TC" }, variants: [{ n: "Daytona 660", p: "$9,595" }], col: "#0a1a2a" },
   { id: 61, type: "bike", brand: "Harley-Davidson", name: "Nightster Special", year: 2024, price: 14299, priceStr: "$14,299", cat: "Cruiser", power: 90, torque: 70, topSpeed: 120, zeroSixty: 5, weightLb: 503, specs: { Engine: "975cc Revolution Max", Power: "90 HP", Torque: "70 lb-ft", Seat: "705 mm", Weight: "228 kg", "Top Speed": "120 mph", Tank: "11.7L", Electronics: "Drag Torque SC" }, variants: [{ n: "Nightster", p: "$12,299" }, { n: "Nightster Special", p: "$14,299" }], col: "#2a1a1a" },
-  { id: 70, type: "vn", brand: "Yamaha", name: "Exciter 155 VVA", year: 2024, price: 1150, priceStr: "~47tr VND", cat: "Underbone Sport", power: 19.3, torque: 14.4, topSpeed: 122, zeroSixty: 9.5, weightLb: 268, specs: { Engine: "155cc VVA SOHC", Power: "19.3 HP", Torque: "14.4 Nm", Seat: "795 mm", Weight: "117 kg", "Top Speed": "122 km/h", Tank: "4.2L", Fuel: "~2.5L/100km" }, variants: [{ n: "Exciter 155 Standard", p: "~45.9tr" }, { n: "Exciter 155 Connected", p: "~47.4tr" }, { n: "Exciter 155 RC", p: "~48.9tr" }], col: "#1a1a0a" },
+  { id: 70, type: "vn", brand: "Yamaha", name: "Exciter 155 VVA", year: 2024, price: 1150, priceStr: "~47tr VND", cat: "Underbone Sport", power: 19.3, torque: 14.4, topSpeed: 122, zeroSixty: 9.5, weightLb: 268, specs: { Engine: "155cc VVA SOHC", Power: "19.3 HP", Torque: "14.4 Nm", Seat: "795 mm", Weight: "117 kg", "Top Speed": "122 km/h", Tank: "4.2L", Fuel: "~2.5L/100km" }, variants: [{ n: "Exciter 155 Standard", p: "~45.9tr" }, { n: "Exciter 155 Connected", p: "~47.4tr" }, { n: "Exciter 155 RC", p: "~48.9tr" }], buildCategories: EXCITER_155_BUILD_CATEGORIES, col: "#1a1a0a" },
   { id: 71, type: "vn", brand: "Honda", name: "Winner X", year: 2024, price: 1100, priceStr: "~46.5tr VND", cat: "Underbone Sport", power: 14.8, torque: 13.5, topSpeed: 118, zeroSixty: 10.2, weightLb: 253, specs: { Engine: "150cc eSP+ SOHC", Power: "14.8 HP", Torque: "13.5 Nm", Seat: "785 mm", Weight: "115 kg", "Top Speed": "118 km/h", Tank: "4.1L", Fuel: "~2.0L/100km" }, variants: [{ n: "Standard", p: "~45.9tr" }, { n: "Special Edition", p: "~48.9tr" }], col: "#2a1a0a" },
   { id: 72, type: "vn", brand: "Yamaha", name: "NVX 155", year: 2024, price: 1050, priceStr: "~50tr VND", cat: "Maxi Scooter", power: 15.1, torque: 13.8, topSpeed: 115, zeroSixty: 9.8, weightLb: 291, specs: { Engine: "155cc VVA SOHC", Power: "15.1 HP", Torque: "13.8 Nm", Seat: "785 mm", Weight: "132 kg", "Top Speed": "115 km/h", Tank: "5.5L", Fuel: "~2.4L/100km" }, variants: [{ n: "NVX 155", p: "~49.9tr" }, { n: "NVX 155 Premium", p: "~52.9tr" }], col: "#0f1a2a" },
   { id: 73, type: "vn", brand: "Honda", name: "Air Blade 150", year: 2024, price: 980, priceStr: "~43.5tr VND", cat: "Scooter", power: 13.6, torque: 13.1, topSpeed: 110, zeroSixty: 10.5, weightLb: 255, specs: { Engine: "150cc eSP+ SOHC", Power: "13.6 HP", Torque: "13.1 Nm", Seat: "764 mm", Weight: "113 kg", "Top Speed": "110 km/h", Tank: "3.7L", Fuel: "~1.9L/100km" }, variants: [{ n: "Standard", p: "~43.5tr" }, { n: "Special", p: "~44.9tr" }], col: "#1a2a1a" },
@@ -772,6 +881,7 @@ function renderVehicleModal(vehicle) {
         ${detailTabButton("photos", "Real Photos")}
         ${detailTabButton("reviews", "Review")}
         ${detailTabButton("share", "Share")}
+        ${hasBuildSheet(vehicle) ? detailTabButton("build", "Độ xe") : ""}
         ${detailTabButton("variants", "Variants")}
       </div>
       <div class="detail-content">${renderVehicleTab(vehicle)}</div>
@@ -780,6 +890,7 @@ function renderVehicleModal(vehicle) {
 }
 
 function renderVehicleTab(vehicle) {
+  if (state.detailTab === "build" && hasBuildSheet(vehicle)) return renderBuildTab(vehicle);
   if (state.detailTab === "performance") return renderPerformanceTab(vehicle);
   if (state.detailTab === "photos") return renderPhotosTab(vehicle);
   if (state.detailTab === "reviews") return renderReviewsTab(vehicle);
@@ -868,6 +979,66 @@ function renderShareTab(vehicle) {
 function renderVariantsTab(vehicle) {
   if (!vehicle.variants.length) return '<div class="empty-state"><strong>No variants available.</strong><div>This entry currently uses a single default configuration.</div></div>';
   return `<div class="variant-list">${vehicle.variants.map((variant) => `<div class="variant-item"><div><strong>${escapeHtml(variant.n)}</strong><div>${escapeHtml(vehicle.brand)} ${escapeHtml(vehicle.name)}</div></div><div>${variant.priceUsd != null ? formatUsd(variant.priceUsd) : escapeHtml(variant.p)}</div></div>`).join("")}</div>`;
+}
+
+function hasBuildSheet(vehicle) {
+  return Array.isArray(vehicle.buildCategories) && vehicle.buildCategories.length > 0;
+}
+
+function renderBuildTab(vehicle) {
+  const categories = vehicle.buildCategories || [];
+  if (!categories.length) {
+    return '<div class="empty-state"><strong>Chưa có danh sách độ xe.</strong><div>Entry này hiện chưa có build sheet riêng.</div></div>';
+  }
+  const totalItems = categories.reduce((sum, category) => sum + category.items.length, 0);
+  return `
+    <div class="build-sheet">
+      <div class="build-intro">
+        <div>
+          <strong>Build sheet cho ${escapeHtml(vehicle.name)}</strong>
+          <div class="build-category-note">Danh sách đồ chơi, nâng cấp và các hạng mục đang tìm kiếm cho Exciter 155. Giá, fitment và ghi chú được giữ theo dữ liệu đã nhập.</div>
+        </div>
+        <div class="build-summary">
+          <span>${categories.length} nhóm</span>
+          <span>${totalItems} món</span>
+        </div>
+      </div>
+      <div class="build-category-list">${categories.map((category) => `
+        <section class="build-category">
+          <div class="build-category-head">
+            <div>
+              <p class="eyebrow">${escapeHtml(category.title)}</p>
+              ${category.note ? `<div class="build-category-note">${escapeHtml(category.note)}</div>` : ""}
+            </div>
+            <span class="type-pill">${category.items.length} món</span>
+          </div>
+          <div class="build-items">${category.items.map(renderBuildItem).join("")}</div>
+        </section>
+      `).join("")}</div>
+    </div>
+  `;
+}
+
+function renderBuildItem(item) {
+  const labelParts = [];
+  if (item.brand && item.brand !== "–") labelParts.push(item.brand);
+  if (item.sku && item.sku !== "–") labelParts.push(`SKU ${item.sku}`);
+  const meta = [];
+  if (item.fitment && item.fitment !== "–") meta.push(`Lắp cho: ${item.fitment}`);
+  if (item.source) meta.push(`Nguồn: ${item.source}`);
+  return `
+    <article class="build-item">
+      <div class="build-item-head">
+        <div>
+          <strong>${escapeHtml(item.name)}</strong>
+          ${labelParts.length ? `<div class="build-item-sub">${escapeHtml(labelParts.join(" • "))}</div>` : ""}
+        </div>
+        <div class="build-price">${escapeHtml(item.price || "Chưa rõ")}</div>
+      </div>
+      ${item.desc ? `<div class="build-item-desc">${escapeHtml(item.desc)}</div>` : ""}
+      ${meta.length ? `<div class="build-meta">${meta.map((entry) => `<span>${escapeHtml(entry)}</span>`).join("")}</div>` : ""}
+    </article>
+  `;
 }
 
 function openCompareModal() {
